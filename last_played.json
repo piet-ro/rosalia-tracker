@@ -10,11 +10,11 @@
     "date": "2026-09-30"
   },
   "latest_track": {
-    "timestamp": "2026-10-05T18:34:59.677Z",
-    "track_name": "Reliquia",
+    "timestamp": "2026-10-05T18:47:40.686Z",
+    "track_name": "Mio Cristo Piange Diamanti",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/7s2fbTm6mudP1SZDZR8vci",
+    "spotify_url": "https://open.spotify.com/track/0zJxp7ndkNCwE2zjfmnnBZ",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -80,6 +80,9 @@
     "2026-09-30T20:48:48.555Z",
     "2026-10-04T20:43:28.552Z",
     "2026-10-05T18:34:59.677Z",
-    "2026-10-05T18:31:09.389Z"
+    "2026-10-05T18:31:09.389Z",
+    "2026-10-05T18:47:40.686Z",
+    "2026-10-05T18:43:10.975Z",
+    "2026-10-05T18:39:02.892Z"
   ]
 }
