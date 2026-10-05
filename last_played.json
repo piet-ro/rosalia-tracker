@@ -10,11 +10,11 @@
     "date": "2026-09-30"
   },
   "latest_track": {
-    "timestamp": "2026-10-05T20:37:04.343Z",
-    "track_name": "Berghain",
+    "timestamp": "2026-10-05T21:00:06.673Z",
+    "track_name": "Sauvignon Blanc",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/6ZBJc582Szb5UGV3VDgrkh",
+    "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -84,6 +84,13 @@
     "2026-10-05T18:47:40.686Z",
     "2026-10-05T18:43:10.975Z",
     "2026-10-05T18:39:02.892Z",
-    "2026-10-05T20:37:04.343Z"
+    "2026-10-05T20:37:04.343Z",
+    "2026-10-05T21:00:06.673Z",
+    "2026-10-05T20:57:24.076Z",
+    "2026-10-05T20:54:33.558Z",
+    "2026-10-05T20:49:41.278Z",
+    "2026-10-05T20:46:44.255Z",
+    "2026-10-05T20:44:59.867Z",
+    "2026-10-05T20:42:39.437Z"
   ]
 }
