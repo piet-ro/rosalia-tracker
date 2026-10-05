@@ -1,21 +1,21 @@
 {
-  "current_streak": 1,
+  "current_streak": 2,
   "longest_streak": {
     "count": 2,
-    "start_date": "2026-09-30",
-    "end_date": "2026-10-01"
+    "start_date": "2026-10-04",
+    "end_date": "2026-10-05"
   },
   "peak_volume": {
     "count": 21,
     "date": "2026-09-30"
   },
   "latest_track": {
-    "timestamp": "2026-10-04T20:43:28.552Z",
-    "track_name": "LA FAMA",
-    "album_name": "MOTOMAMI +",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
-    "spotify_url": "https://open.spotify.com/track/77VjuBo3CJbamC3gzaUzK9",
-    "album_url": "https://open.spotify.com/album/3zbiiu3JTibw0esC7eoMXr"
+    "timestamp": "2026-10-05T18:34:59.677Z",
+    "track_name": "Reliquia",
+    "album_name": "LUX (Complete Works)",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+    "spotify_url": "https://open.spotify.com/track/7s2fbTm6mudP1SZDZR8vci",
+    "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
     "2026-09-30T20:47:24.114Z",
@@ -78,6 +78,8 @@
     "2026-10-01T09:51:48.192Z",
     "2026-10-01T10:10:56.274Z",
     "2026-09-30T20:48:48.555Z",
-    "2026-10-04T20:43:28.552Z"
+    "2026-10-04T20:43:28.552Z",
+    "2026-10-05T18:34:59.677Z",
+    "2026-10-05T18:31:09.389Z"
   ]
 }
