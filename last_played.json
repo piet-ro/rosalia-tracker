@@ -10,11 +10,11 @@
     "date": "2026-09-30"
   },
   "latest_track": {
-    "timestamp": "2026-10-06T06:18:28.519Z",
-    "track_name": "Novia Robot",
+    "timestamp": "2026-10-06T06:29:40.709Z",
+    "track_name": "Magnolias",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu",
+    "spotify_url": "https://open.spotify.com/track/4cSEOMb21q2S2ypucBvQT0",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -94,6 +94,9 @@
     "2026-10-05T20:42:39.437Z",
     "2026-10-06T06:18:28.519Z",
     "2026-10-06T06:15:16.126Z",
-    "2026-10-06T06:11:17.475Z"
+    "2026-10-06T06:11:17.475Z",
+    "2026-10-06T06:29:40.709Z",
+    "2026-10-06T06:26:25.931Z",
+    "2026-10-06T06:22:40.536Z"
   ]
 }
