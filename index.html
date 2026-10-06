@@ -114,7 +114,7 @@
     /* HOME STREAK RIBBON (FIXED ALIGNMENT) */
     .home-active-ribbon {
       position: absolute;
-      top: calc(1rem + 0.8rem + 0.8em - 2px);
+      top: calc(1.15rem + 0.8rem + 0.8em - 2px);
       height: 40px;
       background: linear-gradient(90deg, #ff007f, #e60023);
       border-radius: 20px;
@@ -572,7 +572,7 @@
         const startCenterPct = activeStartIdx * colWidth + (colWidth / 2);
         const endCenterPct = activeEndIdx * colWidth + (colWidth / 2);
 
-        ribbon.style.left = `calc(0.5rem + ${startCenterPct}% - 20px)`;
+        ribbon.style.left = `calc(0.5rem + ${startCenterPct}% - 32px)`;
         ribbon.style.width = `calc(${endCenterPct - startCenterPct}% + 40px)`;
       }
     }
