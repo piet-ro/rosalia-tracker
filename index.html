@@ -114,9 +114,9 @@
     /* HOME STREAK RIBBON (FOCUSED ACTIVE STREAK) */
     .home-active-ribbon {
       position: absolute;
-      top: 2.6rem; height: 36px;
+      top: 2.2rem; height: 40px;
       background: linear-gradient(90deg, #ff007f, #e60023);
-      border-radius: 18px;
+      border-radius: 20px;
       z-index: 1;
       pointer-events: none;
     }
@@ -505,6 +505,27 @@
 
       const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
       const today = new Date();
+      const currentStreakCount = coreData.current_streak || 0;
+
+      // Identify active streak column indices within the 7-day strip
+      const activeIndices = new Set();
+      if (currentStreakCount > 0) {
+        let remainingStreak = currentStreakCount;
+        for (let i = 0; i <= 6 && remainingStreak > 0; i++) {
+          const d = new Date();
+          d.setDate(today.getDate() - i);
+          const dateStr = formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
+          const hasListened = historyData && (historyData[dateStr] || 0) > 0;
+
+          if (hasListened) {
+            const colIdx = 6 - i;
+            activeIndices.add(colIdx);
+            remainingStreak--;
+          } else if (i > 0) {
+            break;
+          }
+        }
+      }
 
       let activeStartIdx = -1;
       let activeEndIdx = -1;
@@ -518,13 +539,7 @@
 
         const hasListened = historyData && (historyData[dateStr] || 0) > 0;
 
-        const isActiveStreakDay = coreData.current_streak > 0 && 
-                                  coreData.active_streak && 
-                                  dateStr >= coreData.active_streak.start_date && 
-                                  dateStr <= coreData.active_streak.end_date && 
-                                  hasListened;
-
-        if (isActiveStreakDay) {
+        if (activeIndices.has(colIdx)) {
           if (activeStartIdx === -1) activeStartIdx = colIdx;
           activeEndIdx = colIdx;
         }
@@ -558,10 +573,12 @@
       if (activeStartIdx !== -1 && activeEndIdx !== -1) {
         ribbon.style.display = 'block';
         const colWidth = 100 / 7;
-        const leftPct = activeStartIdx * colWidth;
-        const widthPct = (activeEndIdx - activeStartIdx + 1) * colWidth;
-        ribbon.style.left = `calc(${leftPct}% + 4px)`;
-        ribbon.style.width = `calc(${widthPct}% - 8px)`;
+        const startCenterPct = activeStartIdx * colWidth + (colWidth / 2);
+        const endCenterPct = activeEndIdx * colWidth + (colWidth / 2);
+
+        // Ribbon radius is 20px (height 40px centered over 36px wrapper / 32px circle)
+        ribbon.style.left = `calc(${startCenterPct}% - 20px)`;
+        ribbon.style.width = `calc(${endCenterPct - startCenterPct}% + 40px)`;
       }
     }
 
@@ -749,11 +766,12 @@
       ribbon.className = `unified-streak-ribbon ${isHighlighted ? 'gradient' : 'white-subtle'}`;
 
       const colWidth = 100 / 7;
-      const leftPct = startCol * colWidth;
-      const rightPct = 100 - (endCol + 1) * colWidth;
+      const startCenterPct = startCol * colWidth + (colWidth / 2);
+      const endCenterPct = endCol * colWidth + (colWidth / 2);
 
-      ribbon.style.left = `calc(${leftPct}% + 4px)`;
-      ribbon.style.right = `calc(${rightPct}% + 4px)`;
+      // Ribbon radius is 20px (height 40px centered over 36px wrapper / 32px circle gives exactly 4px margin all around circle)
+      ribbon.style.left = `calc(${startCenterPct}% - ${isOverallStart ? '20px' : '20px'})`;
+      ribbon.style.right = `calc(${100 - endCenterPct}% - ${isOverallEnd ? '20px' : '20px'})`;
 
       // Rounding rules: only overall start/end days get rounded corners
       const leftRadius = isOverallStart ? '20px' : '0px';
