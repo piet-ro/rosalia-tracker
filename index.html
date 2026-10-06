@@ -114,9 +114,9 @@
     /* HOME STREAK RIBBON (FOCUSED ACTIVE STREAK) */
     .home-active-ribbon {
       position: absolute;
-      top: 2.6rem; height: 32px;
+      top: 2.6rem; height: 36px;
       background: linear-gradient(90deg, #ff007f, #e60023);
-      border-radius: 16px;
+      border-radius: 18px;
       z-index: 1;
       pointer-events: none;
     }
@@ -223,7 +223,8 @@
     /* STREAK RIBBONS */
     .unified-streak-ribbon {
       position: absolute;
-      top: 0; bottom: 18px;
+      top: -2px;
+      height: 40px;
       z-index: 1;
       pointer-events: none;
     }
@@ -559,8 +560,8 @@
         const colWidth = 100 / 7;
         const leftPct = activeStartIdx * colWidth;
         const widthPct = (activeEndIdx - activeStartIdx + 1) * colWidth;
-        ribbon.style.left = `calc(${leftPct}% + 8px)`;
-        ribbon.style.width = `calc(${widthPct}% - 16px)`;
+        ribbon.style.left = `calc(${leftPct}% + 4px)`;
+        ribbon.style.width = `calc(${widthPct}% - 8px)`;
       }
     }
 
@@ -747,15 +748,16 @@
       const ribbon = document.createElement('div');
       ribbon.className = `unified-streak-ribbon ${isHighlighted ? 'gradient' : 'white-subtle'}`;
 
-      const leftPct = (startCol / 7) * 100;
-      const rightPct = 100 - ((endCol + 1) / 7) * 100;
+      const colWidth = 100 / 7;
+      const leftPct = startCol * colWidth;
+      const rightPct = 100 - (endCol + 1) * colWidth;
 
       ribbon.style.left = `calc(${leftPct}% + 4px)`;
       ribbon.style.right = `calc(${rightPct}% + 4px)`;
 
       // Rounding rules: only overall start/end days get rounded corners
-      const leftRadius = isOverallStart ? '18px' : '0px';
-      const rightRadius = isOverallEnd ? '18px' : '0px';
+      const leftRadius = isOverallStart ? '20px' : '0px';
+      const rightRadius = isOverallEnd ? '20px' : '0px';
       ribbon.style.borderRadius = `${leftRadius} ${rightRadius} ${rightRadius} ${leftRadius}`;
 
       weekRow.appendChild(ribbon);
