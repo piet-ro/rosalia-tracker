@@ -10,11 +10,11 @@
     "date": "2026-09-30"
   },
   "latest_track": {
-    "timestamp": "2026-10-06T06:29:40.709Z",
-    "track_name": "Magnolias",
+    "timestamp": "2026-10-06T11:28:59.866Z",
+    "track_name": "Reliquia",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/4cSEOMb21q2S2ypucBvQT0",
+    "spotify_url": "https://open.spotify.com/track/7s2fbTm6mudP1SZDZR8vci",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -97,6 +97,9 @@
     "2026-10-06T06:11:17.475Z",
     "2026-10-06T06:29:40.709Z",
     "2026-10-06T06:26:25.931Z",
-    "2026-10-06T06:22:40.536Z"
+    "2026-10-06T06:22:40.536Z",
+    "2026-10-06T11:28:59.866Z",
+    "2026-10-06T11:25:09.647Z",
+    "2026-10-06T11:22:40.255Z"
   ]
 }
