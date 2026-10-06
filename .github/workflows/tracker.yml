@@ -1,48 +1,222 @@
-name: ROSALÍA Tracker Sync
+name: Rosalía Spotify Tracker
 
 on:
   schedule:
-    # Runs every 15 minutes
     - cron: '*/15 * * * *'
-  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+  repository_dispatch:
+    types: [check_spotify]
+  workflow_dispatch:
 
 jobs:
-  track-and-update:
+  update-tracker:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: '3.11'
+          node-version: '18'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install spotipy
-
-      - name: Run Tracker Script
+      - name: Fetch Spotify Data and Update Stats
         env:
-          SPOTIPY_CLIENT_ID: ${{ secrets.SPOTIPY_CLIENT_ID }}
-          SPOTIPY_CLIENT_SECRET: ${{ secrets.SPOTIPY_CLIENT_SECRET }}
-          SPOTIPY_REDIRECT_URI: ${{ secrets.SPOTIPY_REDIRECT_URI }}
-          SPOTIPY_REFRESH_TOKEN: ${{ secrets.SPOTIPY_REFRESH_TOKEN }}
-        run: python update_tracker.py
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+        run: |
+          node -e '
+          const fs = require("fs");
 
-      - name: Commit and push updated JSON files
+          // Helper to get local date string YYYY-MM-DD in Europe/Rome (CEST)
+          function getLocalDateString(isoTimestamp) {
+            const date = new Date(isoTimestamp);
+            const options = { timeZone: "Europe/Rome", year: "numeric", month: "2-digit", day: "2-digit" };
+            const parts = new Intl.DateTimeFormat("en-CA", options).formatToParts(date);
+            const year = parts.find(p => p.type === "year").value;
+            const month = parts.find(p => p.type === "month").value;
+            const day = parts.find(p => p.type === "day").value;
+            return `${year}-${month}-${day}`;
+          }
+
+          async function getAccessToken() {
+            const res = await fetch("https://accounts.spotify.com/api/token", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+                "Authorization": "Basic " + Buffer.from(process.env.SPOTIFY_CLIENT_ID + ":" + process.env.SPOTIFY_CLIENT_SECRET).toString("base64")
+              },
+              body: new URLSearchParams({
+                grant_type: "refresh_token",
+                refresh_token: process.env.SPOTIFY_REFRESH_TOKEN
+              })
+            });
+            const data = await res.json();
+            return data.access_token;
+          }
+
+          async function run() {
+            try {
+              const token = await getAccessToken();
+              const spotifyRes = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=50", {
+                headers: { "Authorization": "Bearer " + token }
+              });
+              const spotifyData = await spotifyRes.json();
+
+              let lastPlayedData = {};
+              if (fs.existsSync("./last_played.json")) {
+                try { lastPlayedData = JSON.parse(fs.readFileSync("./last_played.json", "utf8")); } catch (e) {}
+              }
+
+              let trackedTimestamps = lastPlayedData.tracked_timestamps || [];
+
+              // Process Rosalía tracks from Spotify fetch
+              if (spotifyData.items && spotifyData.items.length > 0) {
+                const rosaliaItems = spotifyData.items.filter(item => 
+                  item.track.artists.some(a => a.id === "7ltDVBr6mKbRvohxheJ9h1" || a.name.toLowerCase().includes("rosalía") || a.name.toLowerCase().includes("rosalia"))
+                );
+
+                if (rosaliaItems.length > 0) {
+                  const newestItem = rosaliaItems[0];
+                  lastPlayedData.latest_track = {
+                    timestamp: newestItem.played_at,
+                    track_name: newestItem.track.name,
+                    album_name: newestItem.track.album.name,
+                    album_art: newestItem.track.album.images[0]?.url || "",
+                    spotify_url: newestItem.track.external_urls?.spotify || "",
+                    album_url: newestItem.track.album.external_urls?.spotify || ""
+                  };
+
+                  for (const item of rosaliaItems) {
+                    if (!trackedTimestamps.includes(item.played_at)) {
+                      trackedTimestamps.push(item.played_at);
+                    }
+                  }
+                }
+              }
+
+              // Keep buffer capped to last 300 timestamps
+              if (trackedTimestamps.length > 300) {
+                trackedTimestamps = trackedTimestamps.slice(0, 300);
+              }
+              lastPlayedData.tracked_timestamps = trackedTimestamps;
+
+              // RECALCULATE HISTORY FROM SCRATCH (Prevents compounding accumulation bug)
+              const history = {};
+              for (const ts of trackedTimestamps) {
+                const localDateStr = getLocalDateString(ts);
+                history[localDateStr] = (history[localDateStr] || 0) + 1;
+              }
+
+              // Calculate active streak
+              const sortedDates = Object.keys(history).sort();
+              const nowISO = new Date().toISOString();
+              const todayStr = getLocalDateString(nowISO);
+              
+              const yesterday = new Date();
+              yesterday.setDate(yesterday.getDate() - 1);
+              const yesterdayStr = getLocalDateString(yesterday.toISOString());
+
+              let currentStreak = 0;
+              let checkDate = new Date();
+              
+              if (!history[todayStr] && !history[yesterdayStr]) {
+                currentStreak = 0;
+              } else {
+                if (!history[todayStr]) checkDate = yesterday;
+                while (true) {
+                  const dStr = getLocalDateString(checkDate.toISOString());
+                  if (history[dStr] && history[dStr] > 0) {
+                    currentStreak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                  } else {
+                    break;
+                  }
+                }
+              }
+
+              // Calculate Longest Streak Record
+              let longestStreak = 0;
+              let longestStreakStart = "";
+              let longestStreakEnd = "";
+              let tempStreak = 0;
+              let tempStart = "";
+
+              for (let i = 0; i < sortedDates.length; i++) {
+                const curr = sortedDates[i];
+                if (history[curr] > 0) {
+                  if (tempStreak === 0) {
+                    tempStreak = 1;
+                    tempStart = curr;
+                  } else {
+                    const prevDate = new Date(sortedDates[i - 1]);
+                    const currDate = new Date(curr);
+                    const diffDays = Math.round((currDate - prevDate) / (1000 * 60 * 60 * 24));
+                    if (diffDays === 1) {
+                      tempStreak++;
+                    } else {
+                      tempStreak = 1;
+                      tempStart = curr;
+                    }
+                  }
+
+                  if (tempStreak >= longestStreak) {
+                    longestStreak = tempStreak;
+                    longestStreakStart = tempStart;
+                    longestStreakEnd = curr;
+                  }
+                } else {
+                  tempStreak = 0;
+                }
+              }
+
+              // Calculate Peak Volume Record
+              let maxDailyTracks = 0;
+              let maxDailyDate = "";
+              for (const [dateStr, count] of Object.entries(history)) {
+                if (count > maxDailyTracks) {
+                  maxDailyTracks = count;
+                  maxDailyDate = dateStr;
+                }
+              }
+
+              // Write cleaned, sorted history.json
+              const sortedHistory = {};
+              Object.keys(history).sort().reverse().forEach(k => {
+                sortedHistory[k] = history[k];
+              });
+              fs.writeFileSync("./history.json", JSON.stringify(sortedHistory, null, 2));
+
+              const outputData = {
+                current_streak: currentStreak,
+                longest_streak: {
+                  count: longestStreak,
+                  start_date: longestStreakStart,
+                  end_date: longestStreakEnd
+                },
+                peak_volume: {
+                  count: maxDailyTracks,
+                  date: maxDailyDate
+                },
+                latest_track: lastPlayedData.latest_track || null,
+                tracked_timestamps: trackedTimestamps
+              };
+
+              fs.writeFileSync("./last_played.json", JSON.stringify(outputData, null, 2));
+              console.log("Tracker update completed successfully.");
+
+            } catch (err) {
+              console.error("Error updating tracker:", err);
+              process.exit(1);
+            }
+          }
+
+          run();
+          '
+
+      - name: Commit and push changes
         run: |
           git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add last_played.json history.json
-          
-          # Only commit if changes exist (prevents failing jobs on empty commits)
-          if git diff --staged --quiet; then
-            echo "No changes in JSON files to commit."
-          else
-            git commit -m "chore: update ROSALÍA tracker data [skip ci]"
-            git push
-          fi
+          git diff-index --quiet HEAD || (git commit -m "Update streak stats & history [skip ci]" && git push)
