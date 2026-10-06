@@ -33,9 +33,12 @@
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background-size: cover; background-position: center;
       filter: blur(24px) brightness(0.6); transform: scale(1.15);
-      z-index: -1; opacity: 0; transition: opacity 1.8s ease-in-out;
+      z-index: -1; opacity: 0; transition: opacity 1.8s ease-in-out, filter 0.3s ease;
     }
     .bg-blur.loaded { opacity: 1; }
+    body.modal-open .bg-blur {
+      filter: blur(28px) brightness(0.35) !important;
+    }
 
     .loader-container {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -65,8 +68,12 @@
       max-width: 480px; width: 100%; text-align: center;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
       display: none; opacity: 0; z-index: 10;
+      transition: opacity 0.3s ease;
     }
     .card.active { display: block; animation: fadeInUp 0.7s var(--ease-smooth) forwards; }
+    body.modal-open .card {
+      display: none !important;
+    }
 
     @keyframes fadeInUp {
       from { opacity: 0; transform: translateY(20px); }
@@ -94,17 +101,28 @@
     .main-headline.inactive-streak { color: var(--color-red); }
 
     .strip-container {
+      position: relative;
       margin: 1.5rem 0; padding: 1rem 0.5rem;
       background: rgba(255, 255, 255, 0.04);
       border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
     }
     .strip-title { font-size: 0.8rem; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.8rem; }
-    .strip-days { display: flex; justify-content: space-between; align-items: center; }
-    .day-node { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .strip-days { position: relative; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
+    .day-node { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+
+    /* HOME STREAK RIBBON (FOCUSED ACTIVE STREAK) */
+    .home-active-ribbon {
+      position: absolute;
+      top: 2.6rem; height: 32px;
+      background: linear-gradient(90deg, #ff007f, #e60023);
+      border-radius: 16px;
+      z-index: 1;
+      pointer-events: none;
+    }
 
     .records-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1.2rem 0 1.5rem; }
     
-    /* RECORD CARDS AS CLICKABLE BUTTONS */
     .record-card {
       background: rgba(255, 255, 255, 0.05); padding: 0.9rem;
       border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.08); text-align: left;
@@ -134,10 +152,17 @@
     }
     .track-info a { color: var(--color-white); font-weight: 600; text-decoration: underline; }
 
+    .stale-warning-banner {
+      background: rgba(230, 0, 35, 0.2);
+      border: 1px solid rgba(230, 0, 35, 0.5);
+      color: #ff8080; padding: 0.6rem 0.8rem; border-radius: 12px;
+      font-size: 0.8rem; margin-bottom: 1rem; display: none;
+    }
+
     /* MODAL WINDOW & OVERLAY */
     .modal-overlay {
       position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(0, 0, 0, 0.88); backdrop-filter: blur(15px);
+      background: transparent;
       z-index: 200; opacity: 0; visibility: hidden; transition: all 0.3s ease;
       display: flex; justify-content: center; align-items: center; padding: 1rem;
     }
@@ -145,15 +170,18 @@
     
     .modal-content {
       background: #141414; border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 24px; max-width: 480px; width: 100%; height: 85vh;
+      border-radius: 24px; max-width: 480px; width: 100%;
+      max-height: calc(100vh - 2rem);
+      height: 100%;
       display: flex; flex-direction: column; color: var(--color-white);
       position: relative; overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
     }
 
     .modal-sticky-header {
-      position: sticky; top: 0; background: #141414; z-index: 50;
+      position: relative; background: #141414; z-index: 50;
       padding: 1.2rem 1.5rem 0.5rem 1.5rem;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-shrink: 0;
     }
     .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
     .modal-title { font-size: 1.3rem; font-weight: 800; }
@@ -180,7 +208,8 @@
     }
 
     .modal-scroll-body {
-      flex: 1; overflow-y: auto; padding: 1rem 1.5rem 5rem 1.5rem;
+      flex: 1; overflow-y: auto; padding: 1rem 1.5rem;
+      min-height: 0;
     }
 
     .week-row {
@@ -191,20 +220,25 @@
       margin-bottom: 12px;
     }
 
+    /* STREAK RIBBONS */
     .unified-streak-ribbon {
       position: absolute;
       top: 0; bottom: 18px;
       z-index: 1;
+      pointer-events: none;
+    }
+    .unified-streak-ribbon.gradient {
       background: linear-gradient(90deg, #ff007f, #e60023);
-      border-radius: 18px;
+    }
+    .unified-streak-ribbon.white-subtle {
+      background: rgba(255, 255, 255, 0.25);
     }
 
     .heatmap-legend {
-      position: absolute; bottom: 0; left: 0; right: 0;
       background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(10px);
       border-top: 1px solid rgba(255, 255, 255, 0.08);
       padding: 0.8rem; display: none; align-items: center; justify-content: center; gap: 8px;
-      font-size: 0.75rem; color: var(--text-sub); z-index: 60;
+      font-size: 0.75rem; color: var(--text-sub); z-index: 60; flex-shrink: 0;
     }
     .heatmap-legend.active { display: flex; }
     .legend-box { width: 14px; height: 14px; border-radius: 3px; }
@@ -222,6 +256,11 @@
       z-index: 3;
     }
 
+    /* HISTORY HOME VS MODAL DIFFERENCES */
+    .cal-circle.empty-outline {
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      background: transparent;
+    }
     .cal-circle.empty-dot::after {
       content: ''; width: 5px; height: 5px;
       background-color: rgba(255, 255, 255, 0.25);
@@ -252,15 +291,19 @@
   </div>
 
   <div id="main-card" class="card">
+    <div id="stale-warning" class="stale-warning-banner">
+      ⚠️ Data sync is currently delayed. Stats may be incomplete.
+    </div>
+
     <img id="cover-art" class="cover-art" src="" alt="Album Art" style="display: none;" />
     <h1 id="main-headline" class="main-headline active-streak">...</h1>
 
     <div class="strip-container">
+      <div id="home-active-ribbon" class="home-active-ribbon"></div>
       <div class="strip-title">Past 7 Days</div>
       <div id="strip-days" class="strip-days"></div>
     </div>
 
-    <!-- RECORDS NOW ACT AS DIRECT LINKS TO THE MODAL TABS -->
     <div class="records-grid">
       <div id="card-streak-btn" class="record-card">
         <div class="record-label">🔥 Longest Streak</div>
@@ -375,9 +418,37 @@
         coreData = await coreRes.json();
         historyData = await historyRes.json();
 
+        checkHeartbeatAndStreaks();
         renderUI();
       } catch (err) {
         console.error("Data load error", err);
+      }
+    }
+
+    function checkHeartbeatAndStreaks() {
+      // 1. Stale Data Warning (Heartbeat check)
+      if (coreData.last_successful_run) {
+        const lastRun = new Date(coreData.last_successful_run).getTime();
+        const now = Date.now();
+        const hoursPassed = (now - lastRun) / (1000 * 60 * 60);
+        if (hoursPassed > 24) {
+          document.getElementById('stale-warning').style.display = 'block';
+        }
+      }
+
+      // 2. Dynamic Active Streak Check (Break streak if missed yesterday/today)
+      if (coreData.active_streak && coreData.active_streak.end_date) {
+        const lastDate = new Date(coreData.active_streak.end_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        lastDate.setHours(0, 0, 0, 0);
+
+        const diffTime = Math.abs(today - lastDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays > 1) {
+          coreData.current_streak = 0;
+        }
       }
     }
 
@@ -427,17 +498,35 @@
 
     function render7DayStrip() {
       const container = document.getElementById('strip-days');
+      const ribbon = document.getElementById('home-active-ribbon');
       container.innerHTML = '';
+      ribbon.style.display = 'none';
+
       const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
       const today = new Date();
 
+      let activeStartIdx = -1;
+      let activeEndIdx = -1;
+
       for (let i = 6; i >= 0; i--) {
+        const colIdx = 6 - i;
         const d = new Date();
         d.setDate(today.getDate() - i);
         const dateStr = formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
         const dayName = days[d.getDay()];
 
         const hasListened = historyData && (historyData[dateStr] || 0) > 0;
+
+        const isActiveStreakDay = coreData.current_streak > 0 && 
+                                  coreData.active_streak && 
+                                  dateStr >= coreData.active_streak.start_date && 
+                                  dateStr <= coreData.active_streak.end_date && 
+                                  hasListened;
+
+        if (isActiveStreakDay) {
+          if (activeStartIdx === -1) activeStartIdx = colIdx;
+          activeEndIdx = colIdx;
+        }
 
         const node = document.createElement('div');
         node.className = 'day-node';
@@ -446,7 +535,7 @@
         wrapper.className = 'circle-wrapper';
 
         const circle = document.createElement('div');
-        circle.className = `cal-circle ${hasListened ? 'listened' : 'empty-dot'}`;
+        circle.className = `cal-circle ${hasListened ? 'listened' : 'empty-outline'}`;
         circle.innerText = hasListened ? '✓' : '';
 
         if (coreData.peak_volume && dateStr === coreData.peak_volume.date) {
@@ -463,6 +552,39 @@
         node.appendChild(label);
         container.appendChild(node);
       }
+
+      // Render home connecting active ribbon if present
+      if (activeStartIdx !== -1 && activeEndIdx !== -1) {
+        ribbon.style.display = 'block';
+        const colWidth = 100 / 7;
+        const leftPct = activeStartIdx * colWidth;
+        const widthPct = (activeEndIdx - activeStartIdx + 1) * colWidth;
+        ribbon.style.left = `calc(${leftPct}% + 8px)`;
+        ribbon.style.width = `calc(${widthPct}% - 16px)`;
+      }
+    }
+
+    function getAllStreaks() {
+      const dates = Object.keys(historyData).filter(d => historyData[d] > 0).sort();
+      if (dates.length === 0) return [];
+
+      const streaks = [];
+      let currentStreak = { start_date: dates[0], end_date: dates[0] };
+
+      for (let i = 1; i < dates.length; i++) {
+        const prev = new Date(dates[i - 1]);
+        const curr = new Date(dates[i]);
+        const diffDays = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+          currentStreak.end_date = dates[i];
+        } else {
+          streaks.push(currentStreak);
+          currentStreak = { start_date: dates[i], end_date: dates[i] };
+        }
+      }
+      streaks.push(currentStreak);
+      return streaks;
     }
 
     function renderCalendar() {
@@ -475,9 +597,8 @@
       }
       document.getElementById('legend-max-label').innerText = `${maxCount} tracks`;
 
-      // CAPPED RANGE: SEPTEMBER 27 TO TODAY
-      const startDate = new Date(2026, 8, 27); // Sept 27, 2026
-      const endDate = new Date(); // Current date (e.g. Oct 3)
+      const startDate = new Date(2026, 8, 27);
+      const endDate = new Date();
 
       let curr = new Date(startDate);
       const allDays = [];
@@ -494,13 +615,14 @@
         curr.setDate(curr.getDate() + 1);
       }
 
+      const allStreaks = getAllStreaks();
+
       for (let i = 0; i < allDays.length; i += 7) {
         const weekDays = allDays.slice(i, i + 7);
         const weekRow = document.createElement('div');
         weekRow.className = 'week-row';
 
         const streakSegments = [];
-        let activeSegment = null;
 
         weekDays.forEach((dayObj, colIdx) => {
           if (!dayObj) return;
@@ -508,39 +630,46 @@
           const dateStr = formatDateKey(dayObj.getFullYear(), dayObj.getMonth(), dayObj.getDate());
           const count = historyData[dateStr] || 0;
 
-          const isStreakDay = (currentMode === 'binary') &&
-                              coreData.longest_streak &&
-                              dateStr >= coreData.longest_streak.start_date &&
-                              dateStr <= coreData.longest_streak.end_date &&
-                              count > 0;
+          if (currentMode === 'binary' && count > 0) {
+            let matchingStreak = allStreaks.find(s => dateStr >= s.start_date && dateStr <= s.end_date);
+            if (matchingStreak) {
+              const isRecord = coreData.longest_streak && 
+                               matchingStreak.start_date === coreData.longest_streak.start_date &&
+                               matchingStreak.end_date === coreData.longest_streak.end_date;
+              
+              const isActive = coreData.current_streak > 0 &&
+                               coreData.active_streak && 
+                               matchingStreak.start_date === coreData.active_streak.start_date;
 
-          if (isStreakDay) {
-            if (!activeSegment) {
-              activeSegment = { startCol: colIdx, endCol: colIdx };
-            } else {
-              activeSegment.endCol = colIdx;
-            }
-          } else {
-            if (activeSegment) {
-              streakSegments.push(activeSegment);
-              activeSegment = null;
+              const isHighlighted = isRecord || isActive;
+              const isStartDay = (dateStr === matchingStreak.start_date);
+              const isEndDay = (dateStr === matchingStreak.end_date);
+
+              streakSegments.push({
+                colIdx,
+                isHighlighted,
+                isStartDay,
+                isEndDay
+              });
             }
           }
         });
 
-        if (activeSegment) streakSegments.push(activeSegment);
+        // Group consecutive column days in this row into segments
+        if (streakSegments.length > 0) {
+          let currentGroup = [streakSegments[0]];
 
-        streakSegments.forEach(seg => {
-          const ribbon = document.createElement('div');
-          ribbon.className = 'unified-streak-ribbon';
-          const leftPct = (seg.startCol / 7) * 100;
-          const rightPct = 100 - ((seg.endCol + 1) / 7) * 100;
-
-          ribbon.style.left = `calc(${leftPct}% + 4px)`;
-          ribbon.style.right = `calc(${rightPct}% + 4px)`;
-
-          weekRow.appendChild(ribbon);
-        });
+          for (let s = 1; s < streakSegments.length; s++) {
+            if (streakSegments[s].colIdx === streakSegments[s - 1].colIdx + 1 &&
+                streakSegments[s].isHighlighted === streakSegments[s - 1].isHighlighted) {
+              currentGroup.push(streakSegments[s]);
+            } else {
+              renderStreakRibbon(weekRow, currentGroup);
+              currentGroup = [streakSegments[s]];
+            }
+          }
+          renderStreakRibbon(weekRow, currentGroup);
+        }
 
         weekDays.forEach((dayObj) => {
           const cell = document.createElement('div');
@@ -606,6 +735,30 @@
       }
 
       updateStickyMonthHeader();
+    }
+
+    function renderStreakRibbon(weekRow, group) {
+      const startCol = group[0].colIdx;
+      const endCol = group[group.length - 1].colIdx;
+      const isHighlighted = group[0].isHighlighted;
+      const isOverallStart = group[0].isStartDay;
+      const isOverallEnd = group[group.length - 1].isEndDay;
+
+      const ribbon = document.createElement('div');
+      ribbon.className = `unified-streak-ribbon ${isHighlighted ? 'gradient' : 'white-subtle'}`;
+
+      const leftPct = (startCol / 7) * 100;
+      const rightPct = 100 - ((endCol + 1) / 7) * 100;
+
+      ribbon.style.left = `calc(${leftPct}% + 4px)`;
+      ribbon.style.right = `calc(${rightPct}% + 4px)`;
+
+      // Rounding rules: only overall start/end days get rounded corners
+      const leftRadius = isOverallStart ? '18px' : '0px';
+      const rightRadius = isOverallEnd ? '18px' : '0px';
+      ribbon.style.borderRadius = `${leftRadius} ${rightRadius} ${rightRadius} ${leftRadius}`;
+
+      weekRow.appendChild(ribbon);
     }
 
     function updateStickyMonthHeader() {
@@ -674,6 +827,13 @@
 
     document.getElementById('history-modal').addEventListener('click', (e) => {
       if (e.target === document.getElementById('history-modal')) {
+        closeModal();
+      }
+    });
+
+    // Close modal on Escape key press
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
         closeModal();
       }
     });
