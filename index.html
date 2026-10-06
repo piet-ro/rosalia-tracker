@@ -221,6 +221,68 @@
     }
 
     /* STREAK RIBBONS */
+    /* Precise centering and uniform padding around the white inner circle */
+    .day-cell {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .streak-ribbon {
+      position: absolute;
+      /* Adjust ribbon height and positioning relative to the circle */
+      top: 50%;
+      transform: translateY(-50%);
+      height: 38px; /* Slightly larger than white circle (e.g., 30px circle + equal padding) */
+      background: var(--primary-gradient, linear-gradient(135deg, #ff0055, #ff5500));
+      z-index: 1;
+    }
+    
+    /* Perfect pill caps for start/end days */
+    .streak-ribbon.ribbon-start {
+      left: 50%;
+      right: 0;
+      border-top-left-radius: 19px;
+      border-bottom-left-radius: 19px;
+      transform: translateY(-50%) translateX(-19px); /* Offsets back to center perfectly behind white circle */
+    }
+    
+    .streak-ribbon.ribbon-end {
+      left: 0;
+      right: 50%;
+      border-top-right-radius: 19px;
+      border-bottom-right-radius: 19px;
+      width: calc(50% + 19px); /* Extends exactly 19px past center to maintain uniform radius */
+    }
+    
+    .streak-ribbon.ribbon-single {
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 38px;
+      border-radius: 19px;
+    }
+    
+    .streak-ribbon.ribbon-middle {
+      left: 0;
+      right: 0;
+      width: 100%;
+    }
+    
+    /* Ensure inner circle sits cleanly above the background ribbon */
+    .circle-indicator {
+      position: relative;
+      z-index: 2;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+
     .unified-streak-ribbon {
       position: absolute;
       top: 0; bottom: 18px;
