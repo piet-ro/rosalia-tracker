@@ -1,20 +1,20 @@
 {
-  "current_streak": 2,
+  "current_streak": 3,
   "longest_streak": {
-    "count": 2,
+    "count": 3,
     "start_date": "2026-10-04",
-    "end_date": "2026-10-05"
+    "end_date": "2026-10-06"
   },
   "peak_volume": {
     "count": 21,
     "date": "2026-09-30"
   },
   "latest_track": {
-    "timestamp": "2026-10-05T21:00:06.673Z",
-    "track_name": "Sauvignon Blanc",
+    "timestamp": "2026-10-06T06:18:28.519Z",
+    "track_name": "Novia Robot",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6",
+    "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -91,6 +91,9 @@
     "2026-10-05T20:49:41.278Z",
     "2026-10-05T20:46:44.255Z",
     "2026-10-05T20:44:59.867Z",
-    "2026-10-05T20:42:39.437Z"
+    "2026-10-05T20:42:39.437Z",
+    "2026-10-06T06:18:28.519Z",
+    "2026-10-06T06:15:16.126Z",
+    "2026-10-06T06:11:17.475Z"
   ]
 }
