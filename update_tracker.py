@@ -25,10 +25,16 @@ def save_json(filepath, data):
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 def get_spotify_client():
-    # Expects SPOTIPY_CLIENT_ID, SPOTIPY_CLIENT_SECRET, SPOTIPY_REDIRECT_URI in env vars
+    # This matches standard headless environment behavior by using standard env variables
     return spotipy.Spotify(auth_manager=SpotifyOAuth(
-        scope="user-read-recently-played"
+        client_id=os.environ.get("SPOTIPY_CLIENT_ID"),
+        client_secret=os.environ.get("SPOTIPY_CLIENT_SECRET"),
+        redirect_uri=os.environ.get("SPOTIPY_REDIRECT_URI"),
+        scope="user-read-recently-played",
+        open_browser=False,
+        cache_path=None # Disables local file caching requirement which triggers the prompt
     ))
+
 
 def main():
     sp = get_spotify_client()
