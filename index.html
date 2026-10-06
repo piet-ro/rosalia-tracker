@@ -1,667 +1,643 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>ROSALÍA Tracker</title>
-  <link rel="icon" type="image/png" href="favicon.png" />
-  <style>
-    :root {
-      --bg-color: #0d0d0d;
-      --card-bg: #181818;
-      --card-border: #282828;
-      --text-main: #ffffff;
-      --text-sub: #a7a7a7;
-      --accent-red: #ff0055;
-      --primary-gradient: linear-gradient(135deg, #ff0055, #ff5500);
-      --indicator-empty: #222222;
-      --modal-overlay: rgba(0, 0, 0, 0.85);
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROSALÍA Tracker</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+    <style>
+        :root {
+            --bg-color: #0c0c0e;
+            --card-bg: #141418;
+            --card-border: #222228;
+            --text-main: #ffffff;
+            --text-sub: #8e8e93;
+            --accent-pink: #ff2d55;
+            --accent-orange: #ff9500;
+            --primary-gradient: linear-gradient(135deg, #ff2d55, #ff9500);
+            --empty-dot: #1c1c22;
+        }
 
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    body {
-      background-color: var(--bg-color);
-      color: var(--text-main);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      min-height: 100vh;
-      padding: 20px 16px 40px;
-    }
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 24px 16px 48px;
+        }
 
-    /* Header & Offline Banner */
-    header {
-      width: 100%;
-      max-width: 500px;
-      margin-bottom: 20px;
-      text-align: center;
-    }
+        .container {
+            width: 100%;
+            max-width: 440px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
 
-    h1 {
-      font-size: 1.6rem;
-      font-weight: 800;
-      letter-spacing: -0.5px;
-      margin-bottom: 6px;
-    }
+        /* Header */
+        header {
+            text-align: center;
+            padding: 8px 0;
+        }
 
-    .subtitle {
-      font-size: 0.85rem;
-      color: var(--text-sub);
-    }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 4px;
+        }
 
-    .stale-banner {
-      display: none;
-      background: rgba(255, 85, 0, 0.15);
-      border: 1px solid #ff5500;
-      color: #ffaa88;
-      font-size: 0.8rem;
-      padding: 8px 12px;
-      border-radius: 8px;
-      margin-top: 12px;
-      text-align: center;
-    }
+        .subtitle {
+            font-size: 0.85rem;
+            color: var(--text-sub);
+        }
 
-    /* Top Stats Grid */
-    .stats-summary {
-      width: 100%;
-      max-width: 500px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      margin-bottom: 24px;
-    }
+        .stale-banner {
+            display: none;
+            background: rgba(255, 149, 0, 0.12);
+            border: 1px solid rgba(255, 149, 0, 0.3);
+            color: var(--accent-orange);
+            font-size: 0.8rem;
+            padding: 8px 12px;
+            border-radius: 10px;
+            margin-top: 10px;
+            text-align: center;
+        }
 
-    .stat-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 12px;
-      padding: 12px 10px;
-      text-align: center;
-      cursor: pointer;
-      transition: transform 0.15s ease, border-color 0.15s ease;
-    }
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
 
-    .stat-card:hover {
-      transform: translateY(-2px);
-      border-color: #444;
-    }
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            padding: 14px 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.15s ease, border-color 0.15s ease;
+        }
 
-    .stat-value {
-      font-size: 1.3rem;
-      font-weight: 700;
-      background: var(--primary-gradient);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      margin-bottom: 2px;
-    }
+        .stat-card:active {
+            transform: scale(0.97);
+        }
 
-    .stat-label {
-      font-size: 0.7rem;
-      color: var(--text-sub);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
+        .stat-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 2px;
+        }
 
-    /* Latest Track Card */
-    .latest-card {
-      width: 100%;
-      max-width: 500px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 14px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 24px;
-    }
+        .stat-label {
+            font-size: 0.68rem;
+            color: var(--text-sub);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
 
-    .album-art {
-      width: 64px;
-      height: 64px;
-      border-radius: 8px;
-      object-fit: cover;
-      background-color: var(--indicator-empty);
-      flex-shrink: 0;
-    }
+        /* Track Card */
+        .track-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 14px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
 
-    .track-details {
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-    }
+        .album-art {
+            width: 56px;
+            height: 56px;
+            border-radius: 10px;
+            object-fit: cover;
+            background-color: var(--empty-dot);
+            flex-shrink: 0;
+        }
 
-    .track-name {
-      font-size: 0.95rem;
-      font-weight: 700;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      color: var(--text-main);
-      text-decoration: none;
-    }
+        .track-info {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
 
-    .track-name:hover {
-      text-decoration: underline;
-    }
+        .track-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: var(--text-main);
+            text-decoration: none;
+        }
 
-    .album-name {
-      font-size: 0.8rem;
-      color: var(--text-sub);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      margin-top: 2px;
-    }
+        .track-title:hover {
+            text-decoration: underline;
+        }
 
-    .played-time {
-      font-size: 0.75rem;
-      color: #666;
-      margin-top: 6px;
-    }
+        .track-album {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            margin-top: 2px;
+        }
 
-    /* Main Calendar View */
-    .calendar-card {
-      width: 100%;
-      max-width: 500px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 16px;
-    }
+        .track-time {
+            font-size: 0.72rem;
+            color: #636366;
+            margin-top: 4px;
+        }
 
-    .calendar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
+        /* Calendar */
+        .calendar-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 18px;
+            padding: 18px;
+        }
 
-    .month-title {
-      font-size: 1rem;
-      font-weight: 700;
-    }
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
 
-    .calendar-nav {
-      display: flex;
-      gap: 8px;
-    }
+        .month-title {
+            font-size: 1rem;
+            font-weight: 600;
+        }
 
-    .nav-btn {
-      background: #222;
-      border: none;
-      color: var(--text-main);
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
+        .calendar-nav {
+            display: flex;
+            gap: 6px;
+        }
 
-    .nav-btn:hover {
-      background: #333;
-    }
+        .nav-btn {
+            background: var(--empty-dot);
+            border: none;
+            color: var(--text-main);
+            width: 30px;
+            height: 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9rem;
+        }
 
-    .weekdays-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      text-align: center;
-      font-size: 0.7rem;
-      color: var(--text-sub);
-      margin-bottom: 8px;
-    }
+        .weekdays {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-size: 0.68rem;
+            color: var(--text-sub);
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
 
-    .calendar-grid {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      row-gap: 12px;
-    }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            row-gap: 14px;
+        }
 
-    /* Day Cell Geometry & Precision Ribbon Offsets */
-    .day-cell {
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 48px;
-    }
+        /* Day Cell Geometry & Precision Ribbon Offsets */
+        .day-cell {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 44px;
+        }
 
-    .circle-indicator {
-      position: relative;
-      z-index: 2;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--indicator-empty);
-      color: #fff;
-    }
+        .circle-indicator {
+            position: relative;
+            z-index: 2;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--empty-dot);
+            color: var(--text-main);
+        }
 
-    .circle-indicator.played {
-      background: #ffffff;
-      color: #000000;
-    }
+        .circle-indicator.played {
+            background: #ffffff;
+            color: #000000;
+        }
 
-    .day-number {
-      font-size: 0.7rem;
-      color: var(--text-sub);
-      margin-top: 4px;
-      position: relative;
-      z-index: 2;
-    }
+        .day-number {
+            font-size: 0.7rem;
+            color: var(--text-sub);
+            margin-top: 4px;
+            position: relative;
+            z-index: 2;
+        }
 
-    /* Gradient Streak Ribbon CSS */
-    .streak-ribbon {
-      position: absolute;
-      top: 50%;
-      height: 38px;
-      background: var(--primary-gradient);
-      z-index: 1;
-    }
+        /* Streak Ribbon Geometry Fix */
+        .streak-ribbon {
+            position: absolute;
+            top: 50%;
+            height: 38px;
+            background: var(--primary-gradient);
+            z-index: 1;
+        }
 
-    .streak-ribbon.ribbon-start {
-      left: 50%;
-      right: 0;
-      border-top-left-radius: 19px;
-      border-bottom-left-radius: 19px;
-      transform: translateY(-50%) translateX(-19px);
-    }
+        .streak-ribbon.ribbon-start {
+            left: 50%;
+            right: 0;
+            border-top-left-radius: 19px;
+            border-bottom-left-radius: 19px;
+            transform: translateY(-50%) translateX(-19px);
+        }
 
-    .streak-ribbon.ribbon-end {
-      left: 0;
-      right: 50%;
-      border-top-right-radius: 19px;
-      border-bottom-right-radius: 19px;
-      width: calc(50% + 19px);
-      transform: translateY(-50%);
-    }
+        .streak-ribbon.ribbon-end {
+            left: 0;
+            right: 50%;
+            border-top-right-radius: 19px;
+            border-bottom-right-radius: 19px;
+            width: calc(50% + 19px);
+            transform: translateY(-50%);
+        }
 
-    .streak-ribbon.ribbon-single {
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 38px;
-      border-radius: 19px;
-    }
+        .streak-ribbon.ribbon-single {
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 38px;
+            border-radius: 19px;
+        }
 
-    .streak-ribbon.ribbon-middle {
-      left: 0;
-      right: 0;
-      width: 100%;
-      transform: translateY(-50%);
-    }
+        .streak-ribbon.ribbon-middle {
+            left: 0;
+            right: 0;
+            width: 100%;
+            transform: translateY(-50%);
+        }
 
-    /* Sunray Peak Icon */
-    .sunray-icon {
-      position: absolute;
-      top: -4px;
-      right: 8px;
-      width: 12px;
-      height: 12px;
-      color: #ffaa00;
-      z-index: 3;
-    }
+        .sunray-icon {
+            position: absolute;
+            top: -5px;
+            right: 6px;
+            font-size: 10px;
+            z-index: 3;
+        }
 
-    /* Modal System */
-    .modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: var(--modal-overlay);
-      backdrop-filter: blur(6px);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 100;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.2s ease;
-      padding: 16px;
-    }
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.2s ease;
+            padding: 16px;
+        }
 
-    .modal-overlay.active {
-      opacity: 1;
-      pointer-events: auto;
-    }
+        .modal-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
 
-    .modal-content {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      width: 100%;
-      max-width: 440px;
-      max-height: 85vh;
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-    }
+        .modal-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 380px;
+            padding: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+        }
 
-    .modal-header {
-      padding: 16px 20px;
-      border-bottom: 1px solid var(--card-border);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
 
-    .modal-title {
-      font-size: 1.1rem;
-      font-weight: 700;
-    }
+        .modal-title {
+            font-size: 1.05rem;
+            font-weight: 600;
+        }
 
-    .modal-close {
-      background: none;
-      border: none;
-      color: var(--text-sub);
-      font-size: 1.5rem;
-      cursor: pointer;
-      line-height: 1;
-    }
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            font-size: 1.4rem;
+            cursor: pointer;
+            line-height: 1;
+        }
 
-    .modal-body {
-      padding: 20px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+        .modal-rows {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
 
-    .modal-detail-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: #222;
-      padding: 12px 14px;
-      border-radius: 10px;
-      font-size: 0.9rem;
-    }
+        .modal-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--empty-dot);
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+        }
 
-    .modal-detail-label {
-      color: var(--text-sub);
-    }
+        .modal-label {
+            color: var(--text-sub);
+        }
 
-    .modal-detail-value {
-      font-weight: 600;
-    }
-  </style>
+        .modal-value {
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1>ROSALÍA Tracker</h1>
-    <div class="subtitle">Daily playback sync & streak analytics</div>
-    <div id="stale-banner" class="stale-banner">
-      ⚠️ Tracker backend updated over 24h ago. Check GitHub Actions status.
-    </div>
-  </header>
+    <div class="container">
+        <header>
+            <h1>ROSALÍA Tracker</h1>
+            <div class="subtitle">Daily listening streak & playback logs</div>
+            <div id="stale-banner" class="stale-banner">
+                ⚠️ Tracker backend updated over 24h ago. Check GitHub Actions status.
+            </div>
+        </header>
 
-  <div class="stats-summary">
-    <div class="stat-card" id="btn-streak-modal">
-      <div class="stat-value" id="stat-current-streak">0</div>
-      <div class="stat-label">Current Streak</div>
-    </div>
-    <div class="stat-card" id="btn-longest-modal">
-      <div class="stat-value" id="stat-longest-streak">0</div>
-      <div class="stat-label">Longest Streak</div>
-    </div>
-    <div class="stat-card" id="btn-peak-modal">
-      <div class="stat-value" id="stat-peak-volume">0</div>
-      <div class="stat-label">Peak Volume</div>
-    </div>
-  </div>
-
-  <div class="latest-card">
-    <img id="album-art" class="album-art" src="" alt="Album Cover" />
-    <div class="track-details">
-      <a id="track-name" class="track-name" href="#" target="_blank">Loading track...</a>
-      <div id="album-name" class="album-name">-</div>
-      <div id="played-time" class="played-time">-</div>
-    </div>
-  </div>
-
-  <div class="calendar-card">
-    <div class="calendar-header">
-      <div class="month-title" id="month-title">Month Year</div>
-      <div class="calendar-nav">
-        <button class="nav-btn" id="prev-month">&lt;</button>
-        <button class="nav-btn" id="next-month">&gt;</button>
-      </div>
-    </div>
-
-    <div class="weekdays-grid">
-      <div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div><div>SUN</div>
-    </div>
-
-    <div class="calendar-grid" id="calendar-grid"></div>
-  </div>
-
-  <!-- Detail Modal -->
-  <div class="modal-overlay" id="stats-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <div class="modal-title" id="modal-title">Stat Details</div>
-        <button class="modal-close" id="modal-close">&times;</button>
-      </div>
-      <div class="modal-body" id="modal-body"></div>
-    </div>
-  </div>
-
-  <script>
-    let globalData = null;
-    let globalHistory = null;
-    let currentViewDate = new Date();
-
-    async function initTracker() {
-      try {
-        const [resLast, resHist] = await Promise.all([
-          fetch('last_played.json?cache=' + Date.now()),
-          fetch('history.json?cache=' + Date.now())
-        ]);
-
-        globalData = await resLast.json();
-        globalHistory = await resHist.json();
-
-        checkStaleData(globalData.last_successful_run);
-        renderStatsHeader();
-        renderLatestTrack();
-        renderCalendar();
-      } catch (e) {
-        console.error("Error loading tracker data:", e);
-      }
-    }
-
-    function checkStaleData(lastRunIso) {
-      if (!lastRunIso) return;
-      const lastRun = new Date(lastRunIso);
-      const now = new Date();
-      const diffHours = (now - lastRun) / (1000 * 60 * 60);
-      if (diffHours > 28) {
-        document.getElementById('stale-banner').style.display = 'block';
-      }
-    }
-
-    function renderStatsHeader() {
-      document.getElementById('stat-current-streak').innerText = globalData.current_streak || 0;
-      document.getElementById('stat-longest-streak').innerText = globalData.longest_streak?.count || 0;
-      document.getElementById('stat-peak-volume').innerText = globalData.peak_volume?.count || 0;
-    }
-
-    function renderLatestTrack() {
-      const track = globalData.latest_track;
-      if (!track) return;
-
-      document.getElementById('album-art').src = track.album_art || '';
-      document.getElementById('track-name').innerText = track.track_name || 'Unknown Track';
-      document.getElementById('track-name').href = track.spotify_url || '#';
-      document.getElementById('album-name').innerText = track.album_name || '';
-
-      if (track.timestamp) {
-        const d = new Date(track.timestamp);
-        document.getElementById('played-time').innerText = `Played ${d.toLocaleDateString()} at ${d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
-      }
-    }
-
-    function renderCalendar() {
-      const year = currentViewDate.getFullYear();
-      const month = currentViewDate.getMonth();
-
-      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-      document.getElementById('month-title').innerText = `${monthNames[month]} ${year}`;
-
-      const grid = document.getElementById('calendar-grid');
-      grid.innerHTML = '';
-
-      const firstDay = new Date(year, month, 1);
-      const lastDay = new Date(year, month + 1, 0);
-
-      // Convert Sunday=0 to Monday=0 alignment
-      let startingDay = firstDay.getDay() - 1;
-      if (startingDay === -1) startingDay = 6;
-
-      // Empty padding cells before 1st of the month
-      for (let i = 0; i < startingDay; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'day-cell';
-        grid.appendChild(emptyCell);
-      }
-
-      const activeStreak = globalData.active_streak;
-      const peakDate = globalData.peak_volume?.date;
-
-      for (let day = 1; day <= lastDay.getDate(); day++) {
-        const dayCell = document.createElement('div');
-        dayCell.className = 'day-cell';
-
-        const monthStr = String(month + 1).padStart(2, '0');
-        const dayStr = String(day).padStart(2, '0');
-        const dateKey = `${year}-${monthStr}-${dayStr}`;
-
-        const playCount = globalHistory[dateKey] || 0;
-
-        // Active Streak Ribbon logic
-        if (activeStreak) {
-          const isStart = dateKey === activeStreak.start_date;
-          const isEnd = dateKey === activeStreak.end_date;
-          const inRange = dateKey >= activeStreak.start_date && dateKey <= activeStreak.end_date;
-
-          if (inRange) {
-            const ribbon = document.createElement('div');
-            if (isStart && isEnd) {
-              ribbon.className = 'streak-ribbon ribbon-single';
-            } else if (isStart) {
-              ribbon.className = 'streak-ribbon ribbon-start';
-            } else if (isEnd) {
-              ribbon.className = 'streak-ribbon ribbon-end';
-            } else {
-              ribbon.className = 'streak-ribbon ribbon-middle';
-            }
-            dayCell.appendChild(ribbon);
-          }
-        }
-
-        // Checkmark indicator circle
-        const circle = document.createElement('div');
-        circle.className = 'circle-indicator ' + (playCount > 0 ? 'played' : '');
-        if (playCount > 0) {
-          circle.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="3" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-        }
-        dayCell.appendChild(circle);
-
-        // Sunray Peak Day Icon
-        if (dateKey === peakDate && playCount > 0) {
-          const sunray = document.createElement('div');
-          sunray.className = 'sunray-icon';
-          sunray.innerHTML = `☀️`;
-          dayCell.appendChild(sunray);
-        }
-
-        // Date Number
-        const label = document.createElement('span');
-        label.className = 'day-number';
-        label.innerText = day;
-        dayCell.appendChild(label);
-
-        grid.appendChild(dayCell);
-      }
-    }
-
-    // Modal Handling
-    const modal = document.getElementById('stats-modal');
-    const modalTitle = document.getElementById('modal-title');
-    const modalBody = document.getElementById('modal-body');
-
-    function openModal(title, rows) {
-      modalTitle.innerText = title;
-      modalBody.innerHTML = rows.map(r => `
-        <div class="modal-detail-row">
-          <span class="modal-detail-label">${r.label}</span>
-          <span class="modal-detail-value">${r.value}</span>
+        <div class="stats-grid">
+            <div class="stat-card" id="card-current-streak">
+                <div class="stat-value" id="val-current-streak">0</div>
+                <div class="stat-label">Current Streak</div>
+            </div>
+            <div class="stat-card" id="card-longest-streak">
+                <div class="stat-value" id="val-longest-streak">0</div>
+                <div class="stat-label">Longest Streak</div>
+            </div>
+            <div class="stat-card" id="card-peak-volume">
+                <div class="stat-value" id="val-peak-volume">0</div>
+                <div class="stat-label">Peak Volume</div>
+            </div>
         </div>
-      `).join('');
-      modal.classList.add('active');
-    }
 
-    function closeModal() {
-      modal.classList.remove('active');
-    }
+        <div class="track-card">
+            <img id="album-art" class="album-art" src="" alt="Album Cover">
+            <div class="track-info">
+                <a id="track-title" class="track-title" href="#" target="_blank">Loading track...</a>
+                <div id="track-album" class="track-album">-</div>
+                <div id="track-time" class="track-time">-</div>
+            </div>
+        </div>
 
-    document.getElementById('modal-close').addEventListener('click', closeModal);
-    modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+        <div class="calendar-card">
+            <div class="calendar-header">
+                <div class="month-title" id="month-title">Month Year</div>
+                <div class="calendar-nav">
+                    <button class="nav-btn" id="prev-month">&lt;</button>
+                    <button class="nav-btn" id="next-month">&gt;</button>
+                </div>
+            </div>
 
-    // Stat card listeners
-    document.getElementById('btn-streak-modal').addEventListener('click', () => {
-      const active = globalData.active_streak;
-      openModal('Current Streak', [
-        { label: 'Active Days', value: `${globalData.current_streak || 0} Days` },
-        { label: 'Started', value: active ? active.start_date : 'N/A' },
-        { label: 'Status', value: active ? '🔥 Active' : 'Inactive' }
-      ]);
-    });
+            <div class="weekdays">
+                <div>MON</div><div>TUE</div><div>WED</div><div>THU</div><div>FRI</div><div>SAT</div><div>SUN</div>
+            </div>
 
-    document.getElementById('btn-longest-modal').addEventListener('click', () => {
-      const longest = globalData.longest_streak;
-      openModal('Longest Streak Record', [
-        { label: 'Record Length', value: `${longest?.count || 0} Days` },
-        { label: 'Start Date', value: longest?.start_date || 'N/A' },
-        { label: 'End Date', value: longest?.end_date || 'N/A' }
-      ]);
-    });
+            <div class="calendar-grid" id="calendar-grid"></div>
+        </div>
+    </div>
 
-    document.getElementById('btn-peak-modal').addEventListener('click', () => {
-      const peak = globalData.peak_volume;
-      openModal('Peak Volume Day', [
-        { label: 'Max Plays Single Day', value: `${peak?.count || 0} Plays` },
-        { label: 'Record Date', value: peak?.date || 'N/A' }
-      ]);
-    });
+    <!-- Stats Detail Modal -->
+    <div class="modal-overlay" id="detail-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <div class="modal-title" id="modal-title">Details</div>
+                <button class="modal-close" id="modal-close">&times;</button>
+            </div>
+            <div class="modal-rows" id="modal-rows"></div>
+        </div>
+    </div>
 
-    // Calendar navigation
-    document.getElementById('prev-month').addEventListener('click', () => {
-      currentViewDate.setMonth(currentViewDate.getMonth() - 1);
-      renderCalendar();
-    });
+    <script>
+        let globalData = null;
+        let globalHistory = null;
+        let currentDate = new Date();
 
-    document.getElementById('next-month').addEventListener('click', () => {
-      currentViewDate.setMonth(currentViewDate.getMonth() + 1);
-      renderCalendar();
-    });
+        async function init() {
+            try {
+                const [resData, resHistory] = await Promise.all([
+                    fetch('last_played.json?cache=' + Date.now()),
+                    fetch('history.json?cache=' + Date.now())
+                ]);
 
-    // Initialize application
-    initTracker();
-  </script>
+                globalData = await resData.json();
+                globalHistory = await resHistory.json();
+
+                checkStale(globalData.last_successful_run);
+                renderStats();
+                renderTrack();
+                renderCalendar();
+            } catch (err) {
+                console.error("Failed to load tracker data:", err);
+            }
+        }
+
+        function checkStale(lastRun) {
+            if (!lastRun) return;
+            const diffHours = (new Date() - new Date(lastRun)) / (1000 * 60 * 60);
+            if (diffHours > 28) {
+                document.getElementById('stale-banner').style.display = 'block';
+            }
+        }
+
+        function renderStats() {
+            document.getElementById('val-current-streak').innerText = globalData.current_streak || 0;
+            document.getElementById('val-longest-streak').innerText = globalData.longest_streak?.count || 0;
+            document.getElementById('val-peak-volume').innerText = globalData.peak_volume?.count || 0;
+        }
+
+        function renderTrack() {
+            const track = globalData.latest_track;
+            if (!track) return;
+
+            document.getElementById('album-art').src = track.album_art || '';
+            document.getElementById('track-title').innerText = track.track_name || 'Unknown Track';
+            document.getElementById('track-title').href = track.spotify_url || '#';
+            document.getElementById('track-album').innerText = track.album_name || '';
+
+            if (track.timestamp) {
+                const d = new Date(track.timestamp);
+                document.getElementById('track-time').innerText = `Played ${d.toLocaleDateString()} at ${d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+            }
+        }
+
+        function renderCalendar() {
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            document.getElementById('month-title').innerText = `${monthNames[month]} ${year}`;
+
+            const grid = document.getElementById('calendar-grid');
+            grid.innerHTML = '';
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+
+            let startOffset = firstDay.getDay() - 1;
+            if (startOffset === -1) startOffset = 6;
+
+            for (let i = 0; i < startOffset; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'day-cell';
+                grid.appendChild(emptyCell);
+            }
+
+            const activeStreak = globalData.active_streak;
+            const peakDate = globalData.peak_volume?.date;
+
+            for (let day = 1; day <= lastDay.getDate(); day++) {
+                const dayCell = document.createElement('div');
+                dayCell.className = 'day-cell';
+
+                const mStr = String(month + 1).padStart(2, '0');
+                const dStr = String(day).padStart(2, '0');
+                const dateKey = `${year}-${mStr}-${dStr}`;
+
+                const playCount = globalHistory[dateKey] || 0;
+
+                // Active Streak Ribbon logic
+                if (activeStreak) {
+                    const inRange = dateKey >= activeStreak.start_date && dateKey <= activeStreak.end_date;
+                    if (inRange) {
+                        const ribbon = document.createElement('div');
+                        const isStart = dateKey === activeStreak.start_date;
+                        const isEnd = dateKey === activeStreak.end_date;
+
+                        if (isStart && isEnd) ribbon.className = 'streak-ribbon ribbon-single';
+                        else if (isStart) ribbon.className = 'streak-ribbon ribbon-start';
+                        else if (isEnd) ribbon.className = 'streak-ribbon ribbon-end';
+                        else ribbon.className = 'streak-ribbon ribbon-middle';
+
+                        dayCell.appendChild(ribbon);
+                    }
+                }
+
+                // Inner circle indicator
+                const circle = document.createElement('div');
+                circle.className = 'circle-indicator ' + (playCount > 0 ? 'played' : '');
+                if (playCount > 0) {
+                    circle.innerHTML = `<svg viewBox="0 0 24 24" width="14" height="14" stroke="currentColor" stroke-width="3" fill="none"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                }
+                dayCell.appendChild(circle);
+
+                // Peak day sunray
+                if (dateKey === peakDate && playCount > 0) {
+                    const sunray = document.createElement('div');
+                    sunray.className = 'sunray-icon';
+                    sunray.innerText = '☀️';
+                    dayCell.appendChild(sunray);
+                }
+
+                // Day number
+                const label = document.createElement('span');
+                label.className = 'day-number';
+                label.innerText = day;
+                dayCell.appendChild(label);
+
+                grid.appendChild(dayCell);
+            }
+        }
+
+        // Modal Controls
+        const modal = document.getElementById('detail-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalRows = document.getElementById('modal-rows');
+
+        function openModal(title, rows) {
+            modalTitle.innerText = title;
+            modalRows.innerHTML = rows.map(r => `
+                <div class="modal-row">
+                    <span class="modal-label">${r.label}</span>
+                    <span class="modal-value">${r.value}</span>
+                </div>
+            `).join('');
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            modal.classList.remove('active');
+        }
+
+        document.getElementById('modal-close').addEventListener('click', closeModal);
+        modal.addEventListener('click', (e) => { if (e.target === modal) closeModal(); });
+        window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+
+        document.getElementById('card-current-streak').addEventListener('click', () => {
+            const active = globalData.active_streak;
+            openModal('Current Streak', [
+                { label: 'Length', value: `${globalData.current_streak || 0} Days` },
+                { label: 'Start Date', value: active ? active.start_date : 'N/A' },
+                { label: 'Status', value: active ? '🔥 Active' : 'Inactive' }
+            ]);
+        });
+
+        document.getElementById('card-longest-streak').addEventListener('click', () => {
+            const longest = globalData.longest_streak;
+            openModal('Longest Streak Record', [
+                { label: 'Record Length', value: `${longest?.count || 0} Days` },
+                { label: 'Start Date', value: longest?.start_date || 'N/A' },
+                { label: 'End Date', value: longest?.end_date || 'N/A' }
+            ]);
+        });
+
+        document.getElementById('card-peak-volume').addEventListener('click', () => {
+            const peak = globalData.peak_volume;
+            openModal('Peak Volume', [
+                { label: 'Max Daily Plays', value: `${peak?.count || 0} Plays` },
+                { label: 'Date Achieved', value: peak?.date || 'N/A' }
+            ]);
+        });
+
+        document.getElementById('prev-month').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        document.getElementById('next-month').addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        init();
+    </script>
 </body>
 </html>
