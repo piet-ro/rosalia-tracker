@@ -1,0 +1,867 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pietro's ROSALÍA Tracker</title>
+  <link rel="icon" type="image/png" href="./favicon.png">
+
+  <style>
+    :root {
+      --color-white: #ffffff;
+      --color-red: #e60023;
+      --color-magenta: #ff007f;
+      --spotify-green: #1db954;
+      --text-sub: #d0d0d0;
+      --card-bg: rgba(18, 18, 18, 0.7);
+      --ease-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      display: flex; justify-content: center; align-items: center;
+      color: var(--color-white); background-color: #0b0b0b;
+      overflow-x: hidden; padding: 1.5rem;
+    }
+
+    body.modal-open { overflow: hidden !important; }
+
+    .bg-blur {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background-size: cover; background-position: center;
+      filter: blur(24px) brightness(0.6); transform: scale(1.15);
+      z-index: -1; opacity: 0; transition: opacity 1.8s ease-in-out, filter 0.3s ease;
+    }
+    .bg-blur.loaded { opacity: 1; }
+    body.modal-open .bg-blur {
+      filter: blur(28px) brightness(0.35) !important;
+    }
+
+    .loader-container {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      display: flex; justify-content: center; align-items: center;
+      background: transparent; z-index: 100;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+    .loader-container.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+    .dots-loader { display: flex; gap: 12px; }
+    .dots-loader div {
+      width: 14px; height: 14px; background-color: var(--color-white);
+      border-radius: 50%; box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+      animation: dotPulse 1.4s infinite ease-in-out both;
+    }
+    .dots-loader div:nth-child(1) { animation-delay: -0.32s; }
+    .dots-loader div:nth-child(2) { animation-delay: -0.16s; }
+    @keyframes dotPulse {
+      0%, 80%, 100% { transform: scale(0); opacity: 0.3; }
+      40% { transform: scale(1); opacity: 1; }
+    }
+
+    /* CARD CONTAINER */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px; padding: 2.2rem 1.8rem;
+      max-width: 480px; width: 100%; text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+      display: none; opacity: 0; z-index: 10;
+      transition: opacity 0.3s ease;
+    }
+    .card.active { display: block; animation: fadeInUp 0.7s var(--ease-smooth) forwards; }
+    body.modal-open .card {
+      display: none !important;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* MOBILE SPECIFIC OVERRIDES */
+    @media (max-width: 600px) {
+      body { padding: 1rem; align-items: flex-start; }
+      .card { background: transparent; border: none; box-shadow: none; padding: 1rem 0; }
+      .bg-blur { filter: blur(24px) brightness(0.30) !important; }
+    }
+
+    .cover-art {
+      width: 125px; height: 125px; border-radius: 14px;
+      margin: 0 auto 1.2rem; object-fit: cover;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); display: block;
+    }
+
+    .main-headline {
+      font-size: 2.1rem; font-weight: 800; line-height: 1.25;
+      margin-bottom: 1.5rem; letter-spacing: -0.5px;
+    }
+    .main-headline.active-streak { color: var(--color-white); }
+    .main-headline.inactive-streak { color: var(--color-red); }
+
+    .strip-container {
+      position: relative;
+      margin: 1.5rem 0; padding: 1rem 0.5rem;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08);
+      overflow: hidden;
+    }
+    .strip-title { font-size: 0.8rem; color: var(--text-sub); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.8rem; }
+    .strip-days { position: relative; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
+    .day-node { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
+
+    /* HOME STREAK RIBBON (FOCUSED ACTIVE STREAK) */
+    .home-active-ribbon {
+      position: absolute;
+      top: 2.6rem; height: 32px;
+      background: linear-gradient(90deg, #ff007f, #e60023);
+      border-radius: 16px;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .records-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1.2rem 0 1.5rem; }
+    
+    .record-card {
+      background: rgba(255, 255, 255, 0.05); padding: 0.9rem;
+      border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.08); text-align: left;
+      cursor: pointer; transition: all 0.2s ease; user-select: none;
+    }
+    .record-card:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.3);
+      transform: translateY(-2px);
+    }
+    .record-label { font-size: 0.75rem; color: var(--text-sub); margin-bottom: 4px; }
+    .record-value { font-size: 1.1rem; font-weight: 800; }
+    .record-sub { font-size: 0.72rem; color: rgba(255, 255, 255, 0.65); margin-top: 2px; }
+
+    .btn-group { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; }
+    .spotify-btn {
+      display: block; background: var(--color-white); color: #000;
+      font-weight: 700; font-size: 0.95rem; text-decoration: none;
+      padding: 0.85rem; border-radius: 50px; transition: transform 0.2s ease;
+      box-shadow: 0 4px 15px rgba(255, 255, 255, 0.15);
+    }
+    .spotify-btn:hover { transform: scale(1.03); background: #f0f0f0; }
+
+    .track-info {
+      font-size: 0.9rem; line-height: 1.5; color: var(--text-sub);
+      border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1.2rem;
+    }
+    .track-info a { color: var(--color-white); font-weight: 600; text-decoration: underline; }
+
+    .stale-warning-banner {
+      background: rgba(230, 0, 35, 0.2);
+      border: 1px solid rgba(230, 0, 35, 0.5);
+      color: #ff8080; padding: 0.6rem 0.8rem; border-radius: 12px;
+      font-size: 0.8rem; margin-bottom: 1rem; display: none;
+    }
+
+    /* MODAL WINDOW & OVERLAY */
+    .modal-overlay {
+      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: transparent;
+      z-index: 200; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+      display: flex; justify-content: center; align-items: center; padding: 1rem;
+    }
+    .modal-overlay.open { opacity: 1; visibility: visible; }
+    
+    .modal-content {
+      background: #141414; border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 24px; max-width: 480px; width: 100%;
+      max-height: calc(100vh - 2rem);
+      height: 100%;
+      display: flex; flex-direction: column; color: var(--color-white);
+      position: relative; overflow: hidden;
+      box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+    }
+
+    .modal-sticky-header {
+      position: relative; background: #141414; z-index: 50;
+      padding: 1.2rem 1.5rem 0.5rem 1.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08); flex-shrink: 0;
+    }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; }
+    .modal-title { font-size: 1.3rem; font-weight: 800; }
+    .close-btn { background: none; border: none; color: #fff; font-size: 1.6rem; cursor: pointer; }
+
+    .toggle-container {
+      display: flex; align-items: center; background: rgba(255,255,255,0.08);
+      border-radius: 30px; padding: 4px; font-size: 0.85rem; margin-bottom: 0.8rem;
+    }
+    .toggle-option {
+      flex: 1; text-align: center; padding: 8px 12px; border-radius: 20px; cursor: pointer; transition: all 0.2s ease;
+    }
+    .toggle-option.active { background: var(--color-white); color: #000; font-weight: 700; }
+
+    .sticky-month-bar {
+      font-size: 0.95rem; font-weight: 700; color: var(--color-white);
+      padding-bottom: 0.4rem; text-align: center; letter-spacing: 0.2px;
+    }
+
+    .calendar-weekdays-sticky {
+      display: grid; grid-template-columns: repeat(7, 1fr); text-align: center;
+      padding: 0.4rem 0; font-size: 0.75rem; color: rgba(255, 255, 255, 0.4);
+      font-weight: 600; background: #141414;
+    }
+
+    .modal-scroll-body {
+      flex: 1; overflow-y: auto; padding: 1rem 1.5rem;
+      min-height: 0;
+    }
+
+    .week-row {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      text-align: center;
+      margin-bottom: 12px;
+    }
+
+    /* STREAK RIBBONS */
+    .unified-streak-ribbon {
+      position: absolute;
+      top: 0; bottom: 18px;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .unified-streak-ribbon.gradient {
+      background: linear-gradient(90deg, #ff007f, #e60023);
+    }
+    .unified-streak-ribbon.white-subtle {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .heatmap-legend {
+      background: rgba(20, 20, 20, 0.95); backdrop-filter: blur(10px);
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding: 0.8rem; display: none; align-items: center; justify-content: center; gap: 8px;
+      font-size: 0.75rem; color: var(--text-sub); z-index: 60; flex-shrink: 0;
+    }
+    .heatmap-legend.active { display: flex; }
+    .legend-box { width: 14px; height: 14px; border-radius: 3px; }
+
+    .circle-wrapper {
+      position: relative; width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .cal-circle {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-weight: 700; position: relative;
+      background: transparent; border: none;
+      z-index: 3;
+    }
+
+    /* HISTORY HOME VS MODAL DIFFERENCES */
+    .cal-circle.empty-outline {
+      border: 1.5px solid rgba(255, 255, 255, 0.3);
+      background: transparent;
+    }
+    .cal-circle.empty-dot::after {
+      content: ''; width: 5px; height: 5px;
+      background-color: rgba(255, 255, 255, 0.25);
+      border-radius: 50%; display: block;
+    }
+
+    .cal-circle.listened { background: var(--color-white) !important; color: #000 !important; border: none; }
+    .cal-num { font-size: 0.75rem; color: var(--text-sub); font-weight: 600; margin-top: 2px; }
+
+    .sunray-svg {
+      position: absolute; top: -10px; left: -10px; width: 56px; height: 56px;
+      pointer-events: none; z-index: 1;
+      animation: pulseRays 2.2s ease-in-out infinite;
+    }
+
+    @keyframes pulseRays {
+      0%, 100% { transform: scale(0.92); opacity: 0.7; }
+      50% { transform: scale(1.15); opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="bg-blur" class="bg-blur"></div>
+
+  <div id="loader" class="loader-container">
+    <div class="dots-loader"><div></div><div></div><div></div></div>
+  </div>
+
+  <div id="main-card" class="card">
+    <div id="stale-warning" class="stale-warning-banner">
+      ⚠️ Data sync is currently delayed. Stats may be incomplete.
+    </div>
+
+    <img id="cover-art" class="cover-art" src="" alt="Album Art" style="display: none;" />
+    <h1 id="main-headline" class="main-headline active-streak">...</h1>
+
+    <div class="strip-container">
+      <div id="home-active-ribbon" class="home-active-ribbon"></div>
+      <div class="strip-title">Past 7 Days</div>
+      <div id="strip-days" class="strip-days"></div>
+    </div>
+
+    <div class="records-grid">
+      <div id="card-streak-btn" class="record-card">
+        <div class="record-label">🔥 Longest Streak</div>
+        <div id="record-streak-val" class="record-value">-</div>
+        <div id="record-streak-sub" class="record-sub">No record yet</div>
+      </div>
+      <div id="card-volume-btn" class="record-card">
+        <div class="record-label">👑 Most tracks in a day</div>
+        <div id="record-volume-val" class="record-value">-</div>
+        <div id="record-volume-sub" class="record-sub">No record yet</div>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <a href="https://open.spotify.com/artist/7ltDVBr6mKbRvohxheJ9h1" target="_blank" rel="noopener" class="spotify-btn">
+        Listen to ROSALÍA now
+      </a>
+    </div>
+
+    <p id="track-info" class="track-info">Fetching last recorded song...</p>
+  </div>
+
+  <div id="history-modal" class="modal-overlay">
+    <div id="modal-card" class="modal-content">
+      
+      <div class="modal-sticky-header">
+        <div class="modal-header">
+          <h2 class="modal-title">Listening History</h2>
+          <button id="close-modal-btn" class="close-btn">&times;</button>
+        </div>
+
+        <div class="toggle-container">
+          <div id="toggle-binary" class="toggle-option active">Streak</div>
+          <div id="toggle-heatmap" class="toggle-option">Tracks per day</div>
+        </div>
+
+        <div id="sticky-month-bar" class="sticky-month-bar">Loading...</div>
+
+        <div class="calendar-weekdays-sticky">
+          <div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div><div>S</div>
+        </div>
+      </div>
+
+      <div id="modal-scroll-body" class="modal-scroll-body">
+        <div id="calendar-container">Loading history...</div>
+      </div>
+
+      <div id="heatmap-legend" class="heatmap-legend">
+        <span>0</span>
+        <div class="legend-box" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);"></div>
+        <div class="legend-box" style="background: #5f0030;"></div>
+        <div class="legend-box" style="background: #99004d;"></div>
+        <div class="legend-box" style="background: #d10068;"></div>
+        <div class="legend-box" style="background: #ff007f;"></div>
+        <span id="legend-max-label">0 tracks</span>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let historyData = {};
+    let coreData = {};
+    let currentMode = 'binary';
+
+    function formatEUDate(dateStr) {
+      if (!dateStr) return '';
+      const parts = dateStr.split('-');
+      if (parts.length !== 3) return dateStr;
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
+    function formatDateKey(year, monthIndex, day) {
+      const m = String(monthIndex + 1).padStart(2, '0');
+      const d = String(day).padStart(2, '0');
+      return `${year}-${m}-${d}`;
+    }
+
+    function createSunraySVG() {
+      const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+      svg.setAttribute("class", "sunray-svg");
+      svg.setAttribute("viewBox", "0 0 56 56");
+
+      let linesHTML = '';
+      const numRays = 7;
+      const radiusInner = 20;
+      const radiusOuter = 26;
+      const cx = 28;
+      const cy = 28;
+
+      for (let i = 0; i < numRays; i++) {
+        const angle = (i * 360 / numRays) * (Math.PI / 180);
+        const x1 = cx + radiusInner * Math.sin(angle);
+        const y1 = cy - radiusInner * Math.cos(angle);
+        const x2 = cx + radiusOuter * Math.sin(angle);
+        const y2 = cy - radiusOuter * Math.cos(angle);
+
+        linesHTML += `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke="#ff007f" stroke-width="3" stroke-linecap="round"/>`;
+      }
+
+      svg.innerHTML = linesHTML;
+      return svg;
+    }
+
+    async function loadData() {
+      try {
+        const [coreRes, historyRes] = await Promise.all([
+          fetch('./last_played.json?cache=' + Date.now()),
+          fetch('./history.json?cache=' + Date.now())
+        ]);
+
+        coreData = await coreRes.json();
+        historyData = await historyRes.json();
+
+        checkHeartbeatAndStreaks();
+        renderUI();
+      } catch (err) {
+        console.error("Data load error", err);
+      }
+    }
+
+    function checkHeartbeatAndStreaks() {
+      // 1. Stale Data Warning (Heartbeat check)
+      if (coreData.last_successful_run) {
+        const lastRun = new Date(coreData.last_successful_run).getTime();
+        const now = Date.now();
+        const hoursPassed = (now - lastRun) / (1000 * 60 * 60);
+        if (hoursPassed > 24) {
+          document.getElementById('stale-warning').style.display = 'block';
+        }
+      }
+
+      // 2. Dynamic Active Streak Check (Break streak if missed yesterday/today)
+      if (coreData.active_streak && coreData.active_streak.end_date) {
+        const lastDate = new Date(coreData.active_streak.end_date);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        lastDate.setHours(0, 0, 0, 0);
+
+        const diffTime = Math.abs(today - lastDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+        if (diffDays > 1) {
+          coreData.current_streak = 0;
+        }
+      }
+    }
+
+    function renderUI() {
+      if (coreData.latest_track && coreData.latest_track.album_art) {
+        const img = document.getElementById('cover-art');
+        img.src = coreData.latest_track.album_art;
+        img.style.display = 'block';
+
+        const bgBlur = document.getElementById('bg-blur');
+        bgBlur.style.backgroundImage = `url('${coreData.latest_track.album_art}')`;
+        bgBlur.classList.add('loaded');
+      }
+
+      const headlineEl = document.getElementById('main-headline');
+      const streak = coreData.current_streak || 0;
+      if (streak > 0) {
+        headlineEl.className = "main-headline active-streak";
+        headlineEl.innerText = `Pietro is on a ${streak}-day ROSALÍA streak 🔥`;
+      } else {
+        headlineEl.className = "main-headline inactive-streak";
+        headlineEl.innerText = `Pietro's ROSALÍA streak was broken 😱`;
+      }
+
+      if (coreData.longest_streak && coreData.longest_streak.count > 0) {
+        document.getElementById('record-streak-val').innerText = `${coreData.longest_streak.count} Days`;
+        document.getElementById('record-streak-sub').innerText = 
+          `from ${formatEUDate(coreData.longest_streak.start_date)} to ${formatEUDate(coreData.longest_streak.end_date)}`;
+      }
+
+      if (coreData.peak_volume && coreData.peak_volume.count > 0) {
+        document.getElementById('record-volume-val').innerText = `${coreData.peak_volume.count} Tracks`;
+        document.getElementById('record-volume-sub').innerText = `on ${formatEUDate(coreData.peak_volume.date)}`;
+      }
+
+      if (coreData.latest_track) {
+        const t = coreData.latest_track;
+        const playedDate = new Date(t.timestamp);
+        const dateFormatted = playedDate.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        const timeFormatted = playedDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        document.getElementById('track-info').innerHTML = 
+          `Last track: '<a href="${t.spotify_url}" target="_blank">${t.track_name}</a>' from <a href="${t.album_url}" target="_blank">${t.album_name}</a> on ${dateFormatted} at ${timeFormatted}.`;
+      }
+
+      render7DayStrip();
+    }
+
+    function render7DayStrip() {
+      const container = document.getElementById('strip-days');
+      const ribbon = document.getElementById('home-active-ribbon');
+      container.innerHTML = '';
+      ribbon.style.display = 'none';
+
+      const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+      const today = new Date();
+
+      let activeStartIdx = -1;
+      let activeEndIdx = -1;
+
+      for (let i = 6; i >= 0; i--) {
+        const colIdx = 6 - i;
+        const d = new Date();
+        d.setDate(today.getDate() - i);
+        const dateStr = formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
+        const dayName = days[d.getDay()];
+
+        const hasListened = historyData && (historyData[dateStr] || 0) > 0;
+
+        const isActiveStreakDay = coreData.current_streak > 0 && 
+                                  coreData.active_streak && 
+                                  dateStr >= coreData.active_streak.start_date && 
+                                  dateStr <= coreData.active_streak.end_date && 
+                                  hasListened;
+
+        if (isActiveStreakDay) {
+          if (activeStartIdx === -1) activeStartIdx = colIdx;
+          activeEndIdx = colIdx;
+        }
+
+        const node = document.createElement('div');
+        node.className = 'day-node';
+
+        const wrapper = document.createElement('div');
+        wrapper.className = 'circle-wrapper';
+
+        const circle = document.createElement('div');
+        circle.className = `cal-circle ${hasListened ? 'listened' : 'empty-outline'}`;
+        circle.innerText = hasListened ? '✓' : '';
+
+        if (coreData.peak_volume && dateStr === coreData.peak_volume.date) {
+          wrapper.appendChild(createSunraySVG());
+        }
+
+        wrapper.appendChild(circle);
+
+        const label = document.createElement('div');
+        label.className = 'cal-num';
+        label.innerText = i === 0 ? 'Today' : dayName;
+
+        node.appendChild(wrapper);
+        node.appendChild(label);
+        container.appendChild(node);
+      }
+
+      // Render home connecting active ribbon if present
+      if (activeStartIdx !== -1 && activeEndIdx !== -1) {
+        ribbon.style.display = 'block';
+        const colWidth = 100 / 7;
+        const leftPct = activeStartIdx * colWidth;
+        const widthPct = (activeEndIdx - activeStartIdx + 1) * colWidth;
+        ribbon.style.left = `calc(${leftPct}% + 8px)`;
+        ribbon.style.width = `calc(${widthPct}% - 16px)`;
+      }
+    }
+
+    function getAllStreaks() {
+      const dates = Object.keys(historyData).filter(d => historyData[d] > 0).sort();
+      if (dates.length === 0) return [];
+
+      const streaks = [];
+      let currentStreak = { start_date: dates[0], end_date: dates[0] };
+
+      for (let i = 1; i < dates.length; i++) {
+        const prev = new Date(dates[i - 1]);
+        const curr = new Date(dates[i]);
+        const diffDays = Math.round((curr - prev) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+          currentStreak.end_date = dates[i];
+        } else {
+          streaks.push(currentStreak);
+          currentStreak = { start_date: dates[i], end_date: dates[i] };
+        }
+      }
+      streaks.push(currentStreak);
+      return streaks;
+    }
+
+    function renderCalendar() {
+      const container = document.getElementById('calendar-container');
+      container.innerHTML = '';
+
+      let maxCount = coreData.peak_volume ? coreData.peak_volume.count : 1;
+      for (const val of Object.values(historyData)) {
+        if (val > maxCount) maxCount = val;
+      }
+      document.getElementById('legend-max-label').innerText = `${maxCount} tracks`;
+
+      const startDate = new Date(2026, 8, 27);
+      const endDate = new Date();
+
+      let curr = new Date(startDate);
+      const allDays = [];
+
+      let startOffset = curr.getDay() - 1;
+      if (startOffset === -1) startOffset = 6;
+
+      for (let i = 0; i < startOffset; i++) {
+        allDays.push(null);
+      }
+
+      while (curr <= endDate) {
+        allDays.push(new Date(curr));
+        curr.setDate(curr.getDate() + 1);
+      }
+
+      const allStreaks = getAllStreaks();
+
+      for (let i = 0; i < allDays.length; i += 7) {
+        const weekDays = allDays.slice(i, i + 7);
+        const weekRow = document.createElement('div');
+        weekRow.className = 'week-row';
+
+        const streakSegments = [];
+
+        weekDays.forEach((dayObj, colIdx) => {
+          if (!dayObj) return;
+
+          const dateStr = formatDateKey(dayObj.getFullYear(), dayObj.getMonth(), dayObj.getDate());
+          const count = historyData[dateStr] || 0;
+
+          if (currentMode === 'binary' && count > 0) {
+            let matchingStreak = allStreaks.find(s => dateStr >= s.start_date && dateStr <= s.end_date);
+            if (matchingStreak) {
+              const isRecord = coreData.longest_streak && 
+                               matchingStreak.start_date === coreData.longest_streak.start_date &&
+                               matchingStreak.end_date === coreData.longest_streak.end_date;
+              
+              const isActive = coreData.current_streak > 0 &&
+                               coreData.active_streak && 
+                               matchingStreak.start_date === coreData.active_streak.start_date;
+
+              const isHighlighted = isRecord || isActive;
+              const isStartDay = (dateStr === matchingStreak.start_date);
+              const isEndDay = (dateStr === matchingStreak.end_date);
+
+              streakSegments.push({
+                colIdx,
+                isHighlighted,
+                isStartDay,
+                isEndDay
+              });
+            }
+          }
+        });
+
+        // Group consecutive column days in this row into segments
+        if (streakSegments.length > 0) {
+          let currentGroup = [streakSegments[0]];
+
+          for (let s = 1; s < streakSegments.length; s++) {
+            if (streakSegments[s].colIdx === streakSegments[s - 1].colIdx + 1 &&
+                streakSegments[s].isHighlighted === streakSegments[s - 1].isHighlighted) {
+              currentGroup.push(streakSegments[s]);
+            } else {
+              renderStreakRibbon(weekRow, currentGroup);
+              currentGroup = [streakSegments[s]];
+            }
+          }
+          renderStreakRibbon(weekRow, currentGroup);
+        }
+
+        weekDays.forEach((dayObj) => {
+          const cell = document.createElement('div');
+          cell.style.display = 'flex';
+          cell.style.flexDirection = 'column';
+          cell.style.alignItems = 'center';
+          cell.style.position = 'relative';
+          cell.style.zIndex = '2';
+
+          if (!dayObj) {
+            weekRow.appendChild(cell);
+            return;
+          }
+
+          const year = dayObj.getFullYear();
+          const month = dayObj.getMonth();
+          const day = dayObj.getDate();
+          const dateStr = formatDateKey(year, month, day);
+          const count = historyData[dateStr] || 0;
+
+          cell.dataset.dateStr = dateStr;
+          cell.dataset.monthName = dayObj.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+
+          const circleWrapper = document.createElement('div');
+          circleWrapper.className = 'circle-wrapper';
+
+          const circle = document.createElement('div');
+          circle.className = 'cal-circle';
+
+          const dayNum = document.createElement('div');
+          dayNum.className = 'cal-num';
+          dayNum.innerText = day;
+
+          if (count > 0) {
+            circle.classList.add('listened');
+            circle.innerText = '✓';
+
+            if (currentMode === 'heatmap') {
+              circle.innerText = count;
+              circle.classList.remove('listened');
+
+              const ratio = count / maxCount;
+              if (ratio >= 0.75) circle.style.background = '#ff007f';
+              else if (ratio >= 0.50) circle.style.background = '#d10068';
+              else if (ratio >= 0.25) circle.style.background = '#99004d';
+              else circle.style.background = '#5f0030';
+
+              if (coreData.peak_volume && dateStr === coreData.peak_volume.date) {
+                circleWrapper.appendChild(createSunraySVG());
+              }
+            }
+          } else {
+            circle.classList.add('empty-dot');
+          }
+
+          circleWrapper.appendChild(circle);
+          cell.appendChild(circleWrapper);
+          cell.appendChild(dayNum);
+          weekRow.appendChild(cell);
+        });
+
+        container.appendChild(weekRow);
+      }
+
+      updateStickyMonthHeader();
+    }
+
+    function renderStreakRibbon(weekRow, group) {
+      const startCol = group[0].colIdx;
+      const endCol = group[group.length - 1].colIdx;
+      const isHighlighted = group[0].isHighlighted;
+      const isOverallStart = group[0].isStartDay;
+      const isOverallEnd = group[group.length - 1].isEndDay;
+
+      const ribbon = document.createElement('div');
+      ribbon.className = `unified-streak-ribbon ${isHighlighted ? 'gradient' : 'white-subtle'}`;
+
+      const leftPct = (startCol / 7) * 100;
+      const rightPct = 100 - ((endCol + 1) / 7) * 100;
+
+      ribbon.style.left = `calc(${leftPct}% + 4px)`;
+      ribbon.style.right = `calc(${rightPct}% + 4px)`;
+
+      // Rounding rules: only overall start/end days get rounded corners
+      const leftRadius = isOverallStart ? '18px' : '0px';
+      const rightRadius = isOverallEnd ? '18px' : '0px';
+      ribbon.style.borderRadius = `${leftRadius} ${rightRadius} ${rightRadius} ${leftRadius}`;
+
+      weekRow.appendChild(ribbon);
+    }
+
+    function updateStickyMonthHeader() {
+      const scrollBody = document.getElementById('modal-scroll-body');
+      const cells = Array.from(scrollBody.querySelectorAll('[data-month-name]'));
+      if (cells.length === 0) return;
+
+      const bodyRect = scrollBody.getBoundingClientRect();
+      const visibleMonths = new Set();
+
+      cells.forEach(cell => {
+        const rect = cell.getBoundingClientRect();
+        if (rect.top < bodyRect.bottom && rect.bottom > bodyRect.top) {
+          visibleMonths.add(cell.dataset.monthName);
+        }
+      });
+
+      const monthsArr = Array.from(visibleMonths);
+      const stickyBar = document.getElementById('sticky-month-bar');
+
+      if (monthsArr.length === 1) {
+        stickyBar.innerText = monthsArr[0];
+      } else if (monthsArr.length > 1) {
+        const firstParts = monthsArr[0].split(' ');
+        const lastParts = monthsArr[monthsArr.length - 1].split(' ');
+
+        if (firstParts[1] === lastParts[1]) {
+          stickyBar.innerText = `${firstParts[0]} – ${lastParts[0]} ${firstParts[1]}`;
+        } else {
+          stickyBar.innerText = `${monthsArr[0]} – ${monthsArr[monthsArr.length - 1]}`;
+        }
+      }
+    }
+
+    document.getElementById('modal-scroll-body').addEventListener('scroll', updateStickyMonthHeader);
+
+    function openModalWithMode(mode) {
+      currentMode = mode;
+      if (mode === 'binary') {
+        document.getElementById('toggle-binary').classList.add('active');
+        document.getElementById('toggle-heatmap').classList.remove('active');
+        document.getElementById('heatmap-legend').classList.remove('active');
+      } else {
+        document.getElementById('toggle-heatmap').classList.add('active');
+        document.getElementById('toggle-binary').classList.remove('active');
+        document.getElementById('heatmap-legend').classList.add('active');
+      }
+
+      document.body.classList.add('modal-open');
+      document.getElementById('history-modal').classList.add('open');
+      renderCalendar();
+      
+      const scrollBody = document.getElementById('modal-scroll-body');
+      scrollBody.scrollTop = scrollBody.scrollHeight;
+    }
+
+    document.getElementById('card-streak-btn').addEventListener('click', () => openModalWithMode('binary'));
+    document.getElementById('card-volume-btn').addEventListener('click', () => openModalWithMode('heatmap'));
+
+    function closeModal() {
+      document.body.classList.remove('modal-open');
+      document.getElementById('history-modal').classList.remove('open');
+    }
+
+    document.getElementById('close-modal-btn').addEventListener('click', closeModal);
+
+    document.getElementById('history-modal').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('history-modal')) {
+        closeModal();
+      }
+    });
+
+    // Close modal on Escape key press
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' || e.key === 'Esc') {
+        closeModal();
+      }
+    });
+
+    document.getElementById('toggle-binary').addEventListener('click', () => {
+      currentMode = 'binary';
+      document.getElementById('toggle-binary').classList.add('active');
+      document.getElementById('toggle-heatmap').classList.remove('active');
+      document.getElementById('heatmap-legend').classList.remove('active');
+      renderCalendar();
+    });
+
+    document.getElementById('toggle-heatmap').addEventListener('click', () => {
+      currentMode = 'heatmap';
+      document.getElementById('toggle-heatmap').classList.add('active');
+      document.getElementById('toggle-binary').classList.remove('active');
+      document.getElementById('heatmap-legend').classList.add('active');
+      renderCalendar();
+    });
+
+    loadData();
+
+    window.addEventListener('DOMContentLoaded', () => {
+      setTimeout(() => {
+        document.getElementById('loader').classList.add('hidden');
+        document.getElementById('main-card').classList.add('active');
+      }, 1000);
+    });
+  </script>
+</body>
+</html>
