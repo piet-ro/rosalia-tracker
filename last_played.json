@@ -10,11 +10,11 @@
     "date": "2026-09-30"
   },
   "latest_track": {
-    "timestamp": "2026-10-07T07:50:02.509Z",
-    "track_name": "Sexo, Violencia y Llantas",
+    "timestamp": "2026-10-07T07:53:52.725Z",
+    "track_name": "Reliquia",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/3tkwOzZXgstU1DdH4gpaw1",
+    "spotify_url": "https://open.spotify.com/track/7s2fbTm6mudP1SZDZR8vci",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -110,6 +110,7 @@
     "2026-10-06T20:17:34.420Z",
     "2026-10-06T20:08:24.310Z",
     "2026-10-07T07:50:02.509Z",
-    "2026-10-07T07:46:44.038Z"
+    "2026-10-07T07:46:44.038Z",
+    "2026-10-07T07:53:52.725Z"
   ]
 }
