@@ -1,20 +1,20 @@
 {
-  "current_streak": 3,
+  "current_streak": 4,
   "longest_streak": {
-    "count": 3,
+    "count": 4,
     "start_date": "2026-10-04",
-    "end_date": "2026-10-06"
+    "end_date": "2026-10-07"
   },
   "peak_volume": {
     "count": 21,
     "date": "2026-09-30"
   },
   "latest_track": {
-    "timestamp": "2026-10-06T20:34:33.743Z",
-    "track_name": "Focu 'Ranni",
+    "timestamp": "2026-10-07T07:50:02.509Z",
+    "track_name": "Sexo, Violencia y Llantas",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/3aIGNjFJPjrGpe24OFMSUH",
+    "spotify_url": "https://open.spotify.com/track/3tkwOzZXgstU1DdH4gpaw1",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -108,6 +108,8 @@
     "2026-10-06T20:24:41.339Z",
     "2026-10-06T20:21:38.174Z",
     "2026-10-06T20:17:34.420Z",
-    "2026-10-06T20:08:24.310Z"
+    "2026-10-06T20:08:24.310Z",
+    "2026-10-07T07:50:02.509Z",
+    "2026-10-07T07:46:44.038Z"
   ]
 }
