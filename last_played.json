@@ -1,5 +1,5 @@
 {
-  "current_streak": 0,
+  "current_streak": 1,
   "longest_streak": {
     "count": 4,
     "start_date": "2026-10-04",
@@ -10,11 +10,11 @@
     "date": "2026-09-30"
   },
   "latest_track": {
-    "timestamp": "2026-10-07T07:53:52.725Z",
-    "track_name": "Reliquia",
+    "timestamp": "2026-10-09T12:13:46.193Z",
+    "track_name": "Porcelana",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/7s2fbTm6mudP1SZDZR8vci",
+    "spotify_url": "https://open.spotify.com/track/0LdgA1zbSnRgM29DxxYcu8",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -111,6 +111,7 @@
     "2026-10-06T20:08:24.310Z",
     "2026-10-07T07:50:02.509Z",
     "2026-10-07T07:46:44.038Z",
-    "2026-10-07T07:53:52.725Z"
+    "2026-10-07T07:53:52.725Z",
+    "2026-10-09T12:13:46.193Z"
   ]
 }
