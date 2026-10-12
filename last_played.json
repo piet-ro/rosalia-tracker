@@ -6,15 +6,15 @@
     "end_date": "2026-10-07"
   },
   "peak_volume": {
-    "count": 45,
+    "count": 46,
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-12T21:11:43.430Z",
-    "track_name": "MOTOMAMI",
+    "timestamp": "2026-10-12T21:16:11.067Z",
+    "track_name": "G3 N15",
     "album_name": "MOTOMAMI +",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
-    "spotify_url": "https://open.spotify.com/track/6EXl4PwflcMNobeFpL5bWn",
+    "spotify_url": "https://open.spotify.com/track/7EJcb4e5T2vDsaPWR7yEb4",
     "album_url": "https://open.spotify.com/album/3zbiiu3JTibw0esC7eoMXr"
   },
   "tracked_timestamps": [
@@ -158,6 +158,7 @@
     "2026-10-12T20:56:19.525Z",
     "2026-10-12T21:11:43.430Z",
     "2026-10-12T21:09:01.142Z",
-    "2026-10-12T21:04:30.697Z"
+    "2026-10-12T21:04:30.697Z",
+    "2026-10-12T21:16:11.067Z"
   ]
 }
