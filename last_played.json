@@ -10,11 +10,11 @@
     "date": "2026-09-30"
   },
   "latest_track": {
-    "timestamp": "2026-10-12T08:42:21.612Z",
-    "track_name": "De Madrugá",
+    "timestamp": "2026-10-12T08:59:03.927Z",
+    "track_name": "Jeanne",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/6F52Ls9K7a6vNNi0lip9Gm",
+    "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -123,6 +123,11 @@
     "2026-10-12T08:40:36.509Z",
     "2026-10-12T08:38:15.812Z",
     "2026-10-12T08:34:59.689Z",
-    "2026-10-12T08:32:00.287Z"
+    "2026-10-12T08:32:00.287Z",
+    "2026-10-12T08:59:03.927Z",
+    "2026-10-12T08:55:12.146Z",
+    "2026-10-12T08:52:29.136Z",
+    "2026-10-12T08:49:38.232Z",
+    "2026-10-12T08:45:19.154Z"
   ]
 }
