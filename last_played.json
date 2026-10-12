@@ -6,15 +6,15 @@
     "end_date": "2026-10-07"
   },
   "peak_volume": {
-    "count": 33,
+    "count": 36,
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-12T10:09:03.627Z",
-    "track_name": "Jeanne",
+    "timestamp": "2026-10-12T18:41:28.654Z",
+    "track_name": "Dios Es Un Stalker (versión Francotiradora)",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd",
+    "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -146,6 +146,9 @@
     "2026-10-12T09:53:58.982Z",
     "2026-10-12T09:49:39.954Z",
     "2026-10-12T09:46:42.228Z",
-    "2026-10-12T10:09:03.627Z"
+    "2026-10-12T10:09:03.627Z",
+    "2026-10-12T18:41:28.654Z",
+    "2026-10-12T18:38:31.570Z",
+    "2026-10-12T18:36:47.170Z"
   ]
 }
