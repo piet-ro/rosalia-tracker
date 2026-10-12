@@ -6,15 +6,15 @@
     "end_date": "2026-10-07"
   },
   "peak_volume": {
-    "count": 27,
+    "count": 32,
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-12T09:44:57.382Z",
-    "track_name": "Mundo Nuevo",
+    "timestamp": "2026-10-12T09:59:32.862Z",
+    "track_name": "Sauvignon Blanc",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/1uRF6PMGde0D7uB73bni1d",
+    "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -140,6 +140,11 @@
     "2026-10-12T09:42:36.516Z",
     "2026-10-12T09:39:20.582Z",
     "2026-10-12T09:36:21.168Z",
-    "2026-10-12T09:31:51.035Z"
+    "2026-10-12T09:31:51.035Z",
+    "2026-10-12T09:59:32.862Z",
+    "2026-10-12T09:56:49.903Z",
+    "2026-10-12T09:53:58.982Z",
+    "2026-10-12T09:49:39.954Z",
+    "2026-10-12T09:46:42.228Z"
   ]
 }
