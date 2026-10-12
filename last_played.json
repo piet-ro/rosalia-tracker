@@ -6,15 +6,15 @@
     "end_date": "2026-10-07"
   },
   "peak_volume": {
-    "count": 21,
-    "date": "2026-09-30"
+    "count": 22,
+    "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-12T09:13:30.320Z",
-    "track_name": "Magnolias",
+    "timestamp": "2026-10-12T09:27:42.569Z",
+    "track_name": "Divinize",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/4cSEOMb21q2S2ypucBvQT0",
+    "spotify_url": "https://open.spotify.com/track/5Doua6JQZzfRgxMW5RWJUB",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -132,6 +132,9 @@
     "2026-10-12T09:13:30.320Z",
     "2026-10-12T09:10:14.997Z",
     "2026-10-12T09:06:29.307Z",
-    "2026-10-12T09:02:16.835Z"
+    "2026-10-12T09:02:16.835Z",
+    "2026-10-12T09:27:42.569Z",
+    "2026-10-12T09:23:38.725Z",
+    "2026-10-12T09:19:48.029Z"
   ]
 }
