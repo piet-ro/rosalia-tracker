@@ -1,5 +1,5 @@
 {
-  "current_streak": 1,
+  "current_streak": 2,
   "longest_streak": {
     "count": 4,
     "start_date": "2026-10-04",
@@ -10,11 +10,11 @@
     "date": "2026-09-30"
   },
   "latest_track": {
-    "timestamp": "2026-10-11T08:59:21.183Z",
-    "track_name": "Divinize",
+    "timestamp": "2026-10-12T08:13:10.268Z",
+    "track_name": "Sexo, Violencia y Llantas",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/5Doua6JQZzfRgxMW5RWJUB",
+    "spotify_url": "https://open.spotify.com/track/3tkwOzZXgstU1DdH4gpaw1",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -113,6 +113,7 @@
     "2026-10-07T07:46:44.038Z",
     "2026-10-07T07:53:52.725Z",
     "2026-10-09T12:13:46.193Z",
-    "2026-10-11T08:59:21.183Z"
+    "2026-10-11T08:59:21.183Z",
+    "2026-10-12T08:13:10.268Z"
   ]
 }
