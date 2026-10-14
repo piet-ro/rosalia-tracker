@@ -10,12 +10,12 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-14T18:09:13.378Z",
-    "track_name": "DI MI NOMBRE - Cap.8: Éxtasis",
-    "album_name": "El Mal Querer",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b273b115d8632e69edce1a1da7d8",
-    "spotify_url": "https://open.spotify.com/track/2Sfl7odHUmG7qc8SbqUyzE",
-    "album_url": "https://open.spotify.com/album/355bjCHzRJztCzaG5Za4gq"
+    "timestamp": "2026-10-14T20:23:48.368Z",
+    "track_name": "Sexo, Violencia y Llantas",
+    "album_name": "LUX",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+    "spotify_url": "https://open.spotify.com/track/1dp0MRcrgCxEESP1LrF2yA",
+    "album_url": "https://open.spotify.com/album/3SUEJULSGgBDG1j4GQhfYY"
   },
   "tracked_timestamps": [
     "2026-09-30T20:47:24.114Z",
@@ -169,6 +169,10 @@
     "2026-10-14T18:09:13.378Z",
     "2026-10-14T18:06:30.983Z",
     "2026-10-14T18:02:57.971Z",
-    "2026-10-14T18:02:17.270Z"
+    "2026-10-14T18:02:17.270Z",
+    "2026-10-14T20:23:48.368Z",
+    "2026-10-14T20:20:48.301Z",
+    "2026-10-14T20:19:14.097Z",
+    "2026-10-14T20:16:18.804Z"
   ]
 }
