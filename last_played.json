@@ -10,11 +10,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-14T07:24:30.494Z",
-    "track_name": "Divinize",
+    "timestamp": "2026-10-14T17:43:34.582Z",
+    "track_name": "Porcelana",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/5Doua6JQZzfRgxMW5RWJUB",
+    "spotify_url": "https://open.spotify.com/track/0LdgA1zbSnRgM29DxxYcu8",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
@@ -160,6 +160,7 @@
     "2026-10-12T21:09:01.142Z",
     "2026-10-12T21:04:30.697Z",
     "2026-10-12T21:16:11.067Z",
-    "2026-10-14T07:24:30.494Z"
+    "2026-10-14T07:24:30.494Z",
+    "2026-10-14T17:43:34.582Z"
   ]
 }
