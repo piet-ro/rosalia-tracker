@@ -1,5 +1,5 @@
 {
-  "current_streak": 2,
+  "current_streak": 3,
   "longest_streak": {
     "count": 4,
     "start_date": "2026-10-04",
@@ -10,12 +10,12 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-15T07:04:14.943Z",
-    "track_name": "Sexo, Violencia y Llantas",
-    "album_name": "LUX",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
-    "spotify_url": "https://open.spotify.com/track/1dp0MRcrgCxEESP1LrF2yA",
-    "album_url": "https://open.spotify.com/album/3SUEJULSGgBDG1j4GQhfYY"
+    "timestamp": "2026-10-16T13:54:37.609Z",
+    "track_name": "Novia Robot",
+    "album_name": "LUX (Complete Works)",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+    "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu",
+    "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "tracked_timestamps": [
     "2026-09-30T20:47:24.114Z",
@@ -176,6 +176,7 @@
     "2026-10-14T20:16:18.804Z",
     "2026-10-15T06:58:29.692Z",
     "2026-10-15T07:04:14.943Z",
-    "2026-10-15T07:01:53.641Z"
+    "2026-10-15T07:01:53.641Z",
+    "2026-10-16T13:54:37.609Z"
   ]
 }
