@@ -14,15 +14,19 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-19T18:42:26.164Z",
-    "track_name": "Sexo, Violencia y Llantas",
+    "timestamp": "2026-10-19T18:59:22.934Z",
+    "track_name": "Mio Cristo Piange Diamanti",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/3tkwOzZXgstU1DdH4gpaw1",
+    "spotify_url": "https://open.spotify.com/track/0zJxp7ndkNCwE2zjfmnnBZ",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "last_successful_run": "2026-10-19T07:15:31.543Z",
   "tracked_timestamps": [
+    "2026-10-19T18:59:22.934Z",
+    "2026-10-19T18:54:53.220Z",
+    "2026-10-19T18:50:45.129Z",
+    "2026-10-19T18:46:41.836Z",
     "2026-10-19T18:42:26.164Z",
     "2026-10-16T13:54:37.609Z",
     "2026-10-15T07:04:14.943Z",
