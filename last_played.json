@@ -14,15 +14,18 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-19T18:59:22.934Z",
-    "track_name": "Mio Cristo Piange Diamanti",
+    "timestamp": "2026-10-19T20:59:45.013Z",
+    "track_name": "Mundo Nuevo",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/0zJxp7ndkNCwE2zjfmnnBZ",
+    "spotify_url": "https://open.spotify.com/track/1uRF6PMGde0D7uB73bni1d",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "last_successful_run": "2026-10-19T07:15:31.543Z",
   "tracked_timestamps": [
+    "2026-10-19T20:59:45.013Z",
+    "2026-10-19T20:57:24.616Z",
+    "2026-10-19T20:54:09.025Z",
     "2026-10-19T18:59:22.934Z",
     "2026-10-19T18:54:53.220Z",
     "2026-10-19T18:50:45.129Z",
