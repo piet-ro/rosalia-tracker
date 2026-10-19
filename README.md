@@ -1,0 +1,98 @@
+# ROSALÍA Tracker
+
+A small static site that tracks how much ROSALÍA Pietro listens to on Spotify: the current daily streak, the longest streak, the biggest single day, the latest track played, and a calendar of listening history.
+
+There is no server. GitHub Actions does the data work, GitHub Pages hosts the site, and the data lives in two JSON files committed to this repo.
+
+## How it flows
+
+```
+cron-job.org (every 15 min)
+        │  POST /repos/piet-ro/rosalia-tracker/dispatches  {"event_type": "check_spotify"}
+        ▼
+GitHub Actions: .github/workflows/tracker.yml
+        │  1. refresh Spotify access token
+        │  2. fetch last 50 played tracks
+        │  3. keep only ROSALÍA plays, count the new ones
+        │  4. recompute streaks + peak day
+        ▼
+last_played.json + history.json  ──(committed back to main)──►  GitHub Pages
+                                                                   │
+                                                                   ▼
+                                                     index.html reads both JSON files
+```
+
+## Files
+
+### `.github/workflows/tracker.yml` — the engine
+The only place where data is produced. It runs when cron-job.org sends a `repository_dispatch` event of type `check_spotify`, or when started by hand from the Actions tab (`workflow_dispatch`). There is deliberately no GitHub `schedule:` trigger, because cron-job.org already handles timing and is more reliable.
+
+The job runs an inline Node.js script that:
+
+1. Exchanges `SPOTIFY_REFRESH_TOKEN` for an access token (using `SPOTIFY_CLIENT_ID` / `SPOTIFY_CLIENT_SECRET`).
+2. Calls Spotify's *recently played* endpoint (last 50 tracks).
+3. Keeps tracks where ROSALÍA (artist ID `7ltDVBr6mKbRvohxheJ9h1`) is one of the artists.
+4. For each play whose timestamp it has not seen before, adds 1 to that day in `history.json`. Days use the **Europe/Rome** timezone.
+5. Updates the latest track, current/longest streak, peak day and the daily heartbeat in `last_played.json`.
+6. Commits the two JSON files back to the repo, only if something changed.
+
+If the Spotify token or API call fails, the job fails (red in the Actions tab) and nothing is overwritten.
+
+### `history.json` — the permanent record
+Plays per day, newest first:
+
+```json
+{ "2026-10-14": 14, "2026-10-12": 46 }
+```
+
+This file is only ever **added to**, never rebuilt, so it keeps the full history. The calendar, streaks and peak day are all derived from it.
+
+### `last_played.json` — current state
+| Field | Meaning |
+|---|---|
+| `current_streak` | Consecutive days with at least one play, ending today or yesterday (0 if broken) |
+| `active_streak` | `start_date` / `end_date` of that streak, or `null` |
+| `longest_streak` | Record streak: `count`, `start_date`, `end_date` |
+| `peak_volume` | Biggest single day: `count`, `date` |
+| `latest_track` | Most recent ROSALÍA play: name, album, cover art, Spotify links, timestamp |
+| `last_successful_run` | Heartbeat, updated once per day so the site can warn when syncing has stopped |
+| `tracked_timestamps` | The newest 300 play timestamps already counted. Used only to avoid counting the same play twice, since consecutive runs see overlapping plays. Spotify returns at most 50 plays, so 300 is plenty |
+
+### `index.html` — the site
+A single self-contained page (HTML, CSS and JS inline) served by GitHub Pages. On load it fetches both JSON files with a cache-busting query string, then shows:
+
+- the headline streak message, with the latest album art as a blurred background
+- record cards for the longest streak and the peak day
+- the latest track, linking to Spotify
+- a history modal with a calendar view built from `history.json`
+- a "sync delayed" banner if `last_successful_run` is more than 36 hours old
+
+It also resets the streak shown to 0 if `active_streak` ended more than a day ago, in case the workflow has stopped running.
+
+### `favicon.png`
+The browser tab icon.
+
+## Setup
+
+**Repository secrets** (Settings → Secrets and variables → Actions):
+
+- `SPOTIFY_CLIENT_ID`
+- `SPOTIFY_CLIENT_SECRET`
+- `SPOTIFY_REFRESH_TOKEN`: obtained once through Spotify's authorization flow with the `user-read-recently-played` scope
+
+**Workflow permissions:** the workflow needs write access to push commits (it requests `contents: write`).
+
+**cron-job.org:** a job every 15 minutes that sends:
+
+```
+POST https://api.github.com/repos/piet-ro/rosalia-tracker/dispatches
+Authorization: Bearer <GitHub token with repo / Actions write access>
+Accept: application/vnd.github+json
+
+{"event_type": "check_spotify"}
+```
+
+**GitHub Pages:** serve from the `main` branch, root folder.
+
+## Manual run
+Actions tab → *Rosalía Spotify Tracker* → *Run workflow*.
