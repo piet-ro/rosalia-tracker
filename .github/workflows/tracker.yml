@@ -1,15 +1,21 @@
 name: Rosalía Spotify Tracker
 
+# Triggered every 15 minutes by an external cron-job.org job (repository_dispatch),
+# or manually from the Actions tab (workflow_dispatch).
 on:
-  schedule:
-    - cron: '*/15 * * * *'
   repository_dispatch:
     types: [check_spotify]
   workflow_dispatch:
 
+concurrency:
+  group: tracker
+  cancel-in-progress: false
+
 jobs:
   update-tracker:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -17,7 +23,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '18'
+          node-version: '22'
 
       - name: Fetch Spotify Data and Update Stats
         env:
@@ -28,15 +34,28 @@ jobs:
           node -e '
           const fs = require("fs");
 
-          // Helper to get local date string YYYY-MM-DD in Europe/Rome (CEST)
-          function getLocalDateString(isoTimestamp) {
-            const date = new Date(isoTimestamp);
-            const options = { timeZone: "Europe/Rome", year: "numeric", month: "2-digit", day: "2-digit" };
-            const parts = new Intl.DateTimeFormat("en-CA", options).formatToParts(date);
-            const year = parts.find(p => p.type === "year").value;
-            const month = parts.find(p => p.type === "month").value;
-            const day = parts.find(p => p.type === "day").value;
-            return `${year}-${month}-${day}`;
+          const ROSALIA_ID = "7ltDVBr6mKbRvohxheJ9h1";
+          const TIMEZONE = "Europe/Rome";
+          // Rolling de-duplication buffer. Spotify only returns the last 50 plays,
+          // so remembering the newest 300 ROSALÍA plays is more than enough.
+          const BUFFER_SIZE = 300;
+
+          function readJson(path, fallback) {
+            try { return JSON.parse(fs.readFileSync(path, "utf8")); } catch (e) { return fallback; }
+          }
+
+          // YYYY-MM-DD for a timestamp, in the Europe/Rome timezone
+          function localDate(ts) {
+            return new Intl.DateTimeFormat("en-CA", {
+              timeZone: TIMEZONE, year: "numeric", month: "2-digit", day: "2-digit"
+            }).format(new Date(ts));
+          }
+
+          // Shift a YYYY-MM-DD string by n days (pure calendar math, no timezone issues)
+          function addDays(dateStr, n) {
+            const d = new Date(dateStr + "T00:00:00Z");
+            d.setUTCDate(d.getUTCDate() + n);
+            return d.toISOString().slice(0, 10);
           }
 
           async function getAccessToken() {
@@ -52,166 +71,103 @@ jobs:
               })
             });
             const data = await res.json();
+            if (!res.ok || !data.access_token) throw new Error("Token refresh failed: " + JSON.stringify(data));
             return data.access_token;
           }
 
           async function run() {
-            try {
-              const token = await getAccessToken();
-              const spotifyRes = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=50", {
-                headers: { "Authorization": "Bearer " + token }
-              });
-              const spotifyData = await spotifyRes.json();
+            const token = await getAccessToken();
+            const spotifyRes = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=50", {
+              headers: { "Authorization": "Bearer " + token }
+            });
+            const spotifyData = await spotifyRes.json();
+            if (!spotifyRes.ok) throw new Error("Spotify API error: " + JSON.stringify(spotifyData));
 
-              let lastPlayedData = {};
-              if (fs.existsSync("./last_played.json")) {
-                try { lastPlayedData = JSON.parse(fs.readFileSync("./last_played.json", "utf8")); } catch (e) {}
-              }
+            const core = readJson("./last_played.json", {});
+            // history.json is the permanent record of plays per day. It is only ever
+            // incremented, never rebuilt, so old days are never lost.
+            const history = readJson("./history.json", {});
+            const seen = new Set(core.tracked_timestamps || []);
 
-              let trackedTimestamps = lastPlayedData.tracked_timestamps || [];
+            // 1. Find ROSALÍA plays (Spotify returns newest first)
+            const rosaliaItems = (spotifyData.items || []).filter(item =>
+              item.track && item.track.artists.some(a => a.id === ROSALIA_ID)
+            );
 
-              // Process Rosalía tracks from Spotify fetch
-              if (spotifyData.items && spotifyData.items.length > 0) {
-                const rosaliaItems = spotifyData.items.filter(item => 
-                  item.track.artists.some(a => a.id === "7ltDVBr6mKbRvohxheJ9h1" || a.name.toLowerCase().includes("rosalía") || a.name.toLowerCase().includes("rosalia"))
-                );
-
-                if (rosaliaItems.length > 0) {
-                  const newestItem = rosaliaItems[0];
-                  lastPlayedData.latest_track = {
-                    timestamp: newestItem.played_at,
-                    track_name: newestItem.track.name,
-                    album_name: newestItem.track.album.name,
-                    album_art: newestItem.track.album.images[0]?.url || "",
-                    spotify_url: newestItem.track.external_urls?.spotify || "",
-                    album_url: newestItem.track.album.external_urls?.spotify || ""
-                  };
-
-                  for (const item of rosaliaItems) {
-                    if (!trackedTimestamps.includes(item.played_at)) {
-                      trackedTimestamps.push(item.played_at);
-                    }
-                  }
-                }
-              }
-
-              // Keep buffer capped to last 300 timestamps
-              if (trackedTimestamps.length > 300) {
-                trackedTimestamps = trackedTimestamps.slice(0, 300);
-              }
-              lastPlayedData.tracked_timestamps = trackedTimestamps;
-
-              // RECALCULATE HISTORY FROM SCRATCH (Prevents compounding accumulation bug)
-              const history = {};
-              for (const ts of trackedTimestamps) {
-                const localDateStr = getLocalDateString(ts);
-                history[localDateStr] = (history[localDateStr] || 0) + 1;
-              }
-
-              // Calculate active streak
-              const sortedDates = Object.keys(history).sort();
-              const nowISO = new Date().toISOString();
-              const todayStr = getLocalDateString(nowISO);
-              
-              const yesterday = new Date();
-              yesterday.setDate(yesterday.getDate() - 1);
-              const yesterdayStr = getLocalDateString(yesterday.toISOString());
-
-              let currentStreak = 0;
-              let checkDate = new Date();
-              
-              if (!history[todayStr] && !history[yesterdayStr]) {
-                currentStreak = 0;
-              } else {
-                if (!history[todayStr]) checkDate = yesterday;
-                while (true) {
-                  const dStr = getLocalDateString(checkDate.toISOString());
-                  if (history[dStr] && history[dStr] > 0) {
-                    currentStreak++;
-                    checkDate.setDate(checkDate.getDate() - 1);
-                  } else {
-                    break;
-                  }
-                }
-              }
-
-              // Calculate Longest Streak Record
-              let longestStreak = 0;
-              let longestStreakStart = "";
-              let longestStreakEnd = "";
-              let tempStreak = 0;
-              let tempStart = "";
-
-              for (let i = 0; i < sortedDates.length; i++) {
-                const curr = sortedDates[i];
-                if (history[curr] > 0) {
-                  if (tempStreak === 0) {
-                    tempStreak = 1;
-                    tempStart = curr;
-                  } else {
-                    const prevDate = new Date(sortedDates[i - 1]);
-                    const currDate = new Date(curr);
-                    const diffDays = Math.round((currDate - prevDate) / (1000 * 60 * 60 * 24));
-                    if (diffDays === 1) {
-                      tempStreak++;
-                    } else {
-                      tempStreak = 1;
-                      tempStart = curr;
-                    }
-                  }
-
-                  if (tempStreak >= longestStreak) {
-                    longestStreak = tempStreak;
-                    longestStreakStart = tempStart;
-                    longestStreakEnd = curr;
-                  }
-                } else {
-                  tempStreak = 0;
-                }
-              }
-
-              // Calculate Peak Volume Record
-              let maxDailyTracks = 0;
-              let maxDailyDate = "";
-              for (const [dateStr, count] of Object.entries(history)) {
-                if (count > maxDailyTracks) {
-                  maxDailyTracks = count;
-                  maxDailyDate = dateStr;
-                }
-              }
-
-              // Write cleaned, sorted history.json
-              const sortedHistory = {};
-              Object.keys(history).sort().reverse().forEach(k => {
-                sortedHistory[k] = history[k];
-              });
-              fs.writeFileSync("./history.json", JSON.stringify(sortedHistory, null, 2));
-
-              const outputData = {
-                current_streak: currentStreak,
-                longest_streak: {
-                  count: longestStreak,
-                  start_date: longestStreakStart,
-                  end_date: longestStreakEnd
-                },
-                peak_volume: {
-                  count: maxDailyTracks,
-                  date: maxDailyDate
-                },
-                latest_track: lastPlayedData.latest_track || null,
-                tracked_timestamps: trackedTimestamps
-              };
-
-              fs.writeFileSync("./last_played.json", JSON.stringify(outputData, null, 2));
-              console.log("Tracker update completed successfully.");
-
-            } catch (err) {
-              console.error("Error updating tracker:", err);
-              process.exit(1);
+            // 2. Count plays we have not seen before
+            let newPlays = 0;
+            for (const item of rosaliaItems) {
+              if (seen.has(item.played_at)) continue;
+              seen.add(item.played_at);
+              const day = localDate(item.played_at);
+              history[day] = (history[day] || 0) + 1;
+              newPlays++;
             }
+
+            // 3. Latest track (only replace it with something newer)
+            const newest = rosaliaItems[0];
+            if (newest && (!core.latest_track || newest.played_at > core.latest_track.timestamp)) {
+              core.latest_track = {
+                timestamp: newest.played_at,
+                track_name: newest.track.name,
+                album_name: newest.track.album.name,
+                album_art: newest.track.album.images[0]?.url || "",
+                spotify_url: newest.track.external_urls?.spotify || "",
+                album_url: newest.track.album.external_urls?.spotify || ""
+              };
+            }
+
+            // 4. Keep only the newest BUFFER_SIZE timestamps
+            const trackedTimestamps = [...seen].sort().reverse().slice(0, BUFFER_SIZE);
+
+            // 5. Streaks, computed on Europe/Rome calendar days
+            const days = Object.keys(history).filter(d => history[d] > 0).sort();
+            const today = localDate(new Date());
+
+            let longest = { count: 0, start_date: "", end_date: "" };
+            let cur = null;
+            for (const d of days) {
+              if (cur && addDays(cur.end_date, 1) === d) {
+                cur.end_date = d;
+                cur.count++;
+              } else {
+                cur = { count: 1, start_date: d, end_date: d };
+              }
+              if (cur.count >= longest.count) longest = { ...cur };
+            }
+
+            // The last run is still "active" if it ended today or yesterday
+            const active = cur && cur.end_date >= addDays(today, -1) ? cur : null;
+
+            // 6. Peak volume (best single day)
+            let peak = { count: 0, date: "" };
+            for (const [d, c] of Object.entries(history)) {
+              if (c > peak.count) peak = { count: c, date: d };
+            }
+
+            // 7. Heartbeat: only bumped once per day so we do not commit every 15 minutes
+            const lastRun = core.last_successful_run && localDate(core.last_successful_run) === today
+              ? core.last_successful_run
+              : new Date().toISOString();
+
+            const sortedHistory = {};
+            Object.keys(history).sort().reverse().forEach(k => { sortedHistory[k] = history[k]; });
+            fs.writeFileSync("./history.json", JSON.stringify(sortedHistory, null, 2) + "\n");
+
+            fs.writeFileSync("./last_played.json", JSON.stringify({
+              current_streak: active ? active.count : 0,
+              active_streak: active ? { start_date: active.start_date, end_date: active.end_date } : null,
+              longest_streak: longest,
+              peak_volume: peak,
+              latest_track: core.latest_track || null,
+              last_successful_run: lastRun,
+              tracked_timestamps: trackedTimestamps
+            }, null, 2) + "\n");
+
+            console.log(`Done. New plays: ${newPlays}. Current streak: ${active ? active.count : 0}.`);
           }
 
-          run();
+          run().catch(err => { console.error("Error updating tracker:", err); process.exit(1); });
           '
 
       - name: Commit and push changes
@@ -219,4 +175,4 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           git add last_played.json history.json
-          git diff-index --quiet HEAD || (git commit -m "Update streak stats & history [skip ci]" && git push)
+          git diff --cached --quiet || (git commit -m "Update streak stats & history [skip ci]" && git push)
