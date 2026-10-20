@@ -1,8 +1,8 @@
 {
-  "current_streak": 1,
+  "current_streak": 2,
   "active_streak": {
     "start_date": "2026-10-19",
-    "end_date": "2026-10-19"
+    "end_date": "2026-10-20"
   },
   "longest_streak": {
     "count": 4,
@@ -14,15 +14,19 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-19T21:11:35.686Z",
-    "track_name": "Focu 'Ranni",
+    "timestamp": "2026-10-20T16:15:05.603Z",
+    "track_name": "Sauvignon Blanc",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/3aIGNjFJPjrGpe24OFMSUH",
+    "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "last_successful_run": "2026-10-19T22:00:54.584Z",
   "tracked_timestamps": [
+    "2026-10-20T16:15:05.603Z",
+    "2026-10-20T16:14:12.761Z",
+    "2026-10-20T16:12:23.103Z",
+    "2026-10-20T16:09:04.105Z",
     "2026-10-19T21:11:35.686Z",
     "2026-10-19T21:08:45.116Z",
     "2026-10-19T21:04:26.515Z",
