@@ -14,15 +14,19 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-21T06:57:16.010Z",
-    "track_name": "BESO",
-    "album_name": "RR",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b2734d6cf0d0d5e32ca4fa3a59e1",
-    "spotify_url": "https://open.spotify.com/track/609E1JCInJncactoMmkDon",
-    "album_url": "https://open.spotify.com/album/50uChhk7AKkzDKytDixjYW"
+    "timestamp": "2026-10-21T07:10:16.382Z",
+    "track_name": "New Woman (feat. ROSALÍA)",
+    "album_name": "Alter Ego",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b27395ce3d848f4e452489d4a12c",
+    "spotify_url": "https://open.spotify.com/track/5UmfBGfRJgjZ8CdhgffabQ",
+    "album_url": "https://open.spotify.com/album/5eoWRkeplmcCL97afSMJVm"
   },
   "last_successful_run": "2026-10-20T22:00:49.058Z",
   "tracked_timestamps": [
+    "2026-10-21T07:10:16.382Z",
+    "2026-10-21T07:07:16.075Z",
+    "2026-10-21T07:03:54.483Z",
+    "2026-10-21T07:00:55.117Z",
     "2026-10-21T06:57:16.010Z",
     "2026-10-21T06:53:45.838Z",
     "2026-10-21T06:50:57.456Z",
