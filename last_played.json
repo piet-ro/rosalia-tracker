@@ -1,8 +1,8 @@
 {
-  "current_streak": 2,
+  "current_streak": 3,
   "active_streak": {
     "start_date": "2026-10-19",
-    "end_date": "2026-10-20"
+    "end_date": "2026-10-21"
   },
   "longest_streak": {
     "count": 4,
@@ -14,15 +14,18 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-20T16:15:05.603Z",
-    "track_name": "Sauvignon Blanc",
-    "album_name": "LUX (Complete Works)",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6",
-    "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
+    "timestamp": "2026-10-21T06:57:16.010Z",
+    "track_name": "BESO",
+    "album_name": "RR",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b2734d6cf0d0d5e32ca4fa3a59e1",
+    "spotify_url": "https://open.spotify.com/track/609E1JCInJncactoMmkDon",
+    "album_url": "https://open.spotify.com/album/50uChhk7AKkzDKytDixjYW"
   },
   "last_successful_run": "2026-10-20T22:00:49.058Z",
   "tracked_timestamps": [
+    "2026-10-21T06:57:16.010Z",
+    "2026-10-21T06:53:45.838Z",
+    "2026-10-21T06:50:57.456Z",
     "2026-10-20T16:15:05.603Z",
     "2026-10-20T16:14:12.761Z",
     "2026-10-20T16:12:23.103Z",
