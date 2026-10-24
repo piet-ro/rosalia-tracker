@@ -30,9 +30,10 @@ const DEG = Math.PI / 180;
 const SEG = 6, HALF = SEG / 2;
 const MAX_BEND = 28;
 const STEP = 1 / 240;
-// Rebuilding the pile: covers drop in from above the screen, bottom one first, POP_GAP apart.
-// Each falls for DROP_FALL, lands on the cover below, then turns into its resting angle over DROP_SETTLE.
-const POP_GAP = 0.02376, DROP_FALL = 0.45, DROP_SETTLE = 0.45, POP_TIME = DROP_FALL + DROP_SETTLE;
+// Rebuilding the pile: covers drop onto it from in front of the screen, bottom one first, POP_GAP apart,
+// so each appears large and scales down as it falls. It lands on the cover below after DROP_FALL, then turns
+// into its resting angle over DROP_SETTLE.
+const POP_GAP = 0.02376, DROP_FALL = 0.45, DROP_SETTLE = 0.45, POP_TIME = DROP_FALL + DROP_SETTLE, DROP_HEIGHT = 380;
 const LIGHT = (() => { const l = [-0.35, -0.6, 0.72]; const m = Math.hypot(...l); return l.map(v => v / m); })();
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -425,10 +426,11 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     const n = cards.length;
     cards.forEach((c, k) => {  // pop-in cascade from the bottom up
       const depth = n - 1 - k;
-      // waiting above the screen, already in its own layer of the pile, with a slight extra turn to settle out of
-      c.dropFrom = -(anchor().y + P.size);
+      // hidden until its turn, then it starts close to the viewer, with a slight extra turn to settle out of
+      c.dropFrom = DROP_HEIGHT;
       c.restRz = c.rz; c.landRz = c.rz + rand(4, 9) * (Math.random() < 0.5 ? -1 : 1);
-      c.sy = c.y = c.dropFrom; c.sz = c.z = stackZ(depth); c.x = 0; c.rz = c.landRz;
+      c.sy = c.y = stackY(depth); c.sz = c.z = stackZ(depth) + DROP_HEIGHT; c.x = 0; c.rz = c.landRz;
+      c.el.style.visibility = 'hidden';
       c.R = eulerMatrix(0, 0, c.rz);
       c.s = 1; c.sv = 0; c.delay = k * POP_GAP; c.pop = 0;
     });
@@ -559,20 +561,16 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     c.bumped = true;
   }
 
-  // The attention nudge: one corner of the top cover peels up a little and falls back into place.
-  // The cover hinges on the opposite corner, so nothing dips into the pile. Corners take turns at random.
-  const CORNERS = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
-  let lastCorner = -1;
+  // The attention nudge is a feedforward: the top cover starts the launch peel, slowly, tilting its leading
+  // edge up and leaning a little toward a launch direction, then eases straight back into place.
   function nudgeTop() {
     const c = cards[cards.length - 1];
-    if (!c || c.delay > 0 || c.pop !== null) return;
-    let k;
-    do { k = Math.floor(Math.random() * 4); } while (k === lastCorner);
-    lastCorner = k;
-    c.lift = { t: 0, dur: rand(1.1, 1.4), corner: CORNERS[k] };
+    if (!c || c.delay > 0 || c.pop !== null || c.lift) return;
+    const ang = (-90 + rand(-P.spread / 2, P.spread / 2)) * DEG;
+    c.lift = { t: 0, dur: rand(1.1, 1.4), dir: [Math.cos(ang), Math.sin(ang)] };
   }
 
-  // How far the corner is lifted (0..1) over the nudge: it curls up smoothly, then settles back down,
+  // How far into the peel the nudge is (0..1): it rises smoothly, then settles back down,
   // quick at first and slowing as it lands (ease-out).
   function liftAmount(c, dt) {
     const L = c.lift;
@@ -600,19 +598,21 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       if (c.delay > 0) { c.delay -= dt; return; }
       const depth = n - 1 - k;
       if (c.pop !== null) {
-        // falls in from above like a dropped card, then turns softly into its resting angle on the pile
+        // drops onto the pile from in front of the screen, so it shrinks to size as it falls, speeding up,
+        // then turns softly into its resting angle
+        if (c.pop === 0) c.el.style.visibility = '';
         c.pop += dt;
-        const target = stackY(depth);
+        const target = stackZ(depth);
+        c.sy = stackY(depth);
         if (c.pop < DROP_FALL) {
           const v = c.pop / DROP_FALL;
-          c.sy = c.dropFrom + (target - c.dropFrom) * v * v;  // speeding up as it falls
+          c.sz = target + c.dropFrom * (1 - v * v);
         } else {
           const v = Math.min(1, (c.pop - DROP_FALL) / DROP_SETTLE);
-          c.sy = target;
+          c.sz = target;
           c.rz = c.landRz + (c.restRz - c.landRz) * (1 - Math.pow(1 - v, 3));
           if (v >= 1) { c.pop = null; c.rz = c.restRz; c.svy = c.svz = 0; }
         }
-        c.sz = stackZ(depth);
         c.x = 0; c.y = c.sy; c.z = c.sz;
         c.R = eulerMatrix(0, 0, c.rz);
         return;
@@ -625,14 +625,18 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       c.x = 0; c.y = c.sy; c.z = c.sz; c.rx = c.srx; c.ry = 0;
       c.R = eulerMatrix(c.rx, c.ry, c.rz);
       if (c.lift) {
-        const [cx, cy] = c.lift.corner, f = liftAmount(c, dt);
-        // tilt around the in-card axis perpendicular to the corner, then lift by half the diagonal's drop,
-        // so the opposite corner stays put on the pile; the half holding the corner curls a little with it
-        const a = f * P.nudge * 9 * DEG;
-        c.R = mulMM(c.R, axisMatrix([cy / Math.SQRT2, -cx / Math.SQRT2, 0], a));
-        c.z += (P.size / Math.SQRT2) * Math.sin(a);
-        const curl = P.hardness >= 0.999 ? 0 : f * P.nudge * 7 * (1 - P.hardness * 0.5);
-        c.bt = cy < 0 ? curl : 0; c.bb = cy > 0 ? curl : 0; c.btv = c.bbv = 0;
+        const [dx, dy] = c.lift.dir, f = liftAmount(c, dt);
+        // same moves as the start of the peel: the leading edge tips toward you while the cover hinges on its
+        // trailing edge (its lowest point stays on the pile), nudges a few px toward the launch direction
+        // and squashes slightly, as if gathering itself to fly
+        const tilt = f * P.nudge * 12;
+        c.rx = dy * tilt; c.ry = -dx * tilt;
+        c.R = eulerMatrix(c.rx, c.ry, c.rz);
+        const h = [P.size / 2, P.size / 2, P.thick / 2], R = c.R;
+        const reach = h[0] * Math.abs(R[2][0]) + h[1] * Math.abs(R[2][1]) + h[2] * Math.abs(R[2][2]);
+        c.z += reach - h[2];
+        c.x += dx * 5 * f; c.y += dy * 5 * f;
+        c.s = 1 - 0.012 * P.squash * f;
       }
     });
   }
