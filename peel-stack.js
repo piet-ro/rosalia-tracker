@@ -99,25 +99,39 @@ function spring(pos, vel, target, k, damp, dt) {
 // ---------- collision: oriented boxes ----------
 // Returns { n (A to B), depth } or null.
 function satBoxes(A, B) {
-  const T = sub(B.p, A.p);
-  const axesA = [0, 1, 2].map(i => col(A.R, i)), axesB = [0, 1, 2].map(i => col(B.R, i));
-  const cands = [...axesA, ...axesB];
-  for (const a of axesA) for (const b of axesB) {
-    const c = cross(a, b), m = Math.hypot(...c);
-    if (m > 1e-3) cands.push(scale(c, 1 / m));
+  // 15 candidate axes: 3 face normals of each box and the 9 edge-edge cross products. Written without
+  // temporary arrays because it runs for every close pair, 240 times a second.
+  const RA = A.R, RB = B.R, hA = A.h, hB = B.h;
+  const t0 = B.p[0] - A.p[0], t1 = B.p[1] - A.p[1], t2 = B.p[2] - A.p[2];
+  let bestRank = Infinity, depth = 0, n0 = 0, n1 = 0, n2 = 0;
+  for (let k = 0; k < 15; k++) {
+    let l0, l1, l2;
+    if (k < 3) { l0 = RA[0][k]; l1 = RA[1][k]; l2 = RA[2][k]; }
+    else if (k < 6) { l0 = RB[0][k - 3]; l1 = RB[1][k - 3]; l2 = RB[2][k - 3]; }
+    else {
+      const i = ((k - 6) / 3) | 0, j = (k - 6) % 3;
+      const a0 = RA[0][i], a1 = RA[1][i], a2 = RA[2][i], b0 = RB[0][j], b1 = RB[1][j], b2 = RB[2][j];
+      l0 = a1 * b2 - a2 * b1; l1 = a2 * b0 - a0 * b2; l2 = a0 * b1 - a1 * b0;
+      const m = Math.sqrt(l0 * l0 + l1 * l1 + l2 * l2);
+      if (m < 1e-3) continue;
+      l0 /= m; l1 /= m; l2 /= m;
+    }
+    const rA = hA[0] * Math.abs(RA[0][0] * l0 + RA[1][0] * l1 + RA[2][0] * l2) +
+      hA[1] * Math.abs(RA[0][1] * l0 + RA[1][1] * l1 + RA[2][1] * l2) +
+      hA[2] * Math.abs(RA[0][2] * l0 + RA[1][2] * l1 + RA[2][2] * l2);
+    const rB = hB[0] * Math.abs(RB[0][0] * l0 + RB[1][0] * l1 + RB[2][0] * l2) +
+      hB[1] * Math.abs(RB[0][1] * l0 + RB[1][1] * l1 + RB[2][1] * l2) +
+      hB[2] * Math.abs(RB[0][2] * l0 + RB[1][2] * l1 + RB[2][2] * l2);
+    const d = t0 * l0 + t1 * l1 + t2 * l2;
+    const overlap = rA + rB - Math.abs(d);
+    if (overlap <= 0) return null;
+    const rank = k < 6 ? overlap : overlap * 1.05 + 0.1;  // prefer face contacts for stability
+    if (rank < bestRank) {
+      const sgn = d < 0 ? -1 : 1;
+      bestRank = rank; depth = overlap; n0 = l0 * sgn; n1 = l1 * sgn; n2 = l2 * sgn;
+    }
   }
-  let best = null;
-  cands.forEach((L, idx) => {
-    const rA = A.h[0] * Math.abs(dot(axesA[0], L)) + A.h[1] * Math.abs(dot(axesA[1], L)) + A.h[2] * Math.abs(dot(axesA[2], L));
-    const rB = B.h[0] * Math.abs(dot(axesB[0], L)) + B.h[1] * Math.abs(dot(axesB[1], L)) + B.h[2] * Math.abs(dot(axesB[2], L));
-    const d = dot(T, L);
-    let overlap = rA + rB - Math.abs(d);
-    if (best === false) return;
-    if (overlap <= 0) { best = false; return; }
-    const ranked = idx < 6 ? overlap : overlap * 1.05 + 0.1;  // prefer face contacts for stability
-    if (!best || ranked < best.ranked) best = { ranked, depth: overlap, n: d < 0 ? scale(L, -1) : L };
-  });
-  return best || null;
+  return { depth, n: [n0, n1, n2] };
 }
 
 function pileContact(A, pile) {
@@ -205,7 +219,8 @@ function blurredCopy(url, amount) {
         } catch (e) { resolve(null); }
       };
       img.onerror = () => resolve(null);
-      img.src = url;
+      // a separate URL so the browser cannot reuse a copy it fetched without CORS for the plain <img>
+      img.src = url.startsWith('data:') ? url : url + (url.includes('?') ? '&' : '?') + 'blur';
     }));
   }
   return blurCache.get(key);
@@ -236,7 +251,6 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     .ps-seg { left: 0; }
     .ps-face { position: absolute; inset: 0; backface-visibility: hidden; overflow: hidden; background-repeat: no-repeat; }
     .ps-shade, .ps-spec { position: absolute; inset: 0; pointer-events: none; }
-    .ps-shade { background: #000; opacity: 0; }
     .ps-spec { background-image: linear-gradient(115deg, transparent 42%, rgba(255,255,255,0.95) 50%, transparent 58%); background-repeat: no-repeat; opacity: 0; }
     .ps-edge { position: absolute; backface-visibility: hidden; }`;
   stage.appendChild(style);
@@ -272,13 +286,16 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
         const seg = mk(parent, 'ps-seg', `width:${w}px;height:${hS}px;${pos};transform-origin:50% ${up ? '100%' : '0%'}`);
         const rad = outer ? (up ? `${r}px ${r}px 0 0` : `0 0 ${r}px ${r}px`) : '0';
         // faces overlap the next strip by 1.5px so no seam shows between strips
-        const bg = `bottom:-1.5px;background-size:${w}px ${w}px;background-position:0 ${-segTop}px;border-radius:${rad}`;
+        // a 1px transparent margin on the outer sides lets the GPU smooth the card's silhouette when it is tilted
+        const padTop = outer && up ? 1 : 0, padBot = outer && !up ? 1 : 0;
+        const bg = `bottom:-1.5px;padding:${padTop}px 1px ${padBot}px;background-clip:content-box;background-size:${w}px ${w}px;background-position:0 ${-segTop}px;border-radius:${rad}`;
+        const ov = `left:1px;right:1px;top:${padTop}px;bottom:${padBot}px`;
         const f = mk(seg, 'ps-face', `${bg};background-image:url("${front}");transform:translateZ(${t / 2}px)`);
-        const fShade = mk(f, 'ps-shade', '');
-        const fSpec = mk(f, 'ps-spec', `background-size:${2 * w}px ${2 * w}px`);
+        const fShade = mk(f, 'ps-shade', ov);
+        const fSpec = mk(f, 'ps-spec', `${ov};background-size:${2 * w}px ${2 * w}px`);
         const b = mk(seg, 'ps-face', `${bg};background-image:url("${back || front}");transform:rotateY(180deg) translateZ(${t / 2}px)`);
         c.backs.push(b);
-        const bShade = mk(b, 'ps-shade', '');
+        const bShade = mk(b, 'ps-shade', ov);
         if (t > 0) {
           const eTop = outer && up ? r : 0, eH = hS - (outer ? r : 0);
           // edges show the colours of the picture next to them, so the thickness never reads as a white or black band
@@ -345,6 +362,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       R: eulerMatrix(0, 0, 0), h: [w / 2, w / 2 + stackY(n - 1) / 2, (zTop - zBot) / 2],
       invMass: 0, invI: [0, 0, 0], card: null
     };
+    stackBody.rad = Math.hypot(...stackBody.h);
     // the pile moves as it settles; collisions need that motion to knock covers out of its way
     stackBody.front = zTop;
     if (prev && dt > 0) stackBody.v = [0, 0, (zTop - prev.front) / dt];
@@ -370,10 +388,11 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   function tap() {
     if (onTopTap) onTopTap();
     if (seq) return;
-    if (cards.length <= 1) { restack(); return; }
+    if (!cards.length) { restack(); return; }
     if (onePerTap) { if (launchClear()) launchTop(); return; }
-    // the top cover peels as the wind-up, then the rest follow in one run that starts as a bang and slows to a trickle
-    const rest = cards.length - 2;
+    // the top cover peels as the wind-up, then the rest follow in one run that starts as a bang and slows to a trickle.
+    // Every cover leaves, so nothing older sits under the newest cover when the pile builds back up.
+    const rest = cards.length - 1;
     launchTop();
     const times = Array.from({ length: rest }, (_, i) => P.burstLength * Math.pow(rest > 1 ? i / (rest - 1) : 0, P.burstEase));
     seq = { t: -P.peel, times, next: 0 };
@@ -445,7 +464,8 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   // while it peels, the card follows its scripted lift as a solid that cannot be pushed,
   // so covers still in the way get shoved aside instead of overlapping it
   function holdBody(c) {
-    c.body = { p: [c.x, c.y, c.z], v: [0, 0, 0], w: [0, 0, 0], R: c.R, h: boxHalf(), invMass: 0, invI: [0, 0, 0], card: c };
+    const h = boxHalf();
+    c.body = { p: [c.x, c.y, c.z], v: [0, 0, 0], w: [0, 0, 0], R: c.R, h, rad: Math.hypot(...h), invMass: 0, invI: [0, 0, 0], card: c };
   }
 
   function releaseBody(c, vz = P.zKick * rand(0.15, 1)) {
@@ -557,7 +577,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       for (let bI = a + 1; bI < all.length; bI++) {
         const A = all[a], B = all[bI];
         if (A.invMass === 0 && B.invMass === 0) continue;
-        const reach = Math.hypot(...A.h) + Math.hypot(...B.h);
+        const reach = A.rad + B.rad;
         const d = sub(B.p, A.p);
         if (dot(d, d) > reach * reach) continue;
         let hit = satBoxes(A, B);
@@ -599,28 +619,50 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   }
 
   // ----- render -----
-  function render(c) {
+  // Only touch the DOM when a value actually changes: a resting pile then costs nothing per frame.
+  function put(el, prop, v) {
+    if (el['_' + prop] === v) return;
+    el['_' + prop] = v;
+    el.style[prop] = v;
+  }
+
+  // light falling on a surface whose normal is tilted by phi (radians) inside the card
+  function lightAt(R, phi) {
+    const sp = Math.sin(phi), cp = Math.cos(phi);
+    const n0 = -R[0][1] * sp + R[0][2] * cp, n1 = -R[1][1] * sp + R[1][2] * cp, n2 = -R[2][1] * sp + R[2][2] * cp;
+    const lit = n0 * LIGHT[0] + n1 * LIGHT[1] + n2 * LIGHT[2];
+    const spec = Math.pow(Math.max(0, 2 * lit * n2 - LIGHT[2]), P.shininess);  // reflected light toward the viewer
+    // rounded to 1/40 steps: finer than the eye can tell apart, coarse enough that most frames need no repaint
+    const q = v => (Math.round(clamp(v, 0, 0.6) * 40) / 40).toFixed(3);
+    return { front: q(0.7 - lit * 0.75 - spec * 0.3), back: q(0.7 + lit * 0.75), spec };
+  }
+
+  const f4 = v => (Math.round(v * 10000) / 10000).toString();
+  let frameNo = 0;
+  function render(c, k) {
     const R = c.R;
     // squash never grows the card past its collision box; below 0.8 it is the pop-in, so scale evenly
     const popping = c.s < 0.8;
     const sx = popping ? c.s : Math.min(c.s, 1.03), sy = popping ? c.s : Math.min(2 - c.s, 1.03);
-    c.el.style.transform =
-      `matrix3d(${R[0][0]},${R[1][0]},${R[2][0]},0,${R[0][1]},${R[1][1]},${R[2][1]},0,${R[0][2]},${R[1][2]},${R[2][2]},0,${c.x.toFixed(2)},${c.y.toFixed(2)},${c.z.toFixed(2)},1) scale(${sx.toFixed(4)},${sy.toFixed(4)})`;
-    const nc = col(R, 2);
-    const w = P.size, gx = (-nc[0] * 0.7 + nc[1] * 0.35) * w;
+    put(c.el, 'transform',
+      `matrix3d(${f4(R[0][0])},${f4(R[1][0])},${f4(R[2][0])},0,${f4(R[0][1])},${f4(R[1][1])},${f4(R[2][1])},0,${f4(R[0][2])},${f4(R[1][2])},${f4(R[2][2])},0,${c.x.toFixed(1)},${c.y.toFixed(1)},${c.z.toFixed(1)},1) scale(${sx.toFixed(3)},${sy.toFixed(3)})`);
+    for (const s of c.segs) put(s.el, 'transform', `rotateX(${((s.up ? -c.bt : c.bb) * (s.k === 0 ? 0.5 : 1)).toFixed(2)}deg)`);
+    // Repainting the light is the costly part, so each cover refreshes it every other frame, alternating
+    // between covers; the shape still moves every frame. A resting cover is refreshed whenever it changes.
+    if (c.state !== 'stack' && (frameNo + k) % 2) return;
+    const w = P.size, gx = Math.round((-R[0][2] * 0.7 + R[1][2] * 0.35) * w / 3) * 3;
+    // Shading is worked out at the strip boundaries and blended across each strip,
+    // so a bend reads as one smooth curve instead of bands with dark lines between them.
+    const edgeAngle = (up, j) => (j === 0 ? (c.bb - c.bt) / 4 : (up ? -c.bt : c.bb) * j) * DEG;
+    const lights = { up: [], down: [] };
+    for (const up of [true, false]) for (let j = 0; j <= HALF; j++) lights[up ? 'up' : 'down'].push(lightAt(R, edgeAngle(up, j)));
     for (const s of c.segs) {
-      const joint = s.k === 0 ? 0.5 : 1;
-      const b = s.up ? -c.bt * joint : c.bb * joint;
-      s.el.style.transform = `rotateX(${b.toFixed(2)}deg)`;
-      const phi = (s.up ? -c.bt * (0.5 + s.k) : c.bb * (0.5 + s.k)) * DEG;
-      const n = mulMV(R, [0, -Math.sin(phi), Math.cos(phi)]);
-      const lit = dot(n, LIGHT);
-      const rz2 = 2 * lit * n[2] - LIGHT[2];  // reflected light toward the viewer
-      const spec = Math.pow(Math.max(0, rz2), P.shininess);
-      s.fShade.style.opacity = clamp(0.7 - lit * 0.75 - spec * 0.3, 0, 0.6).toFixed(3);
-      s.bShade.style.opacity = clamp(0.7 + lit * 0.75, 0, 0.6).toFixed(3);
-      s.fSpec.style.opacity = (P.reflection * (0.25 + 0.75 * spec)).toFixed(3);
-      s.fSpec.style.backgroundPosition = `${(-w / 2 + gx).toFixed(1)}px ${(-w / 2 - s.segTop).toFixed(1)}px`;
+      const L = lights[s.up ? 'up' : 'down'], inner = L[s.k], outer = L[s.k + 1];
+      const dir = s.up ? 'to top' : 'to bottom';
+      put(s.fShade, 'backgroundImage', `linear-gradient(${dir}, rgba(0,0,0,${inner.front}), rgba(0,0,0,${outer.front}))`);
+      put(s.bShade, 'backgroundImage', `linear-gradient(${dir}, rgba(0,0,0,${inner.back}), rgba(0,0,0,${outer.back}))`);
+      put(s.fSpec, 'opacity', (Math.round(P.reflection * (0.25 + 0.75 * (inner.spec + outer.spec) / 2) * 40) / 40).toFixed(3));
+      put(s.fSpec, 'backgroundPosition', `${-w / 2 + gx}px ${-w / 2 - s.segTop}px`);
     }
   }
 
@@ -630,8 +672,8 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     const dt = Math.min(0.033, (now - last) / 1000) * timeScale;
     last = now;
     const { x: ax, y: ay } = anchor();
-    world.style.transform = `translate3d(${ax}px,${ay}px,0)`;
-    stage.style.perspectiveOrigin = `${ax}px ${ay}px`;
+    put(world, 'transform', `translate3d(${Math.round(ax)}px,${Math.round(ay)}px,0)`);
+    put(stage, 'perspectiveOrigin', `${Math.round(ax)}px ${Math.round(ay)}px`);
     stepStack(dt);
     charge += ((charging ? 1 : 0) - charge) * (1 - Math.exp(-dt * (charging ? 14 : 5)));
     pileShift *= Math.exp(-dt * 5);
@@ -651,6 +693,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       nextNudge -= dt;
       if (nextNudge <= 0) { nudgeTop(); nextNudge = P.nudgeEvery * rand(0.7, 1.3); }
     } else nextNudge = Math.max(nextNudge, 2);
+    frameNo++;
     cards.forEach(render);
     flying.forEach(render);
     requestAnimationFrame(frame);
