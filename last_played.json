@@ -14,12 +14,12 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-24T21:15:16.083Z",
-    "track_name": "Memória",
-    "album_name": "LUX",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
-    "spotify_url": "https://open.spotify.com/track/4ukpy7Q6QmrB7ttNMSAcG2",
-    "album_url": "https://open.spotify.com/album/3SUEJULSGgBDG1j4GQhfYY"
+    "timestamp": "2026-10-24T21:27:24.042Z",
+    "track_name": "BULERÍAS",
+    "album_name": "MOTOMAMI",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b273ac8367a27c0eb7195dc3a58d",
+    "spotify_url": "https://open.spotify.com/track/5tmrMIajDQRBcJQPaoAGdk",
+    "album_url": "https://open.spotify.com/album/6jbtHi5R0jMXoliU2OS0lo"
   },
   "streak_tracks": [
     {
@@ -168,10 +168,42 @@
       "album_name": "LUX",
       "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
       "spotify_url": "https://open.spotify.com/track/4ukpy7Q6QmrB7ttNMSAcG2"
+    },
+    {
+      "played_at": "2026-10-24T21:18:24.198Z",
+      "track_name": "LA FAMA",
+      "album_name": "MOTOMAMI +",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
+      "spotify_url": "https://open.spotify.com/track/77VjuBo3CJbamC3gzaUzK9"
+    },
+    {
+      "played_at": "2026-10-24T21:20:44.957Z",
+      "track_name": "Sexo, Violencia y Llantas",
+      "album_name": "LUX",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+      "spotify_url": "https://open.spotify.com/track/1dp0MRcrgCxEESP1LrF2yA"
+    },
+    {
+      "played_at": "2026-10-24T21:24:48.203Z",
+      "track_name": "Divinize",
+      "album_name": "LUX",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+      "spotify_url": "https://open.spotify.com/track/2JH26hQtnqWUNnQET8o2N1"
+    },
+    {
+      "played_at": "2026-10-24T21:27:24.042Z",
+      "track_name": "BULERÍAS",
+      "album_name": "MOTOMAMI",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273ac8367a27c0eb7195dc3a58d",
+      "spotify_url": "https://open.spotify.com/track/5tmrMIajDQRBcJQPaoAGdk"
     }
   ],
   "last_successful_run": "2026-10-23T22:00:50.476Z",
   "tracked_timestamps": [
+    "2026-10-24T21:27:24.042Z",
+    "2026-10-24T21:24:48.203Z",
+    "2026-10-24T21:20:44.957Z",
+    "2026-10-24T21:18:24.198Z",
     "2026-10-24T21:15:16.083Z",
     "2026-10-24T21:11:30.714Z",
     "2026-10-24T21:08:09.023Z",
