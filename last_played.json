@@ -14,12 +14,12 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-24T17:32:02.386Z",
-    "track_name": "La Rumba Del Perdón",
-    "album_name": "LUX (Complete Works)",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/3MTrgQB5BtBzbW7pUCHnUo",
-    "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
+    "timestamp": "2026-10-24T21:15:16.083Z",
+    "track_name": "Memória",
+    "album_name": "LUX",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+    "spotify_url": "https://open.spotify.com/track/4ukpy7Q6QmrB7ttNMSAcG2",
+    "album_url": "https://open.spotify.com/album/3SUEJULSGgBDG1j4GQhfYY"
   },
   "streak_tracks": [
     {
@@ -140,10 +140,42 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
       "spotify_url": "https://open.spotify.com/track/3MTrgQB5BtBzbW7pUCHnUo"
+    },
+    {
+      "played_at": "2026-10-24T21:05:47.091Z",
+      "track_name": "CUUUUuuuuuute",
+      "album_name": "MOTOMAMI +",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
+      "spotify_url": "https://open.spotify.com/track/3lf72csq4o0yPNo6XFkwZO"
+    },
+    {
+      "played_at": "2026-10-24T21:08:09.023Z",
+      "track_name": "CUUUUuuuuuute",
+      "album_name": "MOTOMAMI +",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
+      "spotify_url": "https://open.spotify.com/track/3lf72csq4o0yPNo6XFkwZO"
+    },
+    {
+      "played_at": "2026-10-24T21:11:30.714Z",
+      "track_name": "SAKURA",
+      "album_name": "MOTOMAMI",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273ac8367a27c0eb7195dc3a58d",
+      "spotify_url": "https://open.spotify.com/track/15pRGUlhmCxtewBs42ui1N"
+    },
+    {
+      "played_at": "2026-10-24T21:15:16.083Z",
+      "track_name": "Memória",
+      "album_name": "LUX",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+      "spotify_url": "https://open.spotify.com/track/4ukpy7Q6QmrB7ttNMSAcG2"
     }
   ],
   "last_successful_run": "2026-10-23T22:00:50.476Z",
   "tracked_timestamps": [
+    "2026-10-24T21:15:16.083Z",
+    "2026-10-24T21:11:30.714Z",
+    "2026-10-24T21:08:09.023Z",
+    "2026-10-24T21:05:47.091Z",
     "2026-10-24T17:32:02.386Z",
     "2026-10-24T17:20:48.254Z",
     "2026-10-24T17:17:35.492Z",
