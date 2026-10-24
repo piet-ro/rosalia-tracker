@@ -31,7 +31,7 @@ const SEG = 6, HALF = SEG / 2;
 const MAX_BEND = 28;
 const STEP = 1 / 240;
 // rebuilding the pile: each cover pops in this long after the one below it, and takes POP_TIME to settle
-const POP_GAP = 0.0216, POP_TIME = 0.5;
+const POP_GAP = 0.0216, POP_TIME = 0.95;
 const LIGHT = (() => { const l = [-0.35, -0.6, 0.72]; const m = Math.hypot(...l); return l.map(v => v / m); })();
 
 const rand = (a, b) => a + Math.random() * (b - a);
