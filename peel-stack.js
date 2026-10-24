@@ -22,8 +22,8 @@ export const DEFAULTS = {
   bounce: 0.3, friction: 0.3,
   burstLength: 2.6, burstEase: 1.5, endPower: 0.4,
   startPause: 0.7, refillPause: 2,
-  dropHeight: 330, dropFall: 0.33, dropGap: 0.14, dropMax: 4, dropTurn: 15, dropSettle: 0.77,
-  dropShadow: 0.72, dropBlur: 0, dropTilt: 11, dropDrift: 33, dropImpact: 1.25,
+  dropHeight: 80, dropFall: 0.21, dropGap: 0.08, dropMax: 2.5, dropTurn: 18.5, dropSettle: 0.96,
+  dropShadow: 0.87, dropBlur: 0.32, dropTilt: 7.5, dropDrift: 33, dropImpact: 1.85,
   nudge: 0.5, nudgeLift: 40, nudgeTurn: 10, nudgeTime: 1.3, nudgeEvery: 7
 };
 
