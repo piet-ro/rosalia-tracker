@@ -20,12 +20,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-
+      # No setup-node step: the runner already ships a Node version with built-in fetch.
       - name: Fetch Spotify Data and Update Stats
+        id: tracker
         env:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
@@ -58,8 +55,39 @@ jobs:
             return d.toISOString().slice(0, 10);
           }
 
+          // Tell the commit step whether there is anything to commit
+          function setOutput(name, value) {
+            if (process.env.GITHUB_OUTPUT) fs.appendFileSync(process.env.GITHUB_OUTPUT, `${name}=${value}\n`);
+          }
+
+          const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+          // fetch + JSON parse, retried on transient failures: network errors, 429, 5xx,
+          // or an empty/invalid body (Spotify occasionally returns these for a moment).
+          // Other errors (bad token, bad request) are returned as-is so the caller fails fast.
+          const RETRY_DELAYS = [5000, 15000];
+          async function fetchJson(label, url, options) {
+            for (let attempt = 1; ; attempt++) {
+              let problem;
+              try {
+                const res = await fetch(url, options);
+                const text = await res.text();
+                let data = null;
+                try { data = text ? JSON.parse(text) : null; } catch (e) {}
+                const transient = res.status === 429 || res.status >= 500 || (res.ok && data === null && res.status !== 204);
+                if (!transient) return { res, data: data || {} };
+                problem = `HTTP ${res.status}, body: ${text.slice(0, 200) || "(empty)"}`;
+              } catch (err) {
+                problem = `network error: ${err.message}`;
+              }
+              if (attempt > RETRY_DELAYS.length) throw new Error(`${label} failed after ${attempt} attempts (${problem})`);
+              console.log(`${label} attempt ${attempt} failed (${problem}), retrying in ${RETRY_DELAYS[attempt - 1] / 1000}s`);
+              await sleep(RETRY_DELAYS[attempt - 1]);
+            }
+          }
+
           async function getAccessToken() {
-            const res = await fetch("https://accounts.spotify.com/api/token", {
+            const { res, data } = await fetchJson("Token refresh", "https://accounts.spotify.com/api/token", {
               method: "POST",
               headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
@@ -70,18 +98,16 @@ jobs:
                 refresh_token: process.env.SPOTIFY_REFRESH_TOKEN
               })
             });
-            const data = await res.json();
-            if (!res.ok || !data.access_token) throw new Error("Token refresh failed: " + JSON.stringify(data));
+            if (!res.ok || !data.access_token) throw new Error(`Token refresh failed (HTTP ${res.status}): ` + JSON.stringify(data));
             return data.access_token;
           }
 
           async function run() {
             const token = await getAccessToken();
-            const spotifyRes = await fetch("https://api.spotify.com/v1/me/player/recently-played?limit=50", {
-              headers: { "Authorization": "Bearer " + token }
-            });
-            const spotifyData = await spotifyRes.json();
-            if (!spotifyRes.ok) throw new Error("Spotify API error: " + JSON.stringify(spotifyData));
+            const { res: spotifyRes, data: spotifyData } = await fetchJson("Spotify recently-played",
+              "https://api.spotify.com/v1/me/player/recently-played?limit=50",
+              { headers: { "Authorization": "Bearer " + token } });
+            if (!spotifyRes.ok) throw new Error(`Spotify API error (HTTP ${spotifyRes.status}): ` + JSON.stringify(spotifyData));
 
             const core = readJson("./last_played.json", {});
             // history.json is the permanent record of plays per day. It is only ever
@@ -104,6 +130,18 @@ jobs:
               newPlays++;
             }
 
+            // Early exit: no new ROSALÍA plays and the heartbeat was already written today,
+            // so every derived value would come out the same. Nothing to write or commit.
+            // (The first run of each day still goes through, which also lets a streak
+            // drop to 0 after a day without plays.)
+            const today = localDate(new Date());
+            const heartbeatToday = core.last_successful_run && localDate(core.last_successful_run) === today;
+            if (newPlays === 0 && heartbeatToday) {
+              setOutput("changed", "false");
+              console.log("No new ROSALÍA plays, nothing to update.");
+              return;
+            }
+
             // 3. Latest track (only replace it with something newer)
             const newest = rosaliaItems[0];
             if (newest && (!core.latest_track || newest.played_at > core.latest_track.timestamp)) {
@@ -122,7 +160,6 @@ jobs:
 
             // 5. Streaks, computed on Europe/Rome calendar days
             const days = Object.keys(history).filter(d => history[d] > 0).sort();
-            const today = localDate(new Date());
 
             let longest = { count: 0, start_date: "", end_date: "" };
             let cur = null;
@@ -146,9 +183,7 @@ jobs:
             }
 
             // 7. Heartbeat: only bumped once per day so we do not commit every 15 minutes
-            const lastRun = core.last_successful_run && localDate(core.last_successful_run) === today
-              ? core.last_successful_run
-              : new Date().toISOString();
+            const lastRun = heartbeatToday ? core.last_successful_run : new Date().toISOString();
 
             const sortedHistory = {};
             Object.keys(history).sort().reverse().forEach(k => { sortedHistory[k] = history[k]; });
@@ -164,6 +199,7 @@ jobs:
               tracked_timestamps: trackedTimestamps
             }, null, 2) + "\n");
 
+            setOutput("changed", "true");
             console.log(`Done. New plays: ${newPlays}. Current streak: ${active ? active.count : 0}.`);
           }
 
@@ -171,6 +207,7 @@ jobs:
           '
 
       - name: Commit and push changes
+        if: steps.tracker.outputs.changed == 'true'
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"

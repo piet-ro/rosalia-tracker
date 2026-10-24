@@ -12,8 +12,9 @@ cron-job.org (every 15 min)
         ▼
 GitHub Actions: .github/workflows/tracker.yml
         │  1. refresh Spotify access token
-        │  2. fetch last 50 played tracks
+        │  2. fetch last 50 played tracks (retried on transient errors)
         │  3. keep only ROSALÍA plays, count the new ones
+        │     └─ none new and heartbeat already written today? stop here
         │  4. recompute streaks + peak day
         ▼
 last_played.json + history.json  ──(committed back to main)──►  GitHub Pages
@@ -36,7 +37,9 @@ The job runs an inline Node.js script that:
 5. Updates the latest track, current/longest streak, peak day and the daily heartbeat in `last_played.json`.
 6. Commits the two JSON files back to the repo, only if something changed.
 
-If the Spotify token or API call fails, the job fails (red in the Actions tab) and nothing is overwritten.
+**Early exit.** If there are no new ROSALÍA plays and the daily heartbeat has already been written today, the script stops after step 4 and the commit step is skipped: nothing is recomputed, written or pushed. The first run of each day always goes through, which refreshes the heartbeat and lets a broken streak drop to 0.
+
+**Retries.** Spotify sometimes returns an empty body or a 5xx/429 for a moment. Each Spotify call is retried up to 2 more times (after 5s, then 15s) and the HTTP status is logged. Other errors, such as an expired refresh token, fail straight away. If all attempts fail, the job fails (red in the Actions tab) and nothing is overwritten.
 
 ### `history.json` — the permanent record
 Plays per day, newest first:
