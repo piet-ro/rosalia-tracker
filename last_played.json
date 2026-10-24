@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-24T16:41:53.618Z",
-    "track_name": "Divinize",
+    "timestamp": "2026-10-24T16:59:08.436Z",
+    "track_name": "Mundo Nuevo",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/5Doua6JQZzfRgxMW5RWJUB",
+    "spotify_url": "https://open.spotify.com/track/1uRF6PMGde0D7uB73bni1d",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -49,10 +49,50 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
       "spotify_url": "https://open.spotify.com/track/5Doua6JQZzfRgxMW5RWJUB"
+    },
+    {
+      "played_at": "2026-10-24T16:46:02.045Z",
+      "track_name": "Porcelana",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/0LdgA1zbSnRgM29DxxYcu8"
+    },
+    {
+      "played_at": "2026-10-24T16:50:32.199Z",
+      "track_name": "Mio Cristo Piange Diamanti",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/0zJxp7ndkNCwE2zjfmnnBZ"
+    },
+    {
+      "played_at": "2026-10-24T16:53:31.713Z",
+      "track_name": "Berghain",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/6ZBJc582Szb5UGV3VDgrkh"
+    },
+    {
+      "played_at": "2026-10-24T16:56:47.589Z",
+      "track_name": "La Perla",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/3Vgk7dv0fpyHlyeTZatE31"
+    },
+    {
+      "played_at": "2026-10-24T16:59:08.436Z",
+      "track_name": "Mundo Nuevo",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/1uRF6PMGde0D7uB73bni1d"
     }
   ],
   "last_successful_run": "2026-10-23T22:00:50.476Z",
   "tracked_timestamps": [
+    "2026-10-24T16:59:08.436Z",
+    "2026-10-24T16:56:47.589Z",
+    "2026-10-24T16:53:31.713Z",
+    "2026-10-24T16:50:32.199Z",
+    "2026-10-24T16:46:02.045Z",
     "2026-10-24T16:41:53.618Z",
     "2026-10-24T16:37:49.784Z",
     "2026-10-24T16:33:59.007Z",
