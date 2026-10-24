@@ -12,18 +12,19 @@
 // covers  front images (URLs), oldest first; the last one is on top
 
 export const DEFAULTS = {
-  size: 125, thick: 2, radius: 10, stackGap: 1, jitter: 3,
-  hardness: 0.4, reflection: 0.2, shininess: 10, squash: 6,
-  peel: 0.16, peelTilt: 38,
-  power: 990, spread: 75, zKick: 400,
+  size: 125, thick: 2, radius: 12, stackGap: 0, jitter: 7.5,
+  hardness: 0.26, reflection: 0.4, shininess: 19, squash: 8,
+  backBlur: 8, glass: 0.7, frost: 0.4,
+  peel: 0.2, peelTilt: 38,
+  power: 1400, spread: 75, zKick: 400,
   gravity: 650, drag: 0.006, flutter: 320, flutterHz: 1.2, sway: 38,
   spin: 500, spinDrag: 1.8, settleSpin: 90,
-  bounce: 0.6, friction: 0.3,
-  volley: 0.6, volleyTime: 0.1, tailGap: 0.18, tailGrowth: 1.25, tailPower: 0.55,
-  nudge: 0.8, nudgeEvery: 4
+  bounce: 0.3, friction: 0.3,
+  burstLength: 2.6, burstEase: 2.8, endPower: 0.4,
+  nudge: 1.2, nudgeEvery: 4
 };
 
-const STRUCTURAL = ['size', 'thick', 'radius', 'jitter'];
+const STRUCTURAL = ['size', 'thick', 'radius', 'jitter', 'backBlur', 'glass', 'frost'];
 const DEG = Math.PI / 180;
 const SEG = 6, HALF = SEG / 2;
 const MAX_BEND = 28;
@@ -181,16 +182,33 @@ function resolve(A, B, hit, P, onHit) {
 }
 
 // ---------- images ----------
-const backCache = {};
-function defaultBack(w) {
-  if (backCache[w]) return backCache[w];
-  const cv = document.createElement('canvas'); const s = 2;
-  cv.width = cv.height = w * s;
-  const g = cv.getContext('2d'); g.scale(s, s);
-  g.fillStyle = '#2c2c2c'; g.fillRect(0, 0, w, w);
-  g.strokeStyle = '#3e3e3e'; g.lineWidth = 6;
-  for (let x = -w; x < 2 * w; x += 12) { g.beginPath(); g.moveTo(x, 0); g.lineTo(x + w, w); g.stroke(); }
-  return (backCache[w] = cv.toDataURL());
+// The back of a glass cover shows the front seen through it: the same picture, mirrored by the turn
+// and softened. The blur is baked once per image by shrinking and re-enlarging it on a canvas.
+// If the image does not allow that (no CORS), the back falls back to a CSS blur.
+const blurCache = new Map();
+function blurredCopy(url, amount) {
+  const key = url + '|' + amount;
+  if (!blurCache.has(key)) {
+    blurCache.set(key, new Promise(resolve => {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        try {
+          const out = 96, small = Math.max(2, Math.round(out / (1 + amount / 2)));
+          const a = document.createElement('canvas'); a.width = a.height = small;
+          const ga = a.getContext('2d'); ga.imageSmoothingQuality = 'high';
+          ga.drawImage(img, 0, 0, small, small);
+          const b = document.createElement('canvas'); b.width = b.height = out;
+          const gb = b.getContext('2d'); gb.imageSmoothingQuality = 'high';
+          gb.drawImage(a, 0, 0, out, out);
+          resolve(b.toDataURL('image/jpeg', 0.85));
+        } catch (e) { resolve(null); }
+      };
+      img.onerror = () => resolve(null);
+      img.src = url;
+    }));
+  }
+  return blurCache.get(key);
 }
 
 // ---------- the stack ----------
@@ -198,7 +216,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   let P = { ...DEFAULTS, ...params };
   let images = covers.slice();
   let cards = [], flying = [];
-  let timeScale = 1, onePerTap = false, burstTimer = null, charge = 0, charging = false, pileShift = 0, pileHold = 0, nextNudge = 3, alive = true, acc = 0;
+  let timeScale = 1, onePerTap = false, seq = null, charge = 0, charging = false, pileShift = 0, nextNudge = 3, alive = true, acc = 0;
   let stackBody = null;
   let maxDepth = 0;  // deepest overlap seen since the last restack, for debugging
 
@@ -233,9 +251,9 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     const root = document.createElement('div');
     root.className = 'ps-card';
     root.style.cssText = `width:${w}px;height:${w}px;left:${-mid}px;top:${-mid}px`;
-    const front = images[i], backImg = back || defaultBack(w);
+    const front = images[i];
     const c = {
-      el: root, i, segs: [],
+      el: root, i, segs: [], backs: [],
       x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: rand(-P.jitter, P.jitter),
       sy: 0, svy: 0, sz: 0, svz: 0, s: 1, sv: 0, srx: 0, svrx: 0,
       bt: 0, btv: 0, bb: 0, bbv: 0,  // bend per joint (deg) of the top and bottom halves
@@ -258,17 +276,25 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
         const f = mk(seg, 'ps-face', `${bg};background-image:url("${front}");transform:translateZ(${t / 2}px)`);
         const fShade = mk(f, 'ps-shade', '');
         const fSpec = mk(f, 'ps-spec', `background-size:${2 * w}px ${2 * w}px`);
-        const b = mk(seg, 'ps-face', `${bg};background-image:url("${backImg}");transform:rotateY(180deg) translateZ(${t / 2}px)`);
+        const b = mk(seg, 'ps-face', `${bg};background-image:url("${back || front}");transform:rotateY(180deg) translateZ(${t / 2}px)`);
+        c.backs.push(b);
         const bShade = mk(b, 'ps-shade', '');
         if (t > 0) {
           const eTop = outer && up ? r : 0, eH = hS - (outer ? r : 0);
-          mk(seg, 'ps-edge', `background:${edge};width:${t}px;height:${eH}px;left:${-t / 2}px;top:${eTop}px;transform:rotateY(-90deg)`);
-          mk(seg, 'ps-edge', `background:${edge};width:${t}px;height:${eH}px;left:${w - t / 2}px;top:${eTop}px;transform:rotateY(90deg)`);
-          if (outer) mk(seg, 'ps-edge', `background:${edge};width:${w - 2 * r}px;height:${t}px;left:${r}px;top:${up ? -t / 2 : hS - t / 2}px;transform:rotateX(${up ? 90 : -90}deg)`);
+          mk(seg, 'ps-edge', `${edgeCss(front, w, 90, 0, -segTop - eTop)};width:${t}px;height:${eH}px;left:${-t / 2}px;top:${eTop}px;transform:rotateY(-90deg)`);
+          mk(seg, 'ps-edge', `${edgeCss(front, w, 90, -(w - t), -segTop - eTop)};width:${t}px;height:${eH}px;left:${w - t / 2}px;top:${eTop}px;transform:rotateY(90deg)`);
+          if (outer) mk(seg, 'ps-edge', `${edgeCss(front, w, 180, -r, up ? 0 : -(w - t))};width:${w - 2 * r}px;height:${t}px;left:${r}px;top:${up ? -t / 2 : hS - t / 2}px;transform:rotateX(${up ? 90 : -90}deg)`);
         }
         c.segs.push({ el: seg, up, k, segTop, fShade, fSpec, bShade });
         parent = seg;
       }
+    }
+    if (!back && P.backBlur > 0) {
+      c.backs.forEach(f => { f.style.filter = `blur(${P.backBlur * 0.4}px)`; });
+      blurredCopy(front, P.backBlur).then(url => {
+        if (!url) return;  // keep the CSS blur
+        c.backs.forEach(f => { f.style.backgroundImage = `url("${url}")`; f.style.filter = ''; });
+      });
     }
     root.addEventListener('pointerdown', e => {
       if (c.state !== 'stack' || c !== cards[cards.length - 1]) return;
@@ -281,10 +307,22 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     return c;
   }
 
+  // A glass edge: the strip of picture next to it, seen through frosted glass, with light caught at both rims.
+  function edgeCss(front, w, angle, px, py) {
+    if (P.glass <= 0) return `background:${edge}`;
+    const rim = (0.15 + 0.55 * P.glass).toFixed(2), core = (0.04 + 0.12 * P.glass).toFixed(2);
+    return `background-image:linear-gradient(${angle}deg, rgba(255,255,255,${rim}), rgba(255,255,255,${core}) 50%, rgba(255,255,255,${rim})), url("${front}");` +
+      `background-size:100% 100%, ${w}px ${w}px;background-position:0 0, ${px}px ${py}px;background-repeat:no-repeat;` +
+      `filter:blur(${(P.frost * 1.5).toFixed(2)}px) saturate(1.4) brightness(1.15);opacity:${(1 - 0.3 * P.glass).toFixed(2)}`;
+  }
+
   const stackY = d => d * P.stackGap;
-  // while charging, the pile spreads out in depth like a spring loading, so blast covers start with clear space between them
+  // While a burst runs, the top few covers of the pile spread out in depth like a spring loading,
+  // so each cover leaves with clear space behind it. pileShift keeps the pile back as covers leave, then it slides forward.
+  const SPREAD = 4;
   const chargedGap = () => 2 * boxHalf()[2] + 1;
-  const stackZ = d => -d * (P.thick + 0.5 + charge * (chargedGap() - P.thick - 0.5)) - pileShift;
+  const topGap = () => P.thick + 0.5 + charge * (chargedGap() - P.thick - 0.5);
+  const stackZ = d => -(Math.min(d, SPREAD) * topGap() + Math.max(0, d - SPREAD) * (P.thick + 0.5)) - pileShift;
 
   function markTop() {
     cards.forEach((c, k) => {
@@ -315,8 +353,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   }
 
   function restack() {
-    clearTimeout(burstTimer); burstTimer = null;
-    charging = false; charge = 0; pileShift = 0; pileHold = 0;
+    seq = null; charging = false; charge = 0; pileShift = 0;
     world.innerHTML = ''; flying = []; maxDepth = 0;
     cards = images.map((_, i) => buildCard(i));
     const n = cards.length;
@@ -332,60 +369,44 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   // ----- interaction -----
   function tap() {
     if (onTopTap) onTopTap();
-    if (burstTimer) return;
+    if (seq) return;
     if (cards.length <= 1) { restack(); return; }
     if (onePerTap) { if (launchClear()) launchTop(); return; }
-    // 1. the top cover peels as the wind-up, 2. most of the pile blasts out at once,
-    // 3. the rest trickle out one by one, a little softer and slower each time
-    const blastCount = Math.min(cards.length - 2, Math.max(0, Math.round((cards.length - 1) * P.volley) - 1));
+    // the top cover peels as the wind-up, then the rest follow in one run that starts as a bang and slows to a trickle
+    const rest = cards.length - 2;
     launchTop();
-    charging = blastCount > 0;
-    burstTimer = setTimeout(() => {
-      blast(blastCount);
-      charging = false;
-      let gap = P.tailGap;
-      const step = () => {
-        if (cards.length <= 1) { burstTimer = null; return; }
-        if (!launchClear()) { burstTimer = setTimeout(step, 16); return; }
-        launchTop(gap * 0.9, P.tailPower);
-        gap *= P.tailGrowth;
-        burstTimer = setTimeout(step, (gap * 1000) / timeScale);
-      };
-      burstTimer = setTimeout(step, ((P.volleyTime + P.tailGap) * 1000) / timeScale);
-    }, (P.peel * 1000) / timeScale);
+    const times = Array.from({ length: rest }, (_, i) => P.burstLength * Math.pow(rest > 1 ? i / (rest - 1) : 0, P.burstEase));
+    seq = { t: -P.peel, times, next: 0 };
+    charging = rest > 0;
   }
 
-  // Covers in a blast leave straight from the pile without peeling. Each waits in place, as a solid,
-  // until its turn; upper covers go first and fly toward you faster, so the blast fans out in depth.
-  function blast(count) {
-    const gap = chargedGap();
-    for (let i = 0; i < count; i++) {
-      const c = cards.pop();
-      if (!c) break;
-      const ang = (-90 + rand(-P.spread * 0.65, P.spread * 0.65)) * DEG;
-      Object.assign(c, {
-        state: 'wait', t: 0, wait: i * P.volleyTime / Math.max(1, count),
-        dirX: Math.cos(ang), dirY: Math.sin(ang), v0: P.power * rand(0.9, 1.3),
-        vzOut: P.zKick * (0.5 + 0.9 * (1 - i / count)),
-        phase: rand(0, Math.PI * 2), hz: P.flutterHz * rand(0.75, 1.3)
-      });
-      c.x = 0; c.y = c.sy; c.z = -i * gap;  // exactly the charged spacing, so nothing starts overlapped
-      holdBody(c);
-      flying.push(c);
-    }
-    // the rest of the pile stays back until the blast is out of the way, then slides forward
-    pileShift = count * gap; pileHold = P.volleyTime + 0.15;
+  function stepSequence(dt) {
+    if (!seq) return;
+    seq.t += dt;
+    const last = Math.max(1, seq.times.length - 1);
+    while (seq.next < seq.times.length && seq.t >= seq.times[seq.next]) { releaseNext(seq.next / last); seq.next++; }
+    if (seq.next >= seq.times.length) { seq = null; charging = false; }
+  }
+
+  // Covers after the first leave straight from the pile without peeling, softer the later they go.
+  function releaseNext(progress) {
+    const c = cards.pop();
+    if (!c) return;
+    const ang = (-90 + rand(-P.spread / 2, P.spread / 2)) * DEG;
+    Object.assign(c, {
+      state: 'fly', t: 0, dirX: Math.cos(ang), dirY: Math.sin(ang),
+      v0: P.power * (1 + (P.endPower - 1) * progress) * rand(0.9, 1.2),
+      phase: rand(0, Math.PI * 2), hz: P.flutterHz * rand(0.75, 1.3)
+    });
+    c.x = 0; c.y = c.sy; c.z = c.sz;
+    holdBody(c);
+    releaseBody(c, Math.max(150, P.zKick * (1.3 - 0.8 * progress) * rand(0.8, 1.1)));
+    c.sv += P.squash;
+    flying.push(c);
+    pileShift += topGap();
     markTop();
     const top = cards[cards.length - 1];
-    if (top) { top.sv -= P.squash * 0.8; top.svz -= 160; }
-  }
-
-  function stepWait(c, dt) {
-    c.wait -= dt;
-    if (c.wait > 0) return;
-    c.state = 'fly'; c.t = 0;
-    releaseBody(c, c.vzOut);
-    c.sv += P.squash;
+    if (top) { top.sv -= P.squash * 0.4; top.svz -= 60; }
   }
 
   // The next cover can only peel once the space it lifts into is empty.
@@ -529,7 +550,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       b.q = integrateQuat(b.q, b.w, dt);
       b.R = quatMatrix(b.q);
     }
-    const held = flying.filter(c => c.state === 'peel' || c.state === 'wait').map(c => c.body);
+    const held = flying.filter(c => c.state === 'peel').map(c => c.body);
     const all = [...bodies, ...held, ...(stackBody ? [stackBody] : [])];
     for (let a = 0; a < all.length; a++) {
       for (let bI = a + 1; bI < all.length; bI++) {
@@ -612,15 +633,16 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     stage.style.perspectiveOrigin = `${ax}px ${ay}px`;
     stepStack(dt);
     charge += ((charging ? 1 : 0) - charge) * (1 - Math.exp(-dt * (charging ? 14 : 5)));
-    if (pileHold > 0) pileHold -= dt; else pileShift *= Math.exp(-dt * 3);
+    pileShift *= Math.exp(-dt * 5);
     updateStackBody(dt);
-    for (const c of flying) { if (c.state === 'peel') stepPeel(c, dt); else if (c.state === 'wait') stepWait(c, dt); }
+    for (const c of flying) if (c.state === 'peel') stepPeel(c, dt);
+    stepSequence(dt);
     acc += dt;
     let steps = 0;
     while (acc >= STEP && steps < 10) { physicsStep(STEP); acc -= STEP; steps++; }
     if (steps === 10) acc = 0;
     syncFlying(dt, window.innerHeight, ay);
-    if (P.nudge > 0 && !burstTimer && flying.length === 0) {
+    if (P.nudge > 0 && !seq && flying.length === 0) {
       nextNudge -= dt;
       if (nextNudge <= 0) { nudgeTop(); nextNudge = P.nudgeEvery * rand(0.7, 1.3); }
     } else nextNudge = Math.max(nextNudge, 2);
@@ -645,7 +667,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     setOnePerTap(on) { onePerTap = on; },
     get maxOverlap() { return maxDepth; },
     get remaining() { return cards.length; },
-    get busy() { return !!burstTimer || flying.length > 0; },
-    destroy() { alive = false; clearTimeout(burstTimer); stage.innerHTML = ''; }
+    get busy() { return !!seq || flying.length > 0; },
+    destroy() { alive = false; stage.innerHTML = ''; }
   };
 }
