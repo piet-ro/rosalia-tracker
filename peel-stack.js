@@ -395,6 +395,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   // keepFlying rebuilds the pile while covers already in the air keep falling
   function restack(keepFlying = false) {
     seq = null; charging = false; charge = 0; pileShift = 0; restackIn = -1;
+    shield(false);
     if (keepFlying) cards.forEach(c => c.el.remove());
     else { world.innerHTML = ''; flying = []; maxDepth = 0; }
     cards = images.map((_, i) => buildCard(i));
@@ -411,6 +412,10 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   }
 
   // ----- interaction -----
+  // While the pile is emptying, the stage catches every tap, so playing with the covers
+  // cannot press the page's buttons underneath. Covers in the air stay tappable.
+  function shield(on) { stage.style.pointerEvents = on ? 'auto' : 'none'; }
+
   function tap() {
     if (onTopTap) onTopTap();
     if (seq) return;
@@ -422,6 +427,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     launchTop();
     const times = Array.from({ length: rest }, (_, i) => P.burstLength * Math.pow(rest > 1 ? i / (rest - 1) : 0, P.burstEase));
     seq = { t: -P.peel, times, next: 0 };
+    shield(true);
     charging = rest > 0;
     if (autoRestack) restackIn = P.refillPause;  // counts down once the last cover has left the pile
   }
@@ -431,7 +437,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     seq.t += dt;
     const last = Math.max(1, seq.times.length - 1);
     while (seq.next < seq.times.length && seq.t >= seq.times[seq.next]) { releaseNext(seq.next / last); seq.next++; }
-    if (seq.next >= seq.times.length) { seq = null; charging = false; }
+    if (seq.next >= seq.times.length) { seq = null; charging = false; shield(false); }
   }
 
   // Covers after the first leave straight from the pile without peeling, softer the later they go.
