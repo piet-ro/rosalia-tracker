@@ -14,12 +14,12 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-24T21:27:24.042Z",
-    "track_name": "BULERÍAS",
-    "album_name": "MOTOMAMI",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b273ac8367a27c0eb7195dc3a58d",
-    "spotify_url": "https://open.spotify.com/track/5tmrMIajDQRBcJQPaoAGdk",
-    "album_url": "https://open.spotify.com/album/6jbtHi5R0jMXoliU2OS0lo"
+    "timestamp": "2026-10-24T21:43:29.397Z",
+    "track_name": "G3 N15",
+    "album_name": "MOTOMAMI +",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
+    "spotify_url": "https://open.spotify.com/track/7EJcb4e5T2vDsaPWR7yEb4",
+    "album_url": "https://open.spotify.com/album/3zbiiu3JTibw0esC7eoMXr"
   },
   "streak_tracks": [
     {
@@ -196,10 +196,58 @@
       "album_name": "MOTOMAMI",
       "album_art": "https://i.scdn.co/image/ab67616d0000b273ac8367a27c0eb7195dc3a58d",
       "spotify_url": "https://open.spotify.com/track/5tmrMIajDQRBcJQPaoAGdk"
+    },
+    {
+      "played_at": "2026-10-24T21:31:36.041Z",
+      "track_name": "La Rumba Del Perdón",
+      "album_name": "LUX",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+      "spotify_url": "https://open.spotify.com/track/7o76sIawH9bRWsltcWfQfd"
+    },
+    {
+      "played_at": "2026-10-24T21:32:37.508Z",
+      "track_name": "MOTOMAMI",
+      "album_name": "MOTOMAMI +",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
+      "spotify_url": "https://open.spotify.com/track/6EXl4PwflcMNobeFpL5bWn"
+    },
+    {
+      "played_at": "2026-10-24T21:34:39.670Z",
+      "track_name": "CHICKEN TERIYAKI",
+      "album_name": "MOTOMAMI +",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
+      "spotify_url": "https://open.spotify.com/track/5OzQJGSICWovSJI3OFydQ9"
+    },
+    {
+      "played_at": "2026-10-24T21:36:57.275Z",
+      "track_name": "SAOKO",
+      "album_name": "MOTOMAMI +",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
+      "spotify_url": "https://open.spotify.com/track/4n1WwhKzKHUX598tvU1wMu"
+    },
+    {
+      "played_at": "2026-10-24T21:39:40.150Z",
+      "track_name": "HENTAI",
+      "album_name": "MOTOMAMI +",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
+      "spotify_url": "https://open.spotify.com/track/7y1r8U18JSN93zZARYKfhT"
+    },
+    {
+      "played_at": "2026-10-24T21:43:29.397Z",
+      "track_name": "G3 N15",
+      "album_name": "MOTOMAMI +",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
+      "spotify_url": "https://open.spotify.com/track/7EJcb4e5T2vDsaPWR7yEb4"
     }
   ],
   "last_successful_run": "2026-10-23T22:00:50.476Z",
   "tracked_timestamps": [
+    "2026-10-24T21:43:29.397Z",
+    "2026-10-24T21:39:40.150Z",
+    "2026-10-24T21:36:57.275Z",
+    "2026-10-24T21:34:39.670Z",
+    "2026-10-24T21:32:37.508Z",
+    "2026-10-24T21:31:36.041Z",
     "2026-10-24T21:27:24.042Z",
     "2026-10-24T21:24:48.203Z",
     "2026-10-24T21:20:44.957Z",
