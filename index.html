@@ -386,7 +386,7 @@
     const TEST_MODE = new URLSearchParams(location.search).has('test');
     let peelStack = null, peelStackLoading = false;
     // bump with every change to peel-stack.js, so browsers fetch the new file instead of a cached one
-    const PEEL_STACK_VERSION = '6';
+    const PEEL_STACK_VERSION = '8';
     let peelStackModule = null;
     const loadPeelStack = () => peelStackModule || (peelStackModule = import(`./peel-stack.js?v=${PEEL_STACK_VERSION}`));
 
@@ -486,12 +486,12 @@
           },
           covers: tracks.map(t => t.album_art),
           params: { radius: 14 },
-          autoRestack: true
+          autoRestack: true,
+          // celebrate the streak once on arrival; the pile lands, rests a moment, then plays
+          autoplay: !matchMedia('(prefers-reduced-motion: reduce)').matches
         });
         img.classList.add('stacked');
         requestAnimationFrame(() => stage.classList.add('ready'));
-        // celebrate the streak once on arrival, then the pile builds itself back up
-        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setTimeout(() => peelStack.fire(), 900);
       } catch (err) {
         console.error('Cover stack failed to load', err);
       } finally {

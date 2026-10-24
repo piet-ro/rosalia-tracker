@@ -21,6 +21,7 @@ export const DEFAULTS = {
   spin: 500, spinDrag: 1.8, settleSpin: 90,
   bounce: 0.3, friction: 0.3,
   burstLength: 2.6, burstEase: 1.5, endPower: 0.4,
+  startPause: 0.7, refillPause: 2,
   nudge: 1.2, nudgeEvery: 4
 };
 
@@ -227,11 +228,11 @@ function blurredCopy(url, amount) {
 }
 
 // ---------- the stack ----------
-export function createPeelStack({ stage, anchor, covers = [], params = {}, back = null, autoRestack = false, onTopTap = null }) {
+export function createPeelStack({ stage, anchor, covers = [], params = {}, back = null, autoRestack = false, autoplay = false, onTopTap = null }) {
   let P = { ...DEFAULTS, ...params };
   let images = covers.slice();
   let cards = [], flying = [];
-  let timeScale = 1, onePerTap = false, seq = null, charge = 0, charging = false, pileShift = 0, restackIn = -1, nextNudge = 3, alive = true, acc = 0;
+  let timeScale = 1, onePerTap = false, seq = null, charge = 0, charging = false, pileShift = 0, restackIn = -1, playIn = -1, autoplayNext = autoplay, nextNudge = 3, alive = true, acc = 0;
   let stackBody = null;
   let maxDepth = 0;  // deepest overlap seen since the last restack, for debugging
 
@@ -248,6 +249,8 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     .ps-card { will-change: transform; }
     .ps-card.ps-top { pointer-events: auto; cursor: pointer; }
     .ps-card.ps-top:focus-visible { outline: none; }
+    .ps-card.ps-fly { pointer-events: auto; touch-action: none; }
+    .ps-mirror { position: absolute; inset: 0; transform: scaleX(-1); background-repeat: no-repeat; }
     .ps-seg { left: 0; }
     .ps-face { position: absolute; inset: 0; backface-visibility: hidden; overflow: hidden; background-repeat: no-repeat; }
     .ps-shade, .ps-spec { position: absolute; inset: 0; pointer-events: none; }
@@ -285,24 +288,43 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
         const pos = k === 0 ? `top:${segTop}px` : (up ? 'bottom:100%' : 'top:100%');
         const seg = mk(parent, 'ps-seg', `width:${w}px;height:${hS}px;${pos};transform-origin:50% ${up ? '100%' : '0%'}`);
         const rad = outer ? (up ? `${r}px ${r}px 0 0` : `0 0 ${r}px ${r}px`) : '0';
-        // faces overlap the next strip by 1.5px so no seam shows between strips
+        // Faces sit off the hinge by half the thickness, so a bend opens a thin gap on its outside.
+        // Each face reaches 1.5px past every inner joint to cover it; the card's outer edge gets no overlap.
+        const topIn = !(up && outer), botIn = !(!up && outer);
+        const extT = topIn ? 1.5 : 0, extB = botIn ? 1.5 : 0;
         // a 1px transparent margin on the outer sides lets the GPU smooth the card's silhouette when it is tilted
-        const padTop = outer && up ? 1 : 0, padBot = outer && !up ? 1 : 0;
-        const bg = `bottom:-1.5px;padding:${padTop}px 1px ${padBot}px;background-clip:content-box;background-size:${w}px ${w}px;background-position:0 ${-segTop}px;border-radius:${rad}`;
+        const padTop = topIn ? 0 : 1, padBot = botIn ? 0 : 1;
+        const bg = `padding:${padTop}px 1px ${padBot}px;background-clip:content-box;background-size:${w}px ${w}px;background-position:0 ${extT - segTop}px;background-repeat:no-repeat`;
+        const box = `top:${-extT}px;bottom:${-extB}px;border-radius:${rad}`;
         const ov = `left:1px;right:1px;top:${padTop}px;bottom:${padBot}px`;
-        const f = mk(seg, 'ps-face', `${bg};background-image:url("${front}");transform:translateZ(${t / 2}px)`);
+        const f = mk(seg, 'ps-face', `${box};${bg};background-image:url("${front}");transform:translateZ(${t / 2}px)`);
         const fShade = mk(f, 'ps-shade', ov);
         const fSpec = mk(f, 'ps-spec', `${ov};background-size:${2 * w}px ${2 * w}px`);
-        const b = mk(seg, 'ps-face', `${bg};background-image:url("${back || front}");transform:rotateY(180deg) translateZ(${t / 2}px)`);
-        c.backs.push(b);
+        // the back is the front seen from behind: mirrored left to right, like looking through the cover
+        const b = mk(seg, 'ps-face', `${box};transform:rotateY(180deg) translateZ(${t / 2}px)`);
+        c.backs.push(mk(b, 'ps-mirror', `${bg};background-image:url("${back || front}")`));
         const bShade = mk(b, 'ps-shade', ov);
         if (t > 0) {
-          const eTop = outer && up ? r : 0, eH = hS - (outer ? r : 0);
-          // edges show the colours of the picture next to them, so the thickness never reads as a white or black band
-          const edgeFace = (px, py, css) => c.edges.push(mk(seg, 'ps-edge', `background-image:url("${front}");background-size:${w}px ${w}px;background-position:${px}px ${py}px;background-repeat:no-repeat;${css}`));
-          edgeFace(0, -segTop - eTop, `width:${t}px;height:${eH}px;left:${-t / 2}px;top:${eTop}px;transform:rotateY(-90deg)`);
-          edgeFace(-(w - t), -segTop - eTop, `width:${t}px;height:${eH}px;left:${w - t / 2}px;top:${eTop}px;transform:rotateY(90deg)`);
-          if (outer) edgeFace(-r, up ? 0 : -(w - t), `width:${w - 2 * r}px;height:${t}px;left:${r}px;top:${up ? -t / 2 : hS - t / 2}px;transform:rotateX(${up ? 90 : -90}deg)`);
+          // Edges show the colours of the picture next to them, so the thickness never reads as a white or black band.
+          // They sit 1px in, against the visible picture, and also reach over the inner joints.
+          const eTop = (outer && up ? r : 0) - (topIn ? 1 : 0);
+          const eH = hS - (outer ? r : 0) + (topIn ? 1 : 0) + (botIn ? 1 : 0);
+          // a fixed tint (no filter) keeps the sides a touch darker than the faces, so they read as sides
+          const edgeFace = (px, py, css) => c.edges.push(mk(seg, 'ps-edge', `--img:url("${front}");background-image:linear-gradient(rgba(0,0,0,.18),rgba(0,0,0,.18)),var(--img);background-size:100% 100%,${w}px ${w}px;background-position:0 0,${px}px ${py}px;background-repeat:no-repeat;${css}`));
+          edgeFace(-1, -segTop - eTop, `width:${t}px;height:${eH}px;left:${1 - t / 2}px;top:${eTop}px;transform:rotateY(-90deg)`);
+          edgeFace(-(w - 1 - t), -segTop - eTop, `width:${t}px;height:${eH}px;left:${w - 1 - t / 2}px;top:${eTop}px;transform:rotateY(90deg)`);
+          if (outer) {
+            edgeFace(-r, up ? -1 : -(w - 1 - t), `width:${w - 2 * r}px;height:${t}px;left:${r}px;top:${up ? 1 - t / 2 : hS - 1 - t / 2}px;transform:rotateX(${up ? 90 : -90}deg)`);
+            // one angled piece across each rounded corner, so the thickness has no notch there
+            if (r > 1) {
+              const chord = r * Math.SQRT2, m = r / 2 + 0.3;  // midpoint of the corner arc's chord, nudged onto the picture
+              for (const right of [false, true]) {
+                const cx = right ? w - m : m, cy = up ? m : hS - m;
+                const turn = (up ? 1 : -1) * (right ? 45 : -45);
+                edgeFace(-(cx - t / 2), -(segTop + cy - t / 2), `width:${chord}px;height:${t}px;left:${cx - chord / 2}px;top:${cy - t / 2}px;transform:rotateZ(${turn}deg) rotateX(${up ? 90 : -90}deg)`);
+              }
+            }
+          }
         }
         c.segs.push({ el: seg, up, k, segTop, fShade, fSpec, bShade });
         parent = seg;
@@ -313,10 +335,11 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       blurredCopy(front, P.backBlur).then(url => {
         if (!url) return;  // keep the CSS blur
         c.backs.forEach(f => { f.style.backgroundImage = `url("${url}")`; f.style.filter = ''; });
-        c.edges.forEach(f => { f.style.backgroundImage = `url("${url}")`; });
+        c.edges.forEach(f => { f.style.setProperty('--img', `url("${url}")`); });
       });
     }
     root.addEventListener('pointerdown', e => {
+      if (c.state === 'fly') { e.preventDefault(); bump(c, e); return; }
       if (c.state !== 'stack' || c !== cards[cards.length - 1]) return;
       e.preventDefault(); tap();
     });
@@ -338,6 +361,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   function markTop() {
     for (const c of flying) {
       c.el.classList.remove('ps-top');
+      c.el.classList.toggle('ps-fly', c.state === 'fly');
       c.el.removeAttribute('tabindex'); c.el.removeAttribute('role'); c.el.removeAttribute('aria-label');
     }
     cards.forEach((c, k) => {
@@ -371,6 +395,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   // keepFlying rebuilds the pile while covers already in the air keep falling
   function restack(keepFlying = false) {
     seq = null; charging = false; charge = 0; pileShift = 0; restackIn = -1;
+    shield(false);
     if (keepFlying) cards.forEach(c => c.el.remove());
     else { world.innerHTML = ''; flying = []; maxDepth = 0; }
     cards = images.map((_, i) => buildCard(i));
@@ -382,9 +407,15 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     });
     markTop();
     nextNudge = 2.5;
+    // on first load the pile lands, rests a moment, then plays by itself
+    if (autoplayNext && cards.length) { playIn = cards.length * 0.018 + 0.35 + P.startPause; autoplayNext = false; }
   }
 
   // ----- interaction -----
+  // While the pile is emptying, the stage catches every tap, so playing with the covers
+  // cannot press the page's buttons underneath. Covers in the air stay tappable.
+  function shield(on) { stage.style.pointerEvents = on ? 'auto' : 'none'; }
+
   function tap() {
     if (onTopTap) onTopTap();
     if (seq) return;
@@ -396,8 +427,9 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     launchTop();
     const times = Array.from({ length: rest }, (_, i) => P.burstLength * Math.pow(rest > 1 ? i / (rest - 1) : 0, P.burstEase));
     seq = { t: -P.peel, times, next: 0 };
+    shield(true);
     charging = rest > 0;
-    if (autoRestack) restackIn = 1;  // counts down once the last cover has left the pile
+    if (autoRestack) restackIn = P.refillPause;  // counts down once the last cover has left the pile
   }
 
   function stepSequence(dt) {
@@ -405,7 +437,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     seq.t += dt;
     const last = Math.max(1, seq.times.length - 1);
     while (seq.next < seq.times.length && seq.t >= seq.times[seq.next]) { releaseNext(seq.next / last); seq.next++; }
-    if (seq.next >= seq.times.length) { seq = null; charging = false; }
+    if (seq.next >= seq.times.length) { seq = null; charging = false; shield(false); }
   }
 
   // Covers after the first leave straight from the pile without peeling, softer the later they go.
@@ -469,6 +501,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   }
 
   function releaseBody(c, vz = P.zKick * rand(0.15, 1)) {
+    c.el.classList.add('ps-fly');  // falling covers can be tapped
     const b = c.body, m = 1, [hx, , hz] = b.h;
     Object.assign(b, {
       v: [c.dirX * c.v0, c.dirY * c.v0, vz],  // off the pile, so always toward you
@@ -480,6 +513,20 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       swayW: [0, 0, 0]
     });
     b.R = quatMatrix(b.q);
+  }
+
+  // A tap on a falling cover knocks it up and away from the finger, spinning around the spot that was hit.
+  function bump(c, e) {
+    const b = c.body;
+    if (!b || b.invMass === 0) return;
+    const { x: ax, y: ay } = anchor();
+    const sc = 1000 / Math.max(200, 1000 - c.z);  // stage perspective is 1000px
+    const lx = (e.clientX - ax) / sc - c.x, ly = (e.clientY - ay) / sc - c.y;
+    // cancel the fall first, so even a fast cover pops back up a little
+    const J = [-lx * 2 + rand(-60, 60), -(Math.max(0, b.v[1]) + rand(250, 380)), -rand(150, 300)];
+    applyImpulse(b, J, [lx, ly, 0]);
+    c.sv -= P.squash * 0.6;
+    c.btv += (1 - P.hardness) * rand(-250, 250);
   }
 
   function nudgeTop() {
@@ -633,8 +680,8 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     const lit = n0 * LIGHT[0] + n1 * LIGHT[1] + n2 * LIGHT[2];
     const spec = Math.pow(Math.max(0, 2 * lit * n2 - LIGHT[2]), P.shininess);  // reflected light toward the viewer
     // rounded to 1/40 steps: finer than the eye can tell apart, coarse enough that most frames need no repaint
-    const q = v => (Math.round(clamp(v, 0, 0.6) * 40) / 40).toFixed(3);
-    return { front: q(0.7 - lit * 0.75 - spec * 0.3), back: q(0.7 + lit * 0.75), spec };
+    const q = v => (Math.round(clamp(v, 0, 0.7) * 40) / 40).toFixed(3);
+    return { front: q(0.7 - lit * 0.75 - spec * 0.3), back: q(0.8 + lit * 0.75), spec };  // the back is 0.1 darker, so it reads as the back
   }
 
   const f4 = v => (Math.round(v * 10000) / 10000).toString();
@@ -685,6 +732,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     while (acc >= STEP && steps < 10) { physicsStep(STEP); acc -= STEP; steps++; }
     if (steps === 10) acc = 0;
     syncFlying(dt, window.innerHeight, ay);
+    if (playIn >= 0) { playIn -= dt; if (playIn < 0) tap(); }
     if (restackIn >= 0 && !seq && flying.every(c => c.state === 'fly')) {
       restackIn -= dt;
       if (restackIn < 0) restack(true);
