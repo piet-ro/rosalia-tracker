@@ -58,6 +58,7 @@ This file is only ever **added to**, never rebuilt, so it keeps the full history
 | `longest_streak` | Record streak: `count`, `start_date`, `end_date` |
 | `peak_volume` | Biggest single day: `count`, `date` |
 | `latest_track` | Most recent ROSALÍA play: name, album, cover art, Spotify links, timestamp |
+| `streak_tracks` | Every ROSALÍA play of the active streak, oldest first: `played_at`, `track_name`, `album_name`, `album_art`, `spotify_url`. Emptied when the streak breaks. Only plays seen after this field was added are included |
 | `last_successful_run` | Heartbeat, updated once per day so the site can warn when syncing has stopped |
 | `tracked_timestamps` | The newest 300 play timestamps already counted. Used only to avoid counting the same play twice, since consecutive runs see overlapping plays. Spotify returns at most 50 plays, so 300 is plenty |
 
@@ -71,6 +72,12 @@ A single self-contained page (HTML, CSS and JS inline) served by GitHub Pages. O
 - a "sync delayed" banner if `last_successful_run` is more than 36 hours old
 
 It also resets the streak shown to 0 if `active_streak` ended more than a day ago, in case the workflow has stopped running.
+
+### `peel-stack.js` — the cover stack
+During an active streak the cover becomes a pile of every cover played in the streak (`streak_tracks`). Tapping it peels the covers off one by one and throws them like confetti. Each cover is a thin 3D card that can bend, and covers in the air collide as solid boxes. All motion settings live in `DEFAULTS` at the top of the file. For now it only runs in test mode.
+
+### `test/` — test mode
+`/test` opens the site with `?test`, which keeps the real content but pretends a 3-day streak is on and that the last 14 plays all used the latest cover, so the cover stack can be tried. A yellow "Test data" badge marks it.
 
 ### `favicon.png`
 The browser tab icon.
