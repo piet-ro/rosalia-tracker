@@ -22,7 +22,7 @@ export const DEFAULTS = {
   bounce: 0.3, friction: 0.3,
   burstLength: 2.6, burstEase: 1.5, endPower: 0.4,
   startPause: 0.7, refillPause: 2,
-  nudge: 1.2, nudgeEvery: 8
+  nudge: 1.2, nudgeEvery: 6
 };
 
 const STRUCTURAL = ['size', 'thick', 'radius', 'jitter', 'backBlur'];
@@ -264,7 +264,8 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     .ps-card.ps-fly { pointer-events: auto; touch-action: none; }
     .ps-mirror { position: absolute; inset: 0; transform: scaleX(-1); background-repeat: no-repeat; }
     .ps-shadow { position: absolute; inset: 2px; pointer-events: none; transition: opacity 0.25s ease; }
-    .ps-card.ps-off .ps-shadow { opacity: 0; }
+    .ps-shadow { opacity: 0; }
+    .ps-card.ps-top .ps-shadow { opacity: 1; }
     .ps-seg { left: 0; }
     .ps-face { position: absolute; inset: 0; backface-visibility: hidden; overflow: hidden; background-repeat: no-repeat; }
     .ps-shade, .ps-spec { position: absolute; inset: 0; pointer-events: none; }
@@ -360,8 +361,9 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     root.addEventListener('keydown', e => {
       if ((e.key === 'Enter' || e.key === ' ') && c === cards[cards.length - 1]) { e.preventDefault(); tap(); }
     });
-    // A soft shadow under the cover while it rests on the pile. It is a plain painted box-shadow, drawn once,
-    // sitting just behind the cover; it fades out (instead of jumping) as soon as the cover leaves the pile.
+    // A soft shadow under the top cover of the pile only, so shadows don't stack up and darken the pile.
+    // It is a plain painted box-shadow, drawn once, just behind the cover; it fades in as a cover becomes
+    // the top one and fades out (instead of jumping) as soon as it leaves the pile.
     const shadow = document.createElement('div');
     shadow.className = 'ps-shadow';
     shadow.style.cssText = `border-radius:${r}px;box-shadow:0 3px 7px rgba(0,0,0,0.32);transform:translateZ(${-t / 2 - 0.25}px)`;
@@ -562,18 +564,21 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     let k;
     do { k = Math.floor(Math.random() * 4); } while (k === lastCorner);
     lastCorner = k;
-    c.lift = { t: 0, dur: rand(1.1, 1.4), corner: CORNERS[k], landed: false };
+    c.lift = { t: 0, dur: rand(1.3, 1.6), corner: CORNERS[k], landed: false };
   }
 
-  function liftAngle(c, dt) {
+  // How far the corner is lifted (0..1) over the nudge: it snaps up as if catching the wind, hovers and
+  // trembles at the top, almost leaving, then gives up, drops back and lands with a little bounce.
+  function liftAmount(c, dt) {
     const L = c.lift;
     L.t += dt;
-    const u = L.t / L.dur, peak = 0.35, max = P.nudge * 5 * DEG;
+    const u = L.t / L.dur;
     if (u >= 1) { c.lift = null; return 0; }
-    if (u < peak) { const v = u / peak; return max * (1 - Math.pow(1 - v, 3)); }  // quick, soft lift
-    const v = (u - peak) / (1 - peak);
-    if (!L.landed && v > 0.92) { L.landed = true; c.sv -= P.nudge * 0.6; }   // a tiny squish as it lands
-    return max * (1 - v * v);                                                // falls back like paper
+    if (u < 0.22) { const v = u / 0.22; return 1 - Math.pow(1 - v, 3); }
+    if (u < 0.5) { const v = (u - 0.22) / 0.28; return 1 + 0.07 * Math.sin(v * Math.PI * 4) * (1 - v); }
+    if (u < 0.82) { const v = (u - 0.5) / 0.32; return 1 - v * v; }
+    if (!L.landed) { L.landed = true; c.sv -= P.nudge * 0.8; }   // a small squish as it lands
+    return 0.12 * Math.sin(((u - 0.82) / 0.18) * Math.PI);
   }
 
   // ----- simulation -----
@@ -608,11 +613,16 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       c.x = 0; c.y = c.sy; c.z = c.sz; c.rx = c.srx; c.ry = 0;
       c.R = eulerMatrix(c.rx, c.ry, c.rz);
       if (c.lift) {
-        const a = liftAngle(c, dt), [cx, cy] = c.lift ? c.lift.corner : [0, 0];
-        if (a > 0) {
-          // tilt around the in-card axis perpendicular to the corner, then lift by half the diagonal's drop
+        const [cx, cy] = c.lift.corner, f = liftAmount(c, dt);
+        if (f > 0) {
+          // tilt around the in-card axis perpendicular to the corner, then lift by half the diagonal's drop,
+          // so the opposite corner stays put on the pile; the cover also leans a little toward the corner
+          const a = f * P.nudge * 16 * DEG;
           c.R = mulMM(c.R, axisMatrix([cy / Math.SQRT2, -cx / Math.SQRT2, 0], a));
           c.z += (P.size / Math.SQRT2) * Math.sin(a);
+          const g = c.rz * DEG, pull = f * P.nudge * 7 / Math.SQRT2;
+          c.x += (cx * Math.cos(g) - cy * Math.sin(g)) * pull;
+          c.y += (cx * Math.sin(g) + cy * Math.cos(g)) * pull;
         }
       }
     });
