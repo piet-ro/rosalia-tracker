@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-24T16:59:08.436Z",
-    "track_name": "Mundo Nuevo",
+    "timestamp": "2026-10-24T17:13:43.721Z",
+    "track_name": "Sauvignon Blanc",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/1uRF6PMGde0D7uB73bni1d",
+    "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -84,10 +84,50 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
       "spotify_url": "https://open.spotify.com/track/1uRF6PMGde0D7uB73bni1d"
+    },
+    {
+      "played_at": "2026-10-24T17:00:53.201Z",
+      "track_name": "De Madrugá",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/6F52Ls9K7a6vNNi0lip9Gm"
+    },
+    {
+      "played_at": "2026-10-24T17:03:50.830Z",
+      "track_name": "Dios Es Un Stalker (versión Francotiradora)",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO"
+    },
+    {
+      "played_at": "2026-10-24T17:08:09.759Z",
+      "track_name": "La Yugular",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/08g7n12xuTaZwcwr7dgWLR"
+    },
+    {
+      "played_at": "2026-10-24T17:11:00.769Z",
+      "track_name": "Focu 'Ranni",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/3aIGNjFJPjrGpe24OFMSUH"
+    },
+    {
+      "played_at": "2026-10-24T17:13:43.721Z",
+      "track_name": "Sauvignon Blanc",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6"
     }
   ],
   "last_successful_run": "2026-10-23T22:00:50.476Z",
   "tracked_timestamps": [
+    "2026-10-24T17:13:43.721Z",
+    "2026-10-24T17:11:00.769Z",
+    "2026-10-24T17:08:09.759Z",
+    "2026-10-24T17:03:50.830Z",
+    "2026-10-24T17:00:53.201Z",
     "2026-10-24T16:59:08.436Z",
     "2026-10-24T16:56:47.589Z",
     "2026-10-24T16:53:31.713Z",
