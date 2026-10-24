@@ -394,7 +394,7 @@
     const TEST_MODE = new URLSearchParams(location.search).has('test');
     let peelStack = null, peelStackLoading = false;
     // bump with every change to peel-stack.js, so browsers fetch the new file instead of a cached one
-    const PEEL_STACK_VERSION = '15';
+    const PEEL_STACK_VERSION = '16';
     let peelStackModule = null;
     const loadPeelStack = () => peelStackModule || (peelStackModule = import(`./peel-stack.js?v=${PEEL_STACK_VERSION}`));
 
