@@ -30,6 +30,8 @@ const DEG = Math.PI / 180;
 const SEG = 6, HALF = SEG / 2;
 const MAX_BEND = 28;
 const STEP = 1 / 240;
+// rebuilding the pile: each cover pops in this long after the one below it, and takes POP_TIME to settle
+const POP_GAP = 0.0216, POP_TIME = 0.5;
 const LIGHT = (() => { const l = [-0.35, -0.6, 0.72]; const m = Math.hypot(...l); return l.map(v => v / m); })();
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -274,7 +276,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: rand(-P.jitter, P.jitter),
       sy: 0, svy: 0, sz: 0, svz: 0, s: 1, sv: 0, srx: 0, svrx: 0,
       bt: 0, btv: 0, bb: 0, bbv: 0,  // bend per joint (deg) of the top and bottom halves
-      state: 'stack'
+      state: 'stack', pop: null
     };
     c.R = eulerMatrix(0, 0, c.rz);
     const mk = (parent, cls, css) => { const d = document.createElement('div'); d.className = cls; d.style.cssText = css; parent.appendChild(d); return d; };
@@ -395,7 +397,6 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   // keepFlying rebuilds the pile while covers already in the air keep falling
   function restack(keepFlying = false) {
     seq = null; charging = false; charge = 0; pileShift = 0; restackIn = -1;
-    shield(false);
     if (keepFlying) cards.forEach(c => c.el.remove());
     else { world.innerHTML = ''; flying = []; maxDepth = 0; }
     cards = images.map((_, i) => buildCard(i));
@@ -403,18 +404,19 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     cards.forEach((c, k) => {  // pop-in cascade from the bottom up
       const depth = n - 1 - k;
       c.sy = stackY(depth); c.sz = stackZ(depth) - 60;
-      c.s = 0.0001; c.sv = 0; c.delay = k * 0.018;
+      c.s = 0.0001; c.sv = 0; c.delay = k * POP_GAP; c.pop = 0;
     });
     markTop();
     nextNudge = 2.5;
     // on first load the pile lands, rests a moment, then plays by itself
-    if (autoplayNext && cards.length) { playIn = cards.length * 0.018 + 0.35 + P.startPause; autoplayNext = false; }
+    if (autoplayNext && cards.length) { playIn = cards.length * POP_GAP + POP_TIME + P.startPause; autoplayNext = false; }
   }
 
   // ----- interaction -----
-  // While the pile is emptying, the stage catches every tap, so playing with the covers
-  // cannot press the page's buttons underneath. Covers in the air stay tappable.
-  function shield(on) { stage.style.pointerEvents = on ? 'auto' : 'none'; }
+  // While the pile is emptying, and while any cover that was tapped is still on screen, the stage
+  // catches every tap so playing with the covers cannot press the page's buttons underneath.
+  // Covers in the air stay tappable.
+  const shielded = () => !!seq || flying.some(c => c.bumped);
 
   function tap() {
     if (onTopTap) onTopTap();
@@ -427,7 +429,6 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     launchTop();
     const times = Array.from({ length: rest }, (_, i) => P.burstLength * Math.pow(rest > 1 ? i / (rest - 1) : 0, P.burstEase));
     seq = { t: -P.peel, times, next: 0 };
-    shield(true);
     charging = rest > 0;
     if (autoRestack) restackIn = P.refillPause;  // counts down once the last cover has left the pile
   }
@@ -437,7 +438,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     seq.t += dt;
     const last = Math.max(1, seq.times.length - 1);
     while (seq.next < seq.times.length && seq.t >= seq.times[seq.next]) { releaseNext(seq.next / last); seq.next++; }
-    if (seq.next >= seq.times.length) { seq = null; charging = false; shield(false); }
+    if (seq.next >= seq.times.length) { seq = null; charging = false; }
   }
 
   // Covers after the first leave straight from the pile without peeling, softer the later they go.
@@ -523,10 +524,12 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     const sc = 1000 / Math.max(200, 1000 - c.z);  // stage perspective is 1000px
     const lx = (e.clientX - ax) / sc - c.x, ly = (e.clientY - ay) / sc - c.y;
     // cancel the fall first, so even a fast cover pops back up a little
-    const J = [-lx * 2 + rand(-60, 60), -(Math.max(0, b.v[1]) + rand(250, 380)), -rand(150, 300)];
+    // never pushed further away (which would shrink it): a cover moving away from you just stops receding
+    const J = [-lx * 2 + rand(-60, 60), -(Math.max(0, b.v[1]) + rand(250, 380)), Math.max(0, -b.v[2])];
     applyImpulse(b, J, [lx, ly, 0]);
     c.sv -= P.squash * 0.6;
     c.btv += (1 - P.hardness) * rand(-250, 250);
+    c.bumped = true;
   }
 
   function nudgeTop() {
@@ -552,8 +555,17 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   function stepStack(dt) {
     const n = cards.length;
     cards.forEach((c, k) => {
-      if (c.delay > 0) { c.delay -= dt; if (c.delay <= 0) c.sv = 9; return; }
+      if (c.delay > 0) { c.delay -= dt; return; }
       const depth = n - 1 - k;
+      if (c.pop !== null) {
+        // grows in and drops onto the pile, easing out softly at the end
+        c.pop += dt;
+        const u = Math.min(1, c.pop / POP_TIME), e = 1 - Math.pow(1 - u, 3);
+        c.s = e; c.sy = stackY(depth); c.sz = stackZ(depth) - 60 * (1 - e);
+        c.x = 0; c.y = c.sy; c.z = c.sz;
+        if (u >= 1) { c.pop = null; c.s = 1; c.sv = c.svy = c.svz = 0; }
+        return;
+      }
       [c.sy, c.svy] = spring(c.sy, c.svy, stackY(depth), 260, 16, dt);
       [c.sz, c.svz] = spring(c.sz, c.svz, stackZ(depth), 260, 14, dt);
       [c.s, c.sv] = spring(c.s, c.sv, 1, 420, 13, dt);
@@ -660,7 +672,9 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       const ripple = MAX_BEND * 0.45 * soft * calm * calm * (3 - 2 * calm);
       stepBend(c, push + ripple * Math.sin(wave), push + ripple * Math.sin(wave + 1.9), dt);
       [c.s, c.sv] = spring(c.s, c.sv, 1, 380, 9, dt);
-      if (ay + c.y > H + P.size * 1.5 || c.t > 14) c.dead = true;
+      // gone once the whole cover is below the bottom of the screen, as drawn with perspective
+      const sc = 1000 / Math.max(200, 1000 - c.z);
+      if (ay + (c.y - P.size * 0.75) * sc > H || c.t > 14) c.dead = true;
     }
     flying = flying.filter(c => { if (c.dead) c.el.remove(); return !c.dead; });
   }
@@ -689,7 +703,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   function render(c, k) {
     const R = c.R;
     // squash never grows the card past its collision box; below 0.8 it is the pop-in, so scale evenly
-    const popping = c.s < 0.8;
+    const popping = c.pop !== null || c.s < 0.8;
     const sx = popping ? c.s : Math.min(c.s, 1.03), sy = popping ? c.s : Math.min(2 - c.s, 1.03);
     put(c.el, 'transform',
       `matrix3d(${f4(R[0][0])},${f4(R[1][0])},${f4(R[2][0])},0,${f4(R[0][1])},${f4(R[1][1])},${f4(R[2][1])},0,${f4(R[0][2])},${f4(R[1][2])},${f4(R[2][2])},0,${c.x.toFixed(1)},${c.y.toFixed(1)},${c.z.toFixed(1)},1) scale(${sx.toFixed(3)},${sy.toFixed(3)})`);
@@ -733,9 +747,11 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     if (steps === 10) acc = 0;
     syncFlying(dt, window.innerHeight, ay);
     if (playIn >= 0) { playIn -= dt; if (playIn < 0) tap(); }
+    put(stage, 'pointerEvents', shielded() ? 'auto' : 'none');
+    // the pile builds back up once refillPause has passed and the last cover has left the screen
     if (restackIn >= 0 && !seq && flying.every(c => c.state === 'fly')) {
-      restackIn -= dt;
-      if (restackIn < 0) restack(true);
+      restackIn = Math.max(0, restackIn - dt);
+      if (restackIn === 0 && flying.length === 0) restack(true);
     }
     if (P.nudge > 0 && !seq && flying.length === 0) {
       nextNudge -= dt;
