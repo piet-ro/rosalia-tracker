@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-24T17:20:48.254Z",
-    "track_name": "Novia Robot",
+    "timestamp": "2026-10-24T17:32:02.386Z",
+    "track_name": "La Rumba Del Perdón",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu",
+    "spotify_url": "https://open.spotify.com/track/3MTrgQB5BtBzbW7pUCHnUo",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -133,10 +133,18 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
       "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu"
+    },
+    {
+      "played_at": "2026-10-24T17:32:02.386Z",
+      "track_name": "La Rumba Del Perdón",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/3MTrgQB5BtBzbW7pUCHnUo"
     }
   ],
   "last_successful_run": "2026-10-23T22:00:50.476Z",
   "tracked_timestamps": [
+    "2026-10-24T17:32:02.386Z",
     "2026-10-24T17:20:48.254Z",
     "2026-10-24T17:17:35.492Z",
     "2026-10-24T17:13:43.721Z",
