@@ -385,6 +385,10 @@
     // /test (or ?test) fakes an active streak whose last 14 plays all used the latest cover
     const TEST_MODE = new URLSearchParams(location.search).has('test');
     let peelStack = null, peelStackLoading = false;
+    // bump with every change to peel-stack.js, so browsers fetch the new file instead of a cached one
+    const PEEL_STACK_VERSION = '6';
+    let peelStackModule = null;
+    const loadPeelStack = () => peelStackModule || (peelStackModule = import(`./peel-stack.js?v=${PEEL_STACK_VERSION}`));
 
     function formatEUDate(dateStr) {
       if (!dateStr) return '';
@@ -435,6 +439,8 @@
         coreData = await coreRes.json();
         historyData = await historyRes.json();
         if (TEST_MODE) applyTestData();
+        // fetch the animation while the page is still fading in
+        if (coreData.current_streak > 0 && (coreData.streak_tracks || []).length > 1) loadPeelStack();
 
         checkHeartbeatAndStreaks();
         renderUI();
@@ -470,7 +476,7 @@
 
       peelStackLoading = true;
       try {
-        const { createPeelStack } = await import('./peel-stack.js');
+        const { createPeelStack } = await loadPeelStack();
         const stage = document.getElementById('peel-stage');
         peelStack = createPeelStack({
           stage,
