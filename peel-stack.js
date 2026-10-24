@@ -22,20 +22,21 @@ export const DEFAULTS = {
   bounce: 0.3, friction: 0.3,
   burstLength: 2.6, burstEase: 1.5, endPower: 0.4,
   startPause: 0.7, refillPause: 2,
+  dropHeight: 330, dropFall: 0.33, dropGap: 0.14, dropMax: 4, dropTurn: 15, dropSettle: 0.77,
+  dropShadow: 0.72, dropBlur: 0, dropTilt: 11, dropDrift: 33, dropImpact: 1.25,
   nudge: 0.5, nudgeLift: 40, nudgeTurn: 10, nudgeTime: 1.3, nudgeEvery: 7
 };
 
 const STRUCTURAL = ['size', 'thick', 'radius', 'jitter', 'backBlur'];
+const FOCUS_BLUR = 6;  // how soft a cover looks while it is high above the pile, before it comes into focus
 const DEG = Math.PI / 180;
 const SEG = 6, HALF = SEG / 2;
 const MAX_BEND = 28;
 const STEP = 1 / 240;
-// Rebuilding the pile: covers drop onto it from in front of the screen, bottom one first, popGap() apart,
-// so each appears large and scales down as it falls. It lands on the cover below after DROP_FALL, then turns
-// into its resting angle over DROP_SETTLE.
-const DROP_FALL = 0.5, DROP_SETTLE = 0.45, POP_TIME = DROP_FALL + DROP_SETTLE, DROP_HEIGHT = 300;
-// one cover every 0.16 s, so each is seen landing; a long pile speeds up so the whole drop stays under 2.4 s
-const popGap = n => Math.min(0.16, 2.4 / Math.max(1, n));
+// Rebuilding the pile: covers drop onto it from in front of the screen, as if from straight above with the
+// camera overhead. One leaves every dropGap seconds (a long pile speeds up so the drop stays under dropMax),
+// falls for dropFall, lands on the cover below, then turns into its resting angle over dropSettle.
+const popGap = (P, n) => Math.min(P.dropGap, P.dropMax / Math.max(1, n));
 const LIGHT = (() => { const l = [-0.35, -0.6, 0.72]; const m = Math.hypot(...l); return l.map(v => v / m); })();
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -289,7 +290,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     root.style.cssText = `width:${w}px;height:${w}px;left:${-mid}px;top:${-mid}px`;
     const front = images[i];
     const c = {
-      el: root, i, segs: [], backs: [], edges: [],
+      el: root, i, segs: [], backs: [], edges: [], focus: [],
       x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: rand(-P.jitter, P.jitter),
       sy: 0, svy: 0, sz: 0, svz: 0, s: 1, sv: 0, srx: 0, svrx: 0,
       bt: 0, btv: 0, bb: 0, bbv: 0,  // bend per joint (deg) of the top and bottom halves
@@ -319,6 +320,8 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
         const f = mk(seg, 'ps-face', `${box};${bg};background-image:url("${front}");transform:translateZ(${t / 2}px)`);
         const fShade = mk(f, 'ps-shade', ov);
         const fSpec = mk(f, 'ps-spec', `${ov};background-size:${2 * w}px ${2 * w}px`);
+        // an out-of-focus copy of the picture, faded in while the cover is falling from high up
+        c.focus.push(mk(f, 'ps-shade', `${ov};opacity:0;background-repeat:no-repeat;background-size:${w}px ${w}px;background-position:-1px ${extT - segTop - padTop}px`));
         // the back is the front seen from behind: mirrored left to right, like looking through the cover
         const b = mk(seg, 'ps-face', `${box};transform:rotateY(180deg) translateZ(${t / 2}px)`);
         c.backs.push(mk(b, 'ps-mirror', `${bg};background-image:url("${back || front}")`));
@@ -349,6 +352,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
         parent = seg;
       }
     }
+    blurredCopy(front, FOCUS_BLUR).then(url => { if (url) c.focus.forEach(f => { f.style.backgroundImage = `url("${url}")`; }); });
     if (!back && P.backBlur > 0) {
       c.backs.forEach(f => { f.style.filter = `blur(${P.backBlur * 0.4}px)`; });
       blurredCopy(front, P.backBlur).then(url => {
@@ -422,6 +426,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   // keepFlying rebuilds the pile while covers already in the air keep falling
   function restack(keepFlying = false) {
     seq = null; charging = false; charge = 0; pileShift = 0; restackIn = -1;
+    cards.forEach(c => { if (c.dropShadowEl) c.dropShadowEl.remove(); });
     if (keepFlying) cards.forEach(c => c.el.remove());
     else { world.innerHTML = ''; flying = []; maxDepth = 0; }
     cards = images.map((_, i) => buildCard(i));
@@ -429,17 +434,29 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     cards.forEach((c, k) => {  // pop-in cascade from the bottom up
       const depth = n - 1 - k;
       // hidden until its turn, then it starts close to the viewer, with a slight extra turn to settle out of
-      c.dropFrom = DROP_HEIGHT;
-      c.restRz = c.rz; c.landRz = c.rz + rand(4, 9) * (Math.random() < 0.5 ? -1 : 1);
-      c.sy = c.y = stackY(depth); c.sz = c.z = stackZ(depth) + DROP_HEIGHT; c.x = 0; c.rz = c.landRz;
+      c.dropFrom = P.dropHeight;
+      c.restRz = c.rz; c.landRz = c.rz + rand(0.6, 1) * P.dropTurn * (Math.random() < 0.5 ? -1 : 1);
+      const da = rand(0, Math.PI * 2);
+      c.dropDrift = [Math.cos(da) * P.dropDrift, Math.sin(da) * P.dropDrift];
+      c.dropPhase = rand(0, Math.PI * 2); c.landed = false;
+      c.sy = c.y = stackY(depth); c.sz = c.z = stackZ(depth) + P.dropHeight; c.x = 0; c.rz = c.landRz;
       c.el.style.visibility = 'hidden';
       c.R = eulerMatrix(0, 0, c.rz);
-      c.s = 1; c.sv = 0; c.delay = k * popGap(n); c.pop = 0;
+      c.s = 1; c.sv = 0; c.delay = k * popGap(P, n); c.pop = 0;
     });
     markTop();
     nextNudge = 2.5;
+    playIn = -1;  // a rebuild cancels an autoplay that has not started yet
     // on first load the pile lands, rests a moment, then plays by itself
-    if (autoplayNext && cards.length) { playIn = cards.length * popGap(cards.length) + POP_TIME + P.startPause; autoplayNext = false; }
+    if (autoplayNext && cards.length) { playIn = cards.length * popGap(P, cards.length) + P.dropFall + P.dropSettle + P.startPause; autoplayNext = false; }
+  }
+
+  function makeDropShadow() {
+    const el = document.createElement('div');
+    const r = Math.min(P.radius, P.size / 12);
+    el.style.cssText = `position:absolute;left:${-P.size / 2}px;top:${-P.size / 2}px;width:${P.size}px;height:${P.size}px;border-radius:${r}px;background:rgba(0,0,0,.35);box-shadow:0 0 22px 10px rgba(0,0,0,.35);opacity:0;pointer-events:none;will-change:transform,opacity`;
+    world.appendChild(el);
+    return el;
   }
 
   // ----- interaction -----
@@ -607,21 +624,43 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       if (c.pop !== null) {
         // drops onto the pile from in front of the screen, so it shrinks to size as it falls, speeding up,
         // then turns softly into its resting angle
-        if (c.pop === 0) c.el.style.visibility = '';
+        if (c.pop === 0) { c.el.style.visibility = ''; if (k > 0 && P.dropShadow > 0) c.dropShadowEl = makeDropShadow(); }
         c.pop += dt;
         const target = stackZ(depth);
         c.sy = stackY(depth);
-        if (c.pop < DROP_FALL) {
-          const v = c.pop / DROP_FALL;
-          c.sz = target + c.dropFrom * (1 - v * v);
+        let rx = 0, ry = 0, ox = 0, oy = 0;
+        if (c.pop < P.dropFall) {
+          const v = c.pop / P.dropFall, h = 1 - v * v;  // h: share of the height still to fall
+          c.sz = target + c.dropFrom * h;
+          // paper meeting air: a little sway and drift that dies out, flat by the time it lands
+          rx = P.dropTilt * Math.sin(c.dropPhase + v * 5) * (1 - v);
+          ry = P.dropTilt * Math.cos(c.dropPhase * 1.3 + v * 4) * (1 - v);
+          ox = c.dropDrift[0] * h; oy = c.dropDrift[1] * h;
+          c.focus.forEach(f => put(f, 'opacity', (P.dropBlur * Math.pow(1 - v, 1.5)).toFixed(2)));
+          if (c.dropShadowEl) {
+            // the shadow falls on the cover below, lit from the upper left: offset and soft while the cover is
+            // high, sliding in under it and darkening as it lands
+            const off = h * P.size * 0.3, sc = 1 + 0.3 * h;
+            put(c.dropShadowEl, 'transform', `translate3d(${off.toFixed(1)}px,${(stackY(depth) + off).toFixed(1)}px,${(stackZ(depth + 1) + P.thick / 2 + 0.3).toFixed(1)}px) scale(${sc.toFixed(3)})`);
+            put(c.dropShadowEl, 'opacity', (P.dropShadow * (0.15 + 0.75 * (1 - h))).toFixed(2));
+          }
         } else {
-          const v = Math.min(1, (c.pop - DROP_FALL) / DROP_SETTLE);
+          if (!c.landed) {
+            // impact: the shadow goes, the focus is sharp, and the covers below give a little under the weight
+            c.landed = true; c.impact = 0;
+            if (c.dropShadowEl) { c.dropShadowEl.remove(); c.dropShadowEl = null; }
+            c.focus.forEach(f => put(f, 'opacity', '0'));
+            for (let j = 0; j < k; j++) if (cards[j].pop === null) cards[j].svz -= P.dropImpact * 90 / (1 + (k - 1 - j));
+          }
+          c.impact += dt;
+          const v = Math.min(1, (c.pop - P.dropFall) / P.dropSettle);
           c.sz = target;
+          c.s = 1 - 0.035 * P.dropImpact * Math.sin(Math.PI * Math.min(1, c.impact / 0.18));
           c.rz = c.landRz + (c.restRz - c.landRz) * (1 - Math.pow(1 - v, 3));
-          if (v >= 1) { c.pop = null; c.rz = c.restRz; c.svy = c.svz = 0; }
+          if (v >= 1) { c.pop = null; c.rz = c.restRz; c.s = 1; c.svy = c.svz = 0; }
         }
-        c.x = 0; c.y = c.sy; c.z = c.sz;
-        c.R = eulerMatrix(0, 0, c.rz);
+        c.x = ox; c.y = c.sy + oy; c.z = c.sz;
+        c.R = eulerMatrix(rx, ry, c.rz);
         return;
       }
       [c.sy, c.svy] = spring(c.sy, c.svy, stackY(depth), 260, 16, dt);
