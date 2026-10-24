@@ -30,8 +30,9 @@ const DEG = Math.PI / 180;
 const SEG = 6, HALF = SEG / 2;
 const MAX_BEND = 28;
 const STEP = 1 / 240;
-// rebuilding the pile: each cover pops in this long after the one below it, and takes POP_TIME to settle
-const POP_GAP = 0.02376, POP_TIME = 1.045;
+// Rebuilding the pile: covers drop in from above the screen, bottom one first, POP_GAP apart.
+// Each falls for DROP_FALL, lands on the cover below, then turns into its resting angle over DROP_SETTLE.
+const POP_GAP = 0.02376, DROP_FALL = 0.45, DROP_SETTLE = 0.45, POP_TIME = DROP_FALL + DROP_SETTLE;
 const LIGHT = (() => { const l = [-0.35, -0.6, 0.72]; const m = Math.hypot(...l); return l.map(v => v / m); })();
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -424,8 +425,12 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     const n = cards.length;
     cards.forEach((c, k) => {  // pop-in cascade from the bottom up
       const depth = n - 1 - k;
-      c.sy = stackY(depth); c.sz = stackZ(depth) - 60;
-      c.s = 0.0001; c.sv = 0; c.delay = k * POP_GAP; c.pop = 0;
+      // waiting above the screen, already in its own layer of the pile, with a slight extra turn to settle out of
+      c.dropFrom = -(anchor().y + P.size);
+      c.restRz = c.rz; c.landRz = c.rz + rand(4, 9) * (Math.random() < 0.5 ? -1 : 1);
+      c.sy = c.y = c.dropFrom; c.sz = c.z = stackZ(depth); c.x = 0; c.rz = c.landRz;
+      c.R = eulerMatrix(0, 0, c.rz);
+      c.s = 1; c.sv = 0; c.delay = k * POP_GAP; c.pop = 0;
     });
     markTop();
     nextNudge = 2.5;
@@ -564,21 +569,19 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     let k;
     do { k = Math.floor(Math.random() * 4); } while (k === lastCorner);
     lastCorner = k;
-    c.lift = { t: 0, dur: rand(1.3, 1.6), corner: CORNERS[k], landed: false };
+    c.lift = { t: 0, dur: rand(1.1, 1.4), corner: CORNERS[k] };
   }
 
-  // How far the corner is lifted (0..1) over the nudge: it snaps up as if catching the wind, hovers and
-  // trembles at the top, almost leaving, then gives up, drops back and lands with a little bounce.
+  // How far the corner is lifted (0..1) over the nudge: it curls up smoothly, then settles back down,
+  // quick at first and slowing as it lands (ease-out).
   function liftAmount(c, dt) {
     const L = c.lift;
     L.t += dt;
     const u = L.t / L.dur;
     if (u >= 1) { c.lift = null; return 0; }
-    if (u < 0.22) { const v = u / 0.22; return 1 - Math.pow(1 - v, 3); }
-    if (u < 0.5) { const v = (u - 0.22) / 0.28; return 1 + 0.07 * Math.sin(v * Math.PI * 4) * (1 - v); }
-    if (u < 0.82) { const v = (u - 0.5) / 0.32; return 1 - v * v; }
-    if (!L.landed) { L.landed = true; c.sv -= P.nudge * 0.8; }   // a small squish as it lands
-    return 0.12 * Math.sin(((u - 0.82) / 0.18) * Math.PI);
+    if (u < 0.45) { const v = u / 0.45; return v * v * (3 - 2 * v); }
+    const v = (u - 0.45) / 0.55;
+    return Math.pow(1 - v, 3);
   }
 
   // ----- simulation -----
@@ -597,12 +600,21 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       if (c.delay > 0) { c.delay -= dt; return; }
       const depth = n - 1 - k;
       if (c.pop !== null) {
-        // grows in and drops onto the pile, easing out softly at the end
+        // falls in from above like a dropped card, then turns softly into its resting angle on the pile
         c.pop += dt;
-        const u = Math.min(1, c.pop / POP_TIME), e = 1 - Math.pow(1 - u, 3);
-        c.s = e; c.sy = stackY(depth); c.sz = stackZ(depth) - 60 * (1 - e);
+        const target = stackY(depth);
+        if (c.pop < DROP_FALL) {
+          const v = c.pop / DROP_FALL;
+          c.sy = c.dropFrom + (target - c.dropFrom) * v * v;  // speeding up as it falls
+        } else {
+          const v = Math.min(1, (c.pop - DROP_FALL) / DROP_SETTLE);
+          c.sy = target;
+          c.rz = c.landRz + (c.restRz - c.landRz) * (1 - Math.pow(1 - v, 3));
+          if (v >= 1) { c.pop = null; c.rz = c.restRz; c.svy = c.svz = 0; }
+        }
+        c.sz = stackZ(depth);
         c.x = 0; c.y = c.sy; c.z = c.sz;
-        if (u >= 1) { c.pop = null; c.s = 1; c.sv = c.svy = c.svz = 0; }
+        c.R = eulerMatrix(0, 0, c.rz);
         return;
       }
       [c.sy, c.svy] = spring(c.sy, c.svy, stackY(depth), 260, 16, dt);
@@ -614,16 +626,13 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       c.R = eulerMatrix(c.rx, c.ry, c.rz);
       if (c.lift) {
         const [cx, cy] = c.lift.corner, f = liftAmount(c, dt);
-        if (f > 0) {
-          // tilt around the in-card axis perpendicular to the corner, then lift by half the diagonal's drop,
-          // so the opposite corner stays put on the pile; the cover also leans a little toward the corner
-          const a = f * P.nudge * 16 * DEG;
-          c.R = mulMM(c.R, axisMatrix([cy / Math.SQRT2, -cx / Math.SQRT2, 0], a));
-          c.z += (P.size / Math.SQRT2) * Math.sin(a);
-          const g = c.rz * DEG, pull = f * P.nudge * 7 / Math.SQRT2;
-          c.x += (cx * Math.cos(g) - cy * Math.sin(g)) * pull;
-          c.y += (cx * Math.sin(g) + cy * Math.cos(g)) * pull;
-        }
+        // tilt around the in-card axis perpendicular to the corner, then lift by half the diagonal's drop,
+        // so the opposite corner stays put on the pile; the half holding the corner curls a little with it
+        const a = f * P.nudge * 9 * DEG;
+        c.R = mulMM(c.R, axisMatrix([cy / Math.SQRT2, -cx / Math.SQRT2, 0], a));
+        c.z += (P.size / Math.SQRT2) * Math.sin(a);
+        const curl = P.hardness >= 0.999 ? 0 : f * P.nudge * 7 * (1 - P.hardness * 0.5);
+        c.bt = cy < 0 ? curl : 0; c.bb = cy > 0 ? curl : 0; c.btv = c.bbv = 0;
       }
     });
   }
@@ -755,7 +764,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   function render(c, k) {
     const R = c.R;
     // squash never grows the card past its collision box; below 0.8 it is the pop-in, so scale evenly
-    const popping = c.pop !== null || c.s < 0.8;
+    const popping = c.s < 0.8;
     const sx = popping ? c.s : Math.min(c.s, 1.03), sy = popping ? c.s : Math.min(2 - c.s, 1.03);
     put(c.el, 'transform',
       `matrix3d(${f4(R[0][0])},${f4(R[1][0])},${f4(R[2][0])},0,${f4(R[0][1])},${f4(R[1][1])},${f4(R[2][1])},0,${f4(R[0][2])},${f4(R[1][2])},${f4(R[2][2])},0,${c.x.toFixed(1)},${c.y.toFixed(1)},${c.z.toFixed(1)},1) scale(${sx.toFixed(3)},${sy.toFixed(3)})`);
@@ -832,6 +841,6 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     get maxOverlap() { return maxDepth; },
     get remaining() { return cards.length; },
     get busy() { return !!seq || flying.length > 0; },
-    destroy() { alive = false; stage.innerHTML = ''; }
+    destroy() { alive = false; stage.innerHTML = ''; stage.style.pointerEvents = 'none'; }
   };
 }

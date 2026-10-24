@@ -87,7 +87,8 @@
     /* MOBILE SPECIFIC OVERRIDES */
     @media (max-width: 600px) {
       body { padding: 1rem; align-items: flex-start; }
-      .card { background: transparent; border: none; box-shadow: none; padding: 1rem 0; }
+      .card { background: transparent; border: none; box-shadow: none; padding: 2.25rem 0 1rem; }
+      .track-info { border-top: none; }
       .bg-blur { filter: blur(24px) brightness(0.30) !important; }
     }
 
@@ -372,6 +373,7 @@
       <div id="heatmap-legend" class="heatmap-legend">
         <span>0</span>
         <div class="legend-box" style="background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.1);"></div>
+        <div class="legend-box" style="background: #3a001d;"></div>
         <div class="legend-box" style="background: #5f0030;"></div>
         <div class="legend-box" style="background: #99004d;"></div>
         <div class="legend-box" style="background: #d10068;"></div>
@@ -391,7 +393,7 @@
     const TEST_MODE = new URLSearchParams(location.search).has('test');
     let peelStack = null, peelStackLoading = false;
     // bump with every change to peel-stack.js, so browsers fetch the new file instead of a cached one
-    const PEEL_STACK_VERSION = '12';
+    const PEEL_STACK_VERSION = '13';
     let peelStackModule = null;
     const loadPeelStack = () => peelStackModule || (peelStackModule = import(`./peel-stack.js?v=${PEEL_STACK_VERSION}`));
 
@@ -824,8 +826,10 @@
               circle.innerText = count;
               circle.classList.remove('listened');
 
+              // a single play gets its own, darkest shade; the four brighter shades split the rest
               const ratio = count / maxCount;
-              if (ratio >= 0.75) circle.style.background = '#ff007f';
+              if (count === 1) circle.style.background = '#3a001d';
+              else if (ratio >= 0.75) circle.style.background = '#ff007f';
               else if (ratio >= 0.50) circle.style.background = '#d10068';
               else if (ratio >= 0.25) circle.style.background = '#99004d';
               else circle.style.background = '#5f0030';
