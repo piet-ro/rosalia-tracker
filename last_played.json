@@ -1,6 +1,9 @@
 {
-  "current_streak": 0,
-  "active_streak": null,
+  "current_streak": 1,
+  "active_streak": {
+    "start_date": "2026-10-24",
+    "end_date": "2026-10-24"
+  },
   "longest_streak": {
     "count": 4,
     "start_date": "2026-10-04",
@@ -11,15 +14,49 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-21T07:10:16.382Z",
-    "track_name": "New Woman (feat. ROSALÍA)",
-    "album_name": "Alter Ego",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b27395ce3d848f4e452489d4a12c",
-    "spotify_url": "https://open.spotify.com/track/5UmfBGfRJgjZ8CdhgffabQ",
-    "album_url": "https://open.spotify.com/album/5eoWRkeplmcCL97afSMJVm"
+    "timestamp": "2026-10-24T16:41:53.618Z",
+    "track_name": "Divinize",
+    "album_name": "LUX (Complete Works)",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+    "spotify_url": "https://open.spotify.com/track/5Doua6JQZzfRgxMW5RWJUB",
+    "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
+  "streak_tracks": [
+    {
+      "played_at": "2026-10-24T16:31:24.378Z",
+      "track_name": "Reliquia",
+      "album_name": "LUX",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+      "spotify_url": "https://open.spotify.com/track/4ORvXsPK9AJmDzm36BYcdy"
+    },
+    {
+      "played_at": "2026-10-24T16:33:59.007Z",
+      "track_name": "Sexo, Violencia y Llantas",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/3tkwOzZXgstU1DdH4gpaw1"
+    },
+    {
+      "played_at": "2026-10-24T16:37:49.784Z",
+      "track_name": "Reliquia",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/7s2fbTm6mudP1SZDZR8vci"
+    },
+    {
+      "played_at": "2026-10-24T16:41:53.618Z",
+      "track_name": "Divinize",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/5Doua6JQZzfRgxMW5RWJUB"
+    }
+  ],
   "last_successful_run": "2026-10-23T22:00:50.476Z",
   "tracked_timestamps": [
+    "2026-10-24T16:41:53.618Z",
+    "2026-10-24T16:37:49.784Z",
+    "2026-10-24T16:33:59.007Z",
+    "2026-10-24T16:31:24.378Z",
     "2026-10-21T07:10:16.382Z",
     "2026-10-21T07:07:16.075Z",
     "2026-10-21T07:03:54.483Z",
