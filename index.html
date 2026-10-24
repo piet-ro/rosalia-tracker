@@ -93,6 +93,18 @@
       box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5); display: block;
     }
 
+    /* the peel stack draws the covers itself, so the plain image only holds the spot */
+    .cover-art.stacked { visibility: hidden; }
+    #peel-stage { opacity: 0; transition: opacity 0.6s ease; }
+    #peel-stage.ready { opacity: 1; }
+    body.modal-open #peel-stage { display: none; }
+
+    .test-badge {
+      position: fixed; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%);
+      z-index: 300; background: #ffd400; color: #000; font-size: 0.72rem; font-weight: 800;
+      letter-spacing: 1px; text-transform: uppercase; padding: 4px 10px; border-radius: 20px;
+    }
+
     .main-headline {
       font-size: 2.1rem; font-weight: 800; line-height: 1.25;
       margin-bottom: 1.5rem; letter-spacing: -0.5px;
@@ -285,6 +297,8 @@
 <body>
 
   <div id="bg-blur" class="bg-blur"></div>
+  <div id="peel-stage"></div>
+  <div id="test-badge" class="test-badge" hidden>Test data</div>
 
   <div id="loader" class="loader-container">
     <div class="dots-loader"><div></div><div></div><div></div></div>
@@ -368,6 +382,12 @@
     let coreData = {};
     let currentMode = 'binary';
 
+    // /test (or ?test) fakes an active streak whose last 14 plays all used the latest cover
+    const TEST_MODE = new URLSearchParams(location.search).has('test');
+    // the cover stack ships only in test mode until the motion is final
+    const PEEL_STACK_ENABLED = TEST_MODE;
+    let peelStack = null, peelStackLoading = false;
+
     function formatEUDate(dateStr) {
       if (!dateStr) return '';
       const parts = dateStr.split('-');
@@ -416,11 +436,60 @@
 
         coreData = await coreRes.json();
         historyData = await historyRes.json();
+        if (TEST_MODE) applyTestData();
 
         checkHeartbeatAndStreaks();
         renderUI();
       } catch (err) {
         console.error("Data load error", err);
+      }
+    }
+
+    function applyTestData() {
+      const today = new Date();
+      const days = [0, 1, 2].map(i => {
+        const d = new Date(today);
+        d.setDate(today.getDate() - i);
+        return formatDateKey(d.getFullYear(), d.getMonth(), d.getDate());
+      });
+      days.forEach(day => { historyData[day] = historyData[day] || 5; });
+      coreData.current_streak = days.length;
+      coreData.active_streak = { start_date: days[days.length - 1], end_date: days[0] };
+      coreData.last_successful_run = new Date().toISOString();
+      if (coreData.latest_track) {
+        coreData.streak_tracks = Array.from({ length: 14 }, () => ({ ...coreData.latest_track }));
+      }
+      document.getElementById('test-badge').hidden = false;
+    }
+
+    // Swap the cover for a tappable stack of every cover played during the active streak
+    async function maybeInitPeelStack() {
+      const tracks = (coreData.streak_tracks || []).filter(t => t.album_art);
+      const img = document.getElementById('cover-art');
+      if (!PEEL_STACK_ENABLED || peelStack || peelStackLoading) return;
+      if (!(coreData.current_streak > 0) || tracks.length < 2) return;
+      if (!document.getElementById('main-card').classList.contains('active') || img.style.display === 'none') return;
+
+      peelStackLoading = true;
+      try {
+        const { createPeelStack } = await import('./peel-stack.js');
+        const stage = document.getElementById('peel-stage');
+        peelStack = createPeelStack({
+          stage,
+          anchor: () => {
+            const r = img.getBoundingClientRect();
+            return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+          },
+          covers: tracks.map(t => t.album_art),
+          params: { radius: 14 },
+          edge: '#e9e9e9'
+        });
+        img.classList.add('stacked');
+        requestAnimationFrame(() => stage.classList.add('ready'));
+      } catch (err) {
+        console.error('Cover stack failed to load', err);
+      } finally {
+        peelStackLoading = false;
       }
     }
 
@@ -491,6 +560,7 @@
       }
 
       render7DayStrip();
+      maybeInitPeelStack();
     }
 
     function render7DayStrip() {
@@ -892,6 +962,7 @@
         document.getElementById('loader').classList.add('hidden');
         document.getElementById('main-card').classList.add('active');
         positionHomeRibbon();
+        maybeInitPeelStack();
       }, 1000);
     });
   </script>

@@ -70,6 +70,12 @@ A single self-contained page (HTML, CSS and JS inline) served by GitHub Pages. O
 
 It also resets the streak shown to 0 if `active_streak` ended more than a day ago, in case the workflow has stopped running.
 
+### `peel-stack.js` — the cover stack
+During an active streak the cover becomes a pile of every cover played in the streak (`streak_tracks`). Tapping it peels the covers off one by one and throws them like confetti. Each cover is a thin 3D card that can bend, and covers in the air collide as solid boxes. All motion settings live in `DEFAULTS` at the top of the file. For now it only runs in test mode.
+
+### `test/` — test mode
+`/test` opens the site with `?test`, which keeps the real content but pretends a 3-day streak is on and that the last 14 plays all used the latest cover, so the cover stack can be tried. A yellow "Test data" badge marks it.
+
 ### `favicon.png`
 The browser tab icon.
 
