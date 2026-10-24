@@ -30,10 +30,12 @@ const DEG = Math.PI / 180;
 const SEG = 6, HALF = SEG / 2;
 const MAX_BEND = 28;
 const STEP = 1 / 240;
-// Rebuilding the pile: covers drop onto it from in front of the screen, bottom one first, POP_GAP apart,
+// Rebuilding the pile: covers drop onto it from in front of the screen, bottom one first, popGap() apart,
 // so each appears large and scales down as it falls. It lands on the cover below after DROP_FALL, then turns
 // into its resting angle over DROP_SETTLE.
-const POP_GAP = 0.02376, DROP_FALL = 0.45, DROP_SETTLE = 0.45, POP_TIME = DROP_FALL + DROP_SETTLE, DROP_HEIGHT = 380;
+const DROP_FALL = 0.5, DROP_SETTLE = 0.45, POP_TIME = DROP_FALL + DROP_SETTLE, DROP_HEIGHT = 300;
+// one cover every 0.16 s, so each is seen landing; a long pile speeds up so the whole drop stays under 2.4 s
+const popGap = n => Math.min(0.16, 2.4 / Math.max(1, n));
 const LIGHT = (() => { const l = [-0.35, -0.6, 0.72]; const m = Math.hypot(...l); return l.map(v => v / m); })();
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -432,12 +434,12 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       c.sy = c.y = stackY(depth); c.sz = c.z = stackZ(depth) + DROP_HEIGHT; c.x = 0; c.rz = c.landRz;
       c.el.style.visibility = 'hidden';
       c.R = eulerMatrix(0, 0, c.rz);
-      c.s = 1; c.sv = 0; c.delay = k * POP_GAP; c.pop = 0;
+      c.s = 1; c.sv = 0; c.delay = k * popGap(n); c.pop = 0;
     });
     markTop();
     nextNudge = 2.5;
     // on first load the pile lands, rests a moment, then plays by itself
-    if (autoplayNext && cards.length) { playIn = cards.length * POP_GAP + POP_TIME + P.startPause; autoplayNext = false; }
+    if (autoplayNext && cards.length) { playIn = cards.length * popGap(cards.length) + POP_TIME + P.startPause; autoplayNext = false; }
   }
 
   // ----- interaction -----
