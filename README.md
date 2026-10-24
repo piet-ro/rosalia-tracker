@@ -55,6 +55,7 @@ This file is only ever **added to**, never rebuilt, so it keeps the full history
 | `longest_streak` | Record streak: `count`, `start_date`, `end_date` |
 | `peak_volume` | Biggest single day: `count`, `date` |
 | `latest_track` | Most recent ROSALÍA play: name, album, cover art, Spotify links, timestamp |
+| `streak_tracks` | Every ROSALÍA play of the active streak, oldest first: `played_at`, `track_name`, `album_name`, `album_art`, `spotify_url`. Emptied when the streak breaks. Only plays seen after this field was added are included |
 | `last_successful_run` | Heartbeat, updated once per day so the site can warn when syncing has stopped |
 | `tracked_timestamps` | The newest 300 play timestamps already counted. Used only to avoid counting the same play twice, since consecutive runs see overlapping plays. Spotify returns at most 50 plays, so 300 is plenty |
 

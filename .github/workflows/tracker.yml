@@ -96,12 +96,20 @@ jobs:
 
             // 2. Count plays we have not seen before
             let newPlays = 0;
+            const newTracks = [];
             for (const item of rosaliaItems) {
               if (seen.has(item.played_at)) continue;
               seen.add(item.played_at);
               const day = localDate(item.played_at);
               history[day] = (history[day] || 0) + 1;
               newPlays++;
+              newTracks.push({
+                played_at: item.played_at,
+                track_name: item.track.name,
+                album_name: item.track.album.name,
+                album_art: item.track.album.images[0]?.url || "",
+                spotify_url: item.track.external_urls?.spotify || ""
+              });
             }
 
             // 3. Latest track (only replace it with something newer)
@@ -139,6 +147,13 @@ jobs:
             // The last run is still "active" if it ended today or yesterday
             const active = cur && cur.end_date >= addDays(today, -1) ? cur : null;
 
+            // Every play of the active streak, oldest first. Starts over when the streak breaks.
+            const streakTracks = active
+              ? [...(core.streak_tracks || []), ...newTracks]
+                  .filter(t => localDate(t.played_at) >= active.start_date)
+                  .sort((a, b) => a.played_at.localeCompare(b.played_at))
+              : [];
+
             // 6. Peak volume (best single day)
             let peak = { count: 0, date: "" };
             for (const [d, c] of Object.entries(history)) {
@@ -160,6 +175,7 @@ jobs:
               longest_streak: longest,
               peak_volume: peak,
               latest_track: core.latest_track || null,
+              streak_tracks: streakTracks,
               last_successful_run: lastRun,
               tracked_timestamps: trackedTimestamps
             }, null, 2) + "\n");

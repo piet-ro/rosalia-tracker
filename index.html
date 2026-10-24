@@ -111,14 +111,13 @@
     .strip-days { position: relative; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
     .day-node { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; }
 
-    /* HOME STREAK RIBBON (FIXED ALIGNMENT) */
+    /* HOME STREAK RIBBON (positioned in JS from the circles it connects) */
     .home-active-ribbon {
       position: absolute;
-      top: calc(1.15rem + 0.8rem + 0.8em - 2px);
       height: 40px;
       background: linear-gradient(90deg, #ff007f, #e60023);
       border-radius: 20px;
-      z-index: 1;
+      z-index: 0;
       pointer-events: none;
     }
 
@@ -300,7 +299,6 @@
     <h1 id="main-headline" class="main-headline active-streak">...</h1>
 
     <div class="strip-container">
-      <div id="home-active-ribbon" class="home-active-ribbon"></div>
       <div class="strip-title">Past 7 Days</div>
       <div id="strip-days" class="strip-days"></div>
     </div>
@@ -497,9 +495,12 @@
 
     function render7DayStrip() {
       const container = document.getElementById('strip-days');
-      const ribbon = document.getElementById('home-active-ribbon');
       container.innerHTML = '';
+      const ribbon = document.createElement('div');
+      ribbon.id = 'home-active-ribbon';
+      ribbon.className = 'home-active-ribbon';
       ribbon.style.display = 'none';
+      container.appendChild(ribbon);
 
       const days = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
       const today = new Date();
@@ -567,15 +568,34 @@
       }
 
       if (activeStartIdx !== -1 && activeEndIdx !== -1) {
+        ribbon.dataset.start = activeStartIdx;
+        ribbon.dataset.end = activeEndIdx;
         ribbon.style.display = 'block';
-        const colWidth = 100 / 7;
-        const startCenterPct = activeStartIdx * colWidth + (colWidth / 2);
-        const endCenterPct = activeEndIdx * colWidth + (colWidth / 2);
-
-        ribbon.style.left = `calc(0.5rem + ${startCenterPct}% - 32px)`;
-        ribbon.style.width = `calc(${endCenterPct - startCenterPct}% + 40px)`;
+        positionHomeRibbon();
       }
     }
+
+    // Center the ribbon on the first and last checked circles, measured from the DOM
+    function positionHomeRibbon() {
+      const ribbon = document.getElementById('home-active-ribbon');
+      if (!ribbon || ribbon.style.display === 'none') return;
+
+      const wrappers = document.querySelectorAll('#strip-days .circle-wrapper');
+      const startEl = wrappers[ribbon.dataset.start];
+      const endEl = wrappers[ribbon.dataset.end];
+      if (!startEl || !endEl) return;
+
+      const height = ribbon.offsetHeight;
+      const startCenter = startEl.offsetLeft + startEl.offsetWidth / 2;
+      const endCenter = endEl.offsetLeft + endEl.offsetWidth / 2;
+      const middle = startEl.offsetTop + startEl.offsetHeight / 2;
+
+      ribbon.style.left = `${startCenter - height / 2}px`;
+      ribbon.style.width = `${endCenter - startCenter + height}px`;
+      ribbon.style.top = `${middle - height / 2}px`;
+    }
+
+    window.addEventListener('resize', positionHomeRibbon);
 
     function getAllStreaks() {
       const dates = Object.keys(historyData).filter(d => historyData[d] > 0).sort();
@@ -871,6 +891,7 @@
       setTimeout(() => {
         document.getElementById('loader').classList.add('hidden');
         document.getElementById('main-card').classList.add('active');
+        positionHomeRibbon();
       }, 1000);
     });
   </script>
