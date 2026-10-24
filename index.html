@@ -29,8 +29,10 @@
 
     body.modal-open { overflow: hidden !important; }
 
+    /* sized to the largest viewport (browser bars hidden), so it never resizes or jumps while the
+       mobile toolbar slides in and out on scroll */
     .bg-blur {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100vh; height: 100lvh;
       background-size: cover; background-position: center;
       filter: blur(24px) brightness(0.6); transform: scale(1.15);
       z-index: -1; opacity: 0; transition: opacity 1.8s ease-in-out, filter 0.3s ease;
@@ -99,6 +101,7 @@
     #peel-stage.ready { opacity: 1; }
     body.modal-open #peel-stage { display: none; }
 
+    body.modal-open .test-badge { display: none; }
     .test-badge {
       position: fixed; bottom: calc(10px + env(safe-area-inset-bottom, 0px)); left: 50%; transform: translateX(-50%);
       z-index: 300; background: #ffd400; color: #000; font-size: 0.72rem; font-weight: 800;
@@ -114,7 +117,7 @@
 
     .strip-container {
       position: relative;
-      margin: 1.5rem 0; padding: 1rem 0.5rem;
+      margin: 1.5rem 0 0.75rem; padding: 1rem 0.5rem;
       background: rgba(255, 255, 255, 0.04);
       border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.08);
       overflow: hidden;
@@ -133,7 +136,7 @@
       pointer-events: none;
     }
 
-    .records-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 1.2rem 0 1.5rem; }
+    .records-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin: 0.75rem 0 1.5rem; }
     
     .record-card {
       background: rgba(255, 255, 255, 0.05); padding: 0.9rem;
@@ -146,7 +149,7 @@
       transform: translateY(-2px);
     }
     .record-label { font-size: 0.75rem; color: var(--text-sub); margin-bottom: 4px; }
-    .record-value { font-size: 1.1rem; font-weight: 800; }
+    .record-value { font-size: 1.3rem; font-weight: 800; }
     .record-sub { font-size: 0.72rem; color: rgba(255, 255, 255, 0.65); margin-top: 2px; }
 
     .btn-group { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 1.5rem; }
@@ -159,7 +162,7 @@
     .spotify-btn:hover { transform: scale(1.03); background: #f0f0f0; }
 
     .track-info {
-      font-size: 0.9rem; line-height: 1.5; color: var(--text-sub);
+      font-size: 0.72rem; line-height: 1.5; color: var(--text-sub);
       border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1.2rem;
     }
     .track-info a { color: var(--color-white); font-weight: 600; text-decoration: underline; }
@@ -173,7 +176,8 @@
 
     /* MODAL WINDOW & OVERLAY */
     .modal-overlay {
-      position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      /* the visible viewport (dvh), so the legend at the bottom is never hidden behind the browser bar */
+      position: fixed; inset: 0; height: 100vh; height: 100dvh;
       background: transparent;
       z-index: 200; opacity: 0; visibility: hidden; transition: all 0.3s ease;
       display: flex; justify-content: center; align-items: center; padding: 1rem;
@@ -183,8 +187,7 @@
     .modal-content {
       background: #141414; border: 1px solid rgba(255, 255, 255, 0.15);
       border-radius: 24px; max-width: 480px; width: 100%;
-      max-height: calc(100vh - 2rem);
-      height: 100%;
+      height: 100%; max-height: 100%;
       display: flex; flex-direction: column; color: var(--color-white);
       position: relative; overflow: hidden;
       box-shadow: 0 20px 50px rgba(0,0,0,0.8);
@@ -386,7 +389,7 @@
     const TEST_MODE = new URLSearchParams(location.search).has('test');
     let peelStack = null, peelStackLoading = false;
     // bump with every change to peel-stack.js, so browsers fetch the new file instead of a cached one
-    const PEEL_STACK_VERSION = '10';
+    const PEEL_STACK_VERSION = '11';
     let peelStackModule = null;
     const loadPeelStack = () => peelStackModule || (peelStackModule = import(`./peel-stack.js?v=${PEEL_STACK_VERSION}`));
 
@@ -548,7 +551,7 @@
       if (coreData.longest_streak && coreData.longest_streak.count > 0) {
         document.getElementById('record-streak-val').innerText = `${coreData.longest_streak.count} Days`;
         document.getElementById('record-streak-sub').innerText = 
-          `from ${formatEUDate(coreData.longest_streak.start_date)} to ${formatEUDate(coreData.longest_streak.end_date)}`;
+          `ended on ${formatEUDate(coreData.longest_streak.end_date)}`;
       }
 
       if (coreData.peak_volume && coreData.peak_volume.count > 0) {
