@@ -22,7 +22,7 @@ export const DEFAULTS = {
   bounce: 0.3, friction: 0.3,
   burstLength: 2.6, burstEase: 1.5, endPower: 0.4,
   startPause: 0.7, refillPause: 2,
-  nudge: 1.2, nudgeEvery: 4
+  nudge: 1.2, nudgeEvery: 8
 };
 
 const STRUCTURAL = ['size', 'thick', 'radius', 'jitter', 'backBlur'];
@@ -31,7 +31,7 @@ const SEG = 6, HALF = SEG / 2;
 const MAX_BEND = 28;
 const STEP = 1 / 240;
 // rebuilding the pile: each cover pops in this long after the one below it, and takes POP_TIME to settle
-const POP_GAP = 0.0216, POP_TIME = 0.95;
+const POP_GAP = 0.02376, POP_TIME = 1.045;
 const LIGHT = (() => { const l = [-0.35, -0.6, 0.72]; const m = Math.hypot(...l); return l.map(v => v / m); })();
 
 const rand = (a, b) => a + Math.random() * (b - a);
@@ -45,6 +45,16 @@ const sub = (a, b) => [a[0] - b[0], a[1] - b[1], a[2] - b[2]];
 const scale = (a, s) => [a[0] * s, a[1] * s, a[2] * s];
 const col = (R, i) => [R[0][i], R[1][i], R[2][i]];
 const mulMV = (R, v) => [dot(R[0], v), dot(R[1], v), dot(R[2], v)];
+const mulMM = (A, B) => A.map(row => [0, 1, 2].map(j => row[0] * B[0][j] + row[1] * B[1][j] + row[2] * B[2][j]));
+// rotation by angle (radians) around a unit axis (Rodrigues)
+function axisMatrix([x, y, z], a) {
+  const c = Math.cos(a), s = Math.sin(a), t = 1 - c;
+  return [
+    [t * x * x + c, t * x * y - s * z, t * x * z + s * y],
+    [t * x * y + s * z, t * y * y + c, t * y * z - s * x],
+    [t * x * z - s * y, t * y * z + s * x, t * z * z + c]
+  ];
+}
 const mulMtV = (R, v) => [R[0][0] * v[0] + R[1][0] * v[1] + R[2][0] * v[2], R[0][1] * v[0] + R[1][1] * v[1] + R[2][1] * v[2], R[0][2] * v[0] + R[1][2] * v[1] + R[2][2] * v[2]];
 
 // CSS rotateX(a) rotateY(b) rotateZ(c), y pointing down
@@ -253,6 +263,8 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     .ps-card.ps-top:focus-visible { outline: none; }
     .ps-card.ps-fly { pointer-events: auto; touch-action: none; }
     .ps-mirror { position: absolute; inset: 0; transform: scaleX(-1); background-repeat: no-repeat; }
+    .ps-shadow { position: absolute; inset: 2px; pointer-events: none; transition: opacity 0.25s ease; }
+    .ps-card.ps-off .ps-shadow { opacity: 0; }
     .ps-seg { left: 0; }
     .ps-face { position: absolute; inset: 0; backface-visibility: hidden; overflow: hidden; background-repeat: no-repeat; }
     .ps-shade, .ps-spec { position: absolute; inset: 0; pointer-events: none; }
@@ -348,6 +360,12 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     root.addEventListener('keydown', e => {
       if ((e.key === 'Enter' || e.key === ' ') && c === cards[cards.length - 1]) { e.preventDefault(); tap(); }
     });
+    // A soft shadow under the cover while it rests on the pile. It is a plain painted box-shadow, drawn once,
+    // sitting just behind the cover; it fades out (instead of jumping) as soon as the cover leaves the pile.
+    const shadow = document.createElement('div');
+    shadow.className = 'ps-shadow';
+    shadow.style.cssText = `border-radius:${r}px;box-shadow:0 3px 7px rgba(0,0,0,0.32);transform:translateZ(${-t / 2 - 0.25}px)`;
+    root.insertBefore(shadow, root.firstChild);
     world.appendChild(root);
     return c;
   }
@@ -364,6 +382,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     for (const c of flying) {
       c.el.classList.remove('ps-top');
       c.el.classList.toggle('ps-fly', c.state === 'fly');
+      c.el.classList.add('ps-off');
       c.el.removeAttribute('tabindex'); c.el.removeAttribute('role'); c.el.removeAttribute('aria-label');
     }
     cards.forEach((c, k) => {
@@ -471,6 +490,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
 
   // A cover finishes peeling before the next one starts, so two peeling covers never pass through each other.
   function launchTop(maxPeel = Infinity, powerScale = 1) {
+    if (cards.length) cards[cards.length - 1].lift = null;
     for (const f of flying) if (f.state === 'peel') f.peelDur = Math.min(f.peelDur, f.t);
     const c = cards.pop();
     if (!c) return;
@@ -532,14 +552,28 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     c.bumped = true;
   }
 
+  // The attention nudge: one corner of the top cover peels up a little and falls back into place.
+  // The cover hinges on the opposite corner, so nothing dips into the pile. Corners take turns at random.
+  const CORNERS = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
+  let lastCorner = -1;
   function nudgeTop() {
     const c = cards[cards.length - 1];
-    if (!c || c.delay > 0) return;
-    const a = P.nudge, soft = 1 - P.hardness;
-    c.svrx -= a * rand(70, 110);         // tip the top edge toward you
-    c.btv += a * soft * rand(120, 200);   // and curl it a little if it is soft
-    c.sv -= a * 1.2;
-    c.svz += a * 60;
+    if (!c || c.delay > 0 || c.pop !== null) return;
+    let k;
+    do { k = Math.floor(Math.random() * 4); } while (k === lastCorner);
+    lastCorner = k;
+    c.lift = { t: 0, dur: rand(1.1, 1.4), corner: CORNERS[k], landed: false };
+  }
+
+  function liftAngle(c, dt) {
+    const L = c.lift;
+    L.t += dt;
+    const u = L.t / L.dur, peak = 0.35, max = P.nudge * 5 * DEG;
+    if (u >= 1) { c.lift = null; return 0; }
+    if (u < peak) { const v = u / peak; return max * (1 - Math.pow(1 - v, 3)); }  // quick, soft lift
+    const v = (u - peak) / (1 - peak);
+    if (!L.landed && v > 0.92) { L.landed = true; c.sv -= P.nudge * 0.6; }   // a tiny squish as it lands
+    return max * (1 - v * v);                                                // falls back like paper
   }
 
   // ----- simulation -----
@@ -573,6 +607,14 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       stepBend(c, 0, 0, dt);
       c.x = 0; c.y = c.sy; c.z = c.sz; c.rx = c.srx; c.ry = 0;
       c.R = eulerMatrix(c.rx, c.ry, c.rz);
+      if (c.lift) {
+        const a = liftAngle(c, dt), [cx, cy] = c.lift ? c.lift.corner : [0, 0];
+        if (a > 0) {
+          // tilt around the in-card axis perpendicular to the corner, then lift by half the diagonal's drop
+          c.R = mulMM(c.R, axisMatrix([cy / Math.SQRT2, -cx / Math.SQRT2, 0], a));
+          c.z += (P.size / Math.SQRT2) * Math.sin(a);
+        }
+      }
     });
   }
 
