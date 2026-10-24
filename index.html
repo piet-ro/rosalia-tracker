@@ -88,7 +88,6 @@
     @media (max-width: 600px) {
       body { padding: 1rem; align-items: flex-start; }
       .card { background: transparent; border: none; box-shadow: none; padding: 2.25rem 0 1rem; }
-      .track-info { border-top: none; }
       .bg-blur { filter: blur(24px) brightness(0.30) !important; }
     }
 
@@ -169,6 +168,8 @@
       border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 1.2rem;
     }
     .track-info a { color: var(--color-white); font-weight: 600; text-decoration: underline; }
+    /* after the base rule, so it wins */
+    @media (max-width: 600px) { .track-info { border-top: none; } }
 
     .stale-warning-banner {
       background: rgba(230, 0, 35, 0.2);
@@ -393,7 +394,7 @@
     const TEST_MODE = new URLSearchParams(location.search).has('test');
     let peelStack = null, peelStackLoading = false;
     // bump with every change to peel-stack.js, so browsers fetch the new file instead of a cached one
-    const PEEL_STACK_VERSION = '13';
+    const PEEL_STACK_VERSION = '14';
     let peelStackModule = null;
     const loadPeelStack = () => peelStackModule || (peelStackModule = import(`./peel-stack.js?v=${PEEL_STACK_VERSION}`));
 
