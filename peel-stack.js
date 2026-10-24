@@ -19,7 +19,7 @@ export const DEFAULTS = {
   gravity: 650, drag: 0.006, flutter: 320, flutterHz: 1.2, sway: 38,
   spin: 500, spinDrag: 1.8, settleSpin: 90,
   bounce: 0.6, friction: 0.3,
-  burstStart: 0.34, burstAccel: 0.82, burstMin: 0.05,
+  volley: 0.6, volleyTime: 0.1, tailGap: 0.18, tailGrowth: 1.25, tailPower: 0.55,
   nudge: 0.8, nudgeEvery: 4
 };
 
@@ -153,7 +153,9 @@ function resolve(A, B, hit, P, onHit) {
   const rA = sub(c, A.p), rB = sub(c, B.p);
   const totalInv = A.invMass + B.invMass;
   // ease overlapping boxes apart instead of teleporting them
-  const corr = Math.min(Math.max(hit.depth - 0.3, 0) * 0.35, 2.5) / totalInv;
+  // against something immovable (the pile, a peeling cover) the moving one has to give way faster
+  const solid = A.invMass === 0 || B.invMass === 0;
+  const corr = Math.min(Math.max(hit.depth - 0.3, 0) * (solid ? 0.6 : 0.35), solid ? 6 : 2.5) / totalInv;
   A.p = add(A.p, n, -corr * A.invMass);
   B.p = add(B.p, n, corr * B.invMass);
 
@@ -196,7 +198,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   let P = { ...DEFAULTS, ...params };
   let images = covers.slice();
   let cards = [], flying = [];
-  let timeScale = 1, onePerTap = false, burstTimer = null, nextNudge = 3, alive = true, acc = 0;
+  let timeScale = 1, onePerTap = false, burstTimer = null, charge = 0, charging = false, pileShift = 0, pileHold = 0, nextNudge = 3, alive = true, acc = 0;
   let stackBody = null;
   let maxDepth = 0;  // deepest overlap seen since the last restack, for debugging
 
@@ -280,7 +282,9 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   }
 
   const stackY = d => d * P.stackGap;
-  const stackZ = d => -d * (P.thick + 0.5);
+  // while charging, the pile spreads out in depth like a spring loading, so blast covers start with clear space between them
+  const chargedGap = () => 2 * boxHalf()[2] + 1;
+  const stackZ = d => -d * (P.thick + 0.5 + charge * (chargedGap() - P.thick - 0.5)) - pileShift;
 
   function markTop() {
     cards.forEach((c, k) => {
@@ -293,19 +297,26 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   }
 
   // the resting pile is one immovable box, so falling covers bump off it instead of passing through
-  function updateStackBody() {
+  function updateStackBody(dt = 0) {
+    const prev = stackBody;
     if (!cards.length) { stackBody = null; return; }
+    // measured from where the covers are now, not where they are heading
     const n = cards.length, w = P.size;
-    const zTop = P.thick / 2, zBot = stackZ(n - 1) - P.thick / 2;
+    const zs = cards.map(c => c.sz);
+    const zTop = Math.max(...zs) + P.thick / 2, zBot = Math.min(...zs) - P.thick / 2;
     stackBody = {
       p: [0, stackY(n - 1) / 2, (zTop + zBot) / 2], v: [0, 0, 0], w: [0, 0, 0],
       R: eulerMatrix(0, 0, 0), h: [w / 2, w / 2 + stackY(n - 1) / 2, (zTop - zBot) / 2],
       invMass: 0, invI: [0, 0, 0], card: null
     };
+    // the pile moves as it settles; collisions need that motion to knock covers out of its way
+    stackBody.front = zTop;
+    if (prev && dt > 0) stackBody.v = [0, 0, (zTop - prev.front) / dt];
   }
 
   function restack() {
     clearTimeout(burstTimer); burstTimer = null;
+    charging = false; charge = 0; pileShift = 0; pileHold = 0;
     world.innerHTML = ''; flying = []; maxDepth = 0;
     cards = images.map((_, i) => buildCard(i));
     const n = cards.length;
@@ -324,15 +335,57 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     if (burstTimer) return;
     if (cards.length <= 1) { restack(); return; }
     if (onePerTap) { if (launchClear()) launchTop(); return; }
-    let gap = P.burstStart;
-    const step = () => {
-      if (cards.length <= 1) { burstTimer = null; return; }
-      if (!launchClear()) { burstTimer = setTimeout(step, 16); return; }
-      gap = Math.max(P.burstMin, gap * P.burstAccel);
-      launchTop(gap * 0.9);
-      burstTimer = setTimeout(step, (gap * 1000) / timeScale);
-    };
-    step();
+    // 1. the top cover peels as the wind-up, 2. most of the pile blasts out at once,
+    // 3. the rest trickle out one by one, a little softer and slower each time
+    const blastCount = Math.min(cards.length - 2, Math.max(0, Math.round((cards.length - 1) * P.volley) - 1));
+    launchTop();
+    charging = blastCount > 0;
+    burstTimer = setTimeout(() => {
+      blast(blastCount);
+      charging = false;
+      let gap = P.tailGap;
+      const step = () => {
+        if (cards.length <= 1) { burstTimer = null; return; }
+        if (!launchClear()) { burstTimer = setTimeout(step, 16); return; }
+        launchTop(gap * 0.9, P.tailPower);
+        gap *= P.tailGrowth;
+        burstTimer = setTimeout(step, (gap * 1000) / timeScale);
+      };
+      burstTimer = setTimeout(step, ((P.volleyTime + P.tailGap) * 1000) / timeScale);
+    }, (P.peel * 1000) / timeScale);
+  }
+
+  // Covers in a blast leave straight from the pile without peeling. Each waits in place, as a solid,
+  // until its turn; upper covers go first and fly toward you faster, so the blast fans out in depth.
+  function blast(count) {
+    const gap = chargedGap();
+    for (let i = 0; i < count; i++) {
+      const c = cards.pop();
+      if (!c) break;
+      const ang = (-90 + rand(-P.spread * 0.65, P.spread * 0.65)) * DEG;
+      Object.assign(c, {
+        state: 'wait', t: 0, wait: i * P.volleyTime / Math.max(1, count),
+        dirX: Math.cos(ang), dirY: Math.sin(ang), v0: P.power * rand(0.9, 1.3),
+        vzOut: P.zKick * (0.5 + 0.9 * (1 - i / count)),
+        phase: rand(0, Math.PI * 2), hz: P.flutterHz * rand(0.75, 1.3)
+      });
+      c.x = 0; c.y = c.sy; c.z = -i * gap;  // exactly the charged spacing, so nothing starts overlapped
+      holdBody(c);
+      flying.push(c);
+    }
+    // the rest of the pile stays back until the blast is out of the way, then slides forward
+    pileShift = count * gap; pileHold = P.volleyTime + 0.15;
+    markTop();
+    const top = cards[cards.length - 1];
+    if (top) { top.sv -= P.squash * 0.8; top.svz -= 160; }
+  }
+
+  function stepWait(c, dt) {
+    c.wait -= dt;
+    if (c.wait > 0) return;
+    c.state = 'fly'; c.t = 0;
+    releaseBody(c, c.vzOut);
+    c.sv += P.squash;
   }
 
   // The next cover can only peel once the space it lifts into is empty.
@@ -343,14 +396,14 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   }
 
   // A cover finishes peeling before the next one starts, so two peeling covers never pass through each other.
-  function launchTop(maxPeel = Infinity) {
+  function launchTop(maxPeel = Infinity, powerScale = 1) {
     for (const f of flying) if (f.state === 'peel') f.peelDur = Math.min(f.peelDur, f.t);
     const c = cards.pop();
     if (!c) return;
     const ang = (-90 + rand(-P.spread / 2, P.spread / 2)) * DEG;
     Object.assign(c, {
       state: 'peel', t: 0, peelDur: Math.max(0.02, Math.min(P.peel, maxPeel)),
-      dirX: Math.cos(ang), dirY: Math.sin(ang), v0: P.power * rand(0.8, 1.2),
+      dirX: Math.cos(ang), dirY: Math.sin(ang), v0: P.power * powerScale * rand(0.8, 1.2),
       baseY: c.sy, baseZ: c.sz, baseRx: c.srx, baseBt: c.bt,
       phase: rand(0, Math.PI * 2), hz: P.flutterHz * rand(0.75, 1.3)
     });
@@ -373,10 +426,10 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     c.body = { p: [c.x, c.y, c.z], v: [0, 0, 0], w: [0, 0, 0], R: c.R, h: boxHalf(), invMass: 0, invI: [0, 0, 0], card: c };
   }
 
-  function releaseBody(c) {
+  function releaseBody(c, vz = P.zKick * rand(0.15, 1)) {
     const b = c.body, m = 1, [hx, , hz] = b.h;
     Object.assign(b, {
-      v: [c.dirX * c.v0, c.dirY * c.v0, P.zKick * rand(0.15, 1)],  // off the pile, so always toward you
+      v: [c.dirX * c.v0, c.dirY * c.v0, vz],  // off the pile, so always toward you
       q: matrixQuat(c.R),
       w: [rand(-1, 1) * P.spin * DEG, rand(-1, 1) * P.spin * DEG, rand(-0.5, 0.5) * P.spin * DEG],
       invMass: 1 / m,
@@ -476,7 +529,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       b.q = integrateQuat(b.q, b.w, dt);
       b.R = quatMatrix(b.q);
     }
-    const held = flying.filter(c => c.state === 'peel').map(c => c.body);
+    const held = flying.filter(c => c.state === 'peel' || c.state === 'wait').map(c => c.body);
     const all = [...bodies, ...held, ...(stackBody ? [stackBody] : [])];
     for (let a = 0; a < all.length; a++) {
       for (let bI = a + 1; bI < all.length; bI++) {
@@ -558,7 +611,10 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     world.style.transform = `translate3d(${ax}px,${ay}px,0)`;
     stage.style.perspectiveOrigin = `${ax}px ${ay}px`;
     stepStack(dt);
-    for (const c of flying) if (c.state === 'peel') stepPeel(c, dt);
+    charge += ((charging ? 1 : 0) - charge) * (1 - Math.exp(-dt * (charging ? 14 : 5)));
+    if (pileHold > 0) pileHold -= dt; else pileShift *= Math.exp(-dt * 3);
+    updateStackBody(dt);
+    for (const c of flying) { if (c.state === 'peel') stepPeel(c, dt); else if (c.state === 'wait') stepWait(c, dt); }
     acc += dt;
     let steps = 0;
     while (acc >= STEP && steps < 10) { physicsStep(STEP); acc -= STEP; steps++; }
@@ -588,6 +644,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     setTimeScale(s) { timeScale = s; },
     setOnePerTap(on) { onePerTap = on; },
     get maxOverlap() { return maxDepth; },
+    get remaining() { return cards.length; },
     get busy() { return !!burstTimer || flying.length > 0; },
     destroy() { alive = false; clearTimeout(burstTimer); stage.innerHTML = ''; }
   };
