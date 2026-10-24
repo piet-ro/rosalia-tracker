@@ -14,17 +14,17 @@
 export const DEFAULTS = {
   size: 125, thick: 2, radius: 12, stackGap: 0, jitter: 7.5,
   hardness: 0.26, reflection: 0.4, shininess: 19, squash: 8,
-  backBlur: 8, glass: 0.7, frost: 0.4,
+  backBlur: 8,
   peel: 0.2, peelTilt: 38,
   power: 1400, spread: 75, zKick: 400,
   gravity: 650, drag: 0.006, flutter: 320, flutterHz: 1.2, sway: 38,
   spin: 500, spinDrag: 1.8, settleSpin: 90,
   bounce: 0.3, friction: 0.3,
-  burstLength: 2.6, burstEase: 2.8, endPower: 0.4,
+  burstLength: 2.6, burstEase: 1.5, endPower: 0.4,
   nudge: 1.2, nudgeEvery: 4
 };
 
-const STRUCTURAL = ['size', 'thick', 'radius', 'jitter', 'backBlur', 'glass', 'frost'];
+const STRUCTURAL = ['size', 'thick', 'radius', 'jitter', 'backBlur'];
 const DEG = Math.PI / 180;
 const SEG = 6, HALF = SEG / 2;
 const MAX_BEND = 28;
@@ -182,7 +182,7 @@ function resolve(A, B, hit, P, onHit) {
 }
 
 // ---------- images ----------
-// The back of a glass cover shows the front seen through it: the same picture, mirrored by the turn
+// The back of a cover shows the front seen through it: the same picture, mirrored by the turn
 // and softened. The blur is baked once per image by shrinking and re-enlarging it on a canvas.
 // If the image does not allow that (no CORS), the back falls back to a CSS blur.
 const blurCache = new Map();
@@ -212,11 +212,11 @@ function blurredCopy(url, amount) {
 }
 
 // ---------- the stack ----------
-export function createPeelStack({ stage, anchor, covers = [], params = {}, back = null, edge = '#9a9a94', onTopTap = null }) {
+export function createPeelStack({ stage, anchor, covers = [], params = {}, back = null, autoRestack = false, onTopTap = null }) {
   let P = { ...DEFAULTS, ...params };
   let images = covers.slice();
   let cards = [], flying = [];
-  let timeScale = 1, onePerTap = false, seq = null, charge = 0, charging = false, pileShift = 0, nextNudge = 3, alive = true, acc = 0;
+  let timeScale = 1, onePerTap = false, seq = null, charge = 0, charging = false, pileShift = 0, restackIn = -1, nextNudge = 3, alive = true, acc = 0;
   let stackBody = null;
   let maxDepth = 0;  // deepest overlap seen since the last restack, for debugging
 
@@ -253,7 +253,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     root.style.cssText = `width:${w}px;height:${w}px;left:${-mid}px;top:${-mid}px`;
     const front = images[i];
     const c = {
-      el: root, i, segs: [], backs: [],
+      el: root, i, segs: [], backs: [], edges: [],
       x: 0, y: 0, z: 0, rx: 0, ry: 0, rz: rand(-P.jitter, P.jitter),
       sy: 0, svy: 0, sz: 0, svz: 0, s: 1, sv: 0, srx: 0, svrx: 0,
       bt: 0, btv: 0, bb: 0, bbv: 0,  // bend per joint (deg) of the top and bottom halves
@@ -281,9 +281,11 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
         const bShade = mk(b, 'ps-shade', '');
         if (t > 0) {
           const eTop = outer && up ? r : 0, eH = hS - (outer ? r : 0);
-          mk(seg, 'ps-edge', `${edgeCss(front, w, 90, 0, -segTop - eTop)};width:${t}px;height:${eH}px;left:${-t / 2}px;top:${eTop}px;transform:rotateY(-90deg)`);
-          mk(seg, 'ps-edge', `${edgeCss(front, w, 90, -(w - t), -segTop - eTop)};width:${t}px;height:${eH}px;left:${w - t / 2}px;top:${eTop}px;transform:rotateY(90deg)`);
-          if (outer) mk(seg, 'ps-edge', `${edgeCss(front, w, 180, -r, up ? 0 : -(w - t))};width:${w - 2 * r}px;height:${t}px;left:${r}px;top:${up ? -t / 2 : hS - t / 2}px;transform:rotateX(${up ? 90 : -90}deg)`);
+          // edges show the colours of the picture next to them, so the thickness never reads as a white or black band
+          const edgeFace = (px, py, css) => c.edges.push(mk(seg, 'ps-edge', `background-image:url("${front}");background-size:${w}px ${w}px;background-position:${px}px ${py}px;background-repeat:no-repeat;${css}`));
+          edgeFace(0, -segTop - eTop, `width:${t}px;height:${eH}px;left:${-t / 2}px;top:${eTop}px;transform:rotateY(-90deg)`);
+          edgeFace(-(w - t), -segTop - eTop, `width:${t}px;height:${eH}px;left:${w - t / 2}px;top:${eTop}px;transform:rotateY(90deg)`);
+          if (outer) edgeFace(-r, up ? 0 : -(w - t), `width:${w - 2 * r}px;height:${t}px;left:${r}px;top:${up ? -t / 2 : hS - t / 2}px;transform:rotateX(${up ? 90 : -90}deg)`);
         }
         c.segs.push({ el: seg, up, k, segTop, fShade, fSpec, bShade });
         parent = seg;
@@ -294,6 +296,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       blurredCopy(front, P.backBlur).then(url => {
         if (!url) return;  // keep the CSS blur
         c.backs.forEach(f => { f.style.backgroundImage = `url("${url}")`; f.style.filter = ''; });
+        c.edges.forEach(f => { f.style.backgroundImage = `url("${url}")`; });
       });
     }
     root.addEventListener('pointerdown', e => {
@@ -307,15 +310,6 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     return c;
   }
 
-  // A glass edge: the strip of picture next to it, seen through frosted glass, with light caught at both rims.
-  function edgeCss(front, w, angle, px, py) {
-    if (P.glass <= 0) return `background:${edge}`;
-    const rim = (0.15 + 0.55 * P.glass).toFixed(2), core = (0.04 + 0.12 * P.glass).toFixed(2);
-    return `background-image:linear-gradient(${angle}deg, rgba(255,255,255,${rim}), rgba(255,255,255,${core}) 50%, rgba(255,255,255,${rim})), url("${front}");` +
-      `background-size:100% 100%, ${w}px ${w}px;background-position:0 0, ${px}px ${py}px;background-repeat:no-repeat;` +
-      `filter:blur(${(P.frost * 1.5).toFixed(2)}px) saturate(1.4) brightness(1.15);opacity:${(1 - 0.3 * P.glass).toFixed(2)}`;
-  }
-
   const stackY = d => d * P.stackGap;
   // While a burst runs, the top few covers of the pile spread out in depth like a spring loading,
   // so each cover leaves with clear space behind it. pileShift keeps the pile back as covers leave, then it slides forward.
@@ -325,6 +319,10 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   const stackZ = d => -(Math.min(d, SPREAD) * topGap() + Math.max(0, d - SPREAD) * (P.thick + 0.5)) - pileShift;
 
   function markTop() {
+    for (const c of flying) {
+      c.el.classList.remove('ps-top');
+      c.el.removeAttribute('tabindex'); c.el.removeAttribute('role'); c.el.removeAttribute('aria-label');
+    }
     cards.forEach((c, k) => {
       const top = k === cards.length - 1;
       c.el.classList.toggle('ps-top', top);
@@ -352,9 +350,11 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     if (prev && dt > 0) stackBody.v = [0, 0, (zTop - prev.front) / dt];
   }
 
-  function restack() {
-    seq = null; charging = false; charge = 0; pileShift = 0;
-    world.innerHTML = ''; flying = []; maxDepth = 0;
+  // keepFlying rebuilds the pile while covers already in the air keep falling
+  function restack(keepFlying = false) {
+    seq = null; charging = false; charge = 0; pileShift = 0; restackIn = -1;
+    if (keepFlying) cards.forEach(c => c.el.remove());
+    else { world.innerHTML = ''; flying = []; maxDepth = 0; }
     cards = images.map((_, i) => buildCard(i));
     const n = cards.length;
     cards.forEach((c, k) => {  // pop-in cascade from the bottom up
@@ -378,6 +378,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     const times = Array.from({ length: rest }, (_, i) => P.burstLength * Math.pow(rest > 1 ? i / (rest - 1) : 0, P.burstEase));
     seq = { t: -P.peel, times, next: 0 };
     charging = rest > 0;
+    if (autoRestack) restackIn = 1;  // counts down once the last cover has left the pile
   }
 
   function stepSequence(dt) {
@@ -642,6 +643,10 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     while (acc >= STEP && steps < 10) { physicsStep(STEP); acc -= STEP; steps++; }
     if (steps === 10) acc = 0;
     syncFlying(dt, window.innerHeight, ay);
+    if (restackIn >= 0 && !seq && flying.every(c => c.state === 'fly')) {
+      restackIn -= dt;
+      if (restackIn < 0) restack(true);
+    }
     if (P.nudge > 0 && !seq && flying.length === 0) {
       nextNudge -= dt;
       if (nextNudge <= 0) { nudgeTop(); nextNudge = P.nudgeEvery * rand(0.7, 1.3); }
@@ -656,7 +661,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
 
   return {
     fire: tap,
-    restack,
+    restack: () => restack(),
     setCovers(next) { images = next.slice(); restack(); },
     setParams(next) {
       const rebuild = STRUCTURAL.some(k => next[k] !== undefined && next[k] !== P[k]);

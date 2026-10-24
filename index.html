@@ -384,8 +384,6 @@
 
     // /test (or ?test) fakes an active streak whose last 14 plays all used the latest cover
     const TEST_MODE = new URLSearchParams(location.search).has('test');
-    // the cover stack ships only in test mode until the motion is final
-    const PEEL_STACK_ENABLED = TEST_MODE;
     let peelStack = null, peelStackLoading = false;
 
     function formatEUDate(dateStr) {
@@ -466,7 +464,7 @@
     async function maybeInitPeelStack() {
       const tracks = (coreData.streak_tracks || []).filter(t => t.album_art);
       const img = document.getElementById('cover-art');
-      if (!PEEL_STACK_ENABLED || peelStack || peelStackLoading) return;
+      if (peelStack || peelStackLoading) return;
       if (!(coreData.current_streak > 0) || tracks.length < 2) return;
       if (!document.getElementById('main-card').classList.contains('active') || img.style.display === 'none') return;
 
@@ -482,10 +480,12 @@
           },
           covers: tracks.map(t => t.album_art),
           params: { radius: 14 },
-          edge: '#e9e9e9'
+          autoRestack: true
         });
         img.classList.add('stacked');
         requestAnimationFrame(() => stage.classList.add('ready'));
+        // celebrate the streak once on arrival, then the pile builds itself back up
+        if (!matchMedia('(prefers-reduced-motion: reduce)').matches) setTimeout(() => peelStack.fire(), 900);
       } catch (err) {
         console.error('Cover stack failed to load', err);
       } finally {
