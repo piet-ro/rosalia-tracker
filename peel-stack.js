@@ -22,7 +22,7 @@ export const DEFAULTS = {
   bounce: 0.3, friction: 0.3,
   burstLength: 2.6, burstEase: 1.5, endPower: 0.4,
   startPause: 0.7, refillPause: 2,
-  nudge: 1.2, nudgeEvery: 6
+  nudge: 0.5, nudgeLift: 40, nudgeTurn: 10, nudgeTime: 1.3, nudgeEvery: 7
 };
 
 const STRUCTURAL = ['size', 'thick', 'radius', 'jitter', 'backBlur'];
@@ -561,13 +561,18 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     c.bumped = true;
   }
 
-  // The attention nudge is a feedforward: the top cover starts the launch peel, slowly, tilting its leading
-  // edge up and leaning a little toward a launch direction, then eases straight back into place.
+  // The attention nudge is a feedforward: the top cover stays flat, facing you, rises a little toward you
+  // and swings around a pinned point halfway between its centre and one corner, showing a sliver of the
+  // cover below, then eases back into place. The corner and the swing direction change at random each time.
+  const CORNERS = [[-1, -1], [1, -1], [1, 1], [-1, 1]];
+  let lastCorner = -1;
   function nudgeTop() {
     const c = cards[cards.length - 1];
     if (!c || c.delay > 0 || c.pop !== null || c.lift) return;
-    const ang = (-90 + rand(-P.spread / 2, P.spread / 2)) * DEG;
-    c.lift = { t: 0, dur: rand(1.1, 1.4), dir: [Math.cos(ang), Math.sin(ang)] };
+    let k;
+    do { k = Math.floor(Math.random() * 4); } while (k === lastCorner);
+    lastCorner = k;
+    c.lift = { t: 0, dur: P.nudgeTime * rand(0.9, 1.1), corner: CORNERS[k], sign: Math.random() < 0.5 ? -1 : 1 };
   }
 
   // How far into the peel the nudge is (0..1): it rises smoothly, then settles back down,
@@ -625,18 +630,16 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
       c.x = 0; c.y = c.sy; c.z = c.sz; c.rx = c.srx; c.ry = 0;
       c.R = eulerMatrix(c.rx, c.ry, c.rz);
       if (c.lift) {
-        const [dx, dy] = c.lift.dir, f = liftAmount(c, dt);
-        // same moves as the start of the peel: the leading edge tips toward you while the cover hinges on its
-        // trailing edge (its lowest point stays on the pile), nudges a few px toward the launch direction
-        // and squashes slightly, as if gathering itself to fly
-        const tilt = f * P.nudge * 12;
-        c.rx = dy * tilt; c.ry = -dx * tilt;
-        c.R = eulerMatrix(c.rx, c.ry, c.rz);
-        const h = [P.size / 2, P.size / 2, P.thick / 2], R = c.R;
-        const reach = h[0] * Math.abs(R[2][0]) + h[1] * Math.abs(R[2][1]) + h[2] * Math.abs(R[2][2]);
-        c.z += reach - h[2];
-        c.x += dx * 5 * f; c.y += dy * 5 * f;
-        c.s = 1 - 0.012 * P.squash * f;
+        const [kx, ky] = c.lift.corner, sign = c.lift.sign, f = liftAmount(c, dt);
+        // the pinned point, halfway from the cover's centre to the chosen corner, as the cover lies on the pile
+        const g = c.rz * DEG, half = P.size / 4;
+        const px = (kx * Math.cos(g) - ky * Math.sin(g)) * half, py = (kx * Math.sin(g) + ky * Math.cos(g)) * half;
+        // swing the centre around that corner, flat on screen, and rise toward the viewer
+        const turn = f * P.nudge * P.nudgeTurn * sign, a = turn * DEG;
+        c.x += px + (-px * Math.cos(a) + py * Math.sin(a));
+        c.y += py + (-px * Math.sin(a) - py * Math.cos(a));
+        c.z += f * P.nudge * P.nudgeLift;
+        c.R = eulerMatrix(0, 0, c.rz + turn);
       }
     });
   }
@@ -833,6 +836,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
 
   return {
     fire: tap,
+    nudge: () => nudgeTop(),
     restack: () => restack(),
     setCovers(next) { images = next.slice(); restack(); },
     setParams(next) {
