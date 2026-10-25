@@ -25,6 +25,7 @@ export const DEFAULTS = {
   dropHeight: 200, dropFall: 0.45, dropGap: 0, dropMax: 2, dropTurn: 10, dropSettle: 0.7,
   dropShadow: 0.8, dropBlur: 0.5, dropTilt: 0, dropDrift: 15, dropImpact: 2.05,
   dropSpread: 1.5, dropEaseIn: 0, dropEaseOut: 0, dropBounce: 15,
+  pileMax: 20,
   nudge: 0.5, nudgeLift: 40, nudgeTurn: 10, nudgeTime: 1.3, nudgeEvery: 7
 };
 
@@ -260,6 +261,8 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   let P = { ...DEFAULTS, ...params };
   let images = covers.slice();
   let cards = [], flying = [];
+  // older covers waiting below the visible pile (oldest first); they join the pile as covers fly off
+  let reserve = [];
   let timeScale = 1, onePerTap = false, seq = null, charge = 0, charging = false, pileShift = 0, restackIn = -1, playIn = -1, autoplayNext = autoplay, nextNudge = 3, alive = true, acc = 0;
   let stackBody = null;
   let maxDepth = 0;  // deepest overlap seen since the last restack, for debugging
@@ -278,8 +281,6 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     .ps-card.ps-top { pointer-events: auto; cursor: pointer; }
     .ps-card.ps-top:focus-visible { outline: none; }
     .ps-card.ps-fly { pointer-events: auto; touch-action: none; }
-    /* in the air the 2px thickness is barely visible, and dropping those strips keeps busy bursts smooth */
-    .ps-card.ps-fly .ps-edge, .ps-card.ps-fly .ps-shadow { display: none; }
     .ps-mirror { position: absolute; inset: 0; transform: scaleX(-1); background-repeat: no-repeat; }
     .ps-shadow { position: absolute; inset: 2px; pointer-events: none; transition: opacity 0.25s ease; }
     .ps-shadow { opacity: 0; }
@@ -443,7 +444,11 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     cards.forEach(c => { if (c.dropShadowEl) c.dropShadowEl.remove(); });
     if (keepFlying) cards.forEach(c => c.el.remove());
     else { world.innerHTML = ''; flying = []; maxDepth = 0; }
-    cards = images.map((_, i) => buildCard(i));
+    // The pile shows only the newest pileMax covers, which keeps the refill smooth; older ones wait in
+    // reserve and slide in under the pile during the burst, so every cover still gets thrown.
+    const first = Math.max(0, images.length - P.pileMax);
+    reserve = images.slice(0, first).map((_, i) => i);
+    cards = images.slice(first).map((_, i) => buildCard(first + i));
     const n = cards.length;
     cards.forEach((c, k) => {  // pop-in cascade from the bottom up
       const depth = n - 1 - k;
@@ -486,7 +491,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     if (onePerTap) { if (launchClear()) launchTop(); return; }
     // the top cover peels as the wind-up, then the rest follow in one run that starts as a bang and slows to a trickle.
     // Every cover leaves, so nothing older sits under the newest cover when the pile builds back up.
-    const rest = cards.length - 1;
+    const rest = cards.length + reserve.length - 1;
     launchTop();
     const times = Array.from({ length: rest }, (_, i) => P.burstLength * Math.pow(rest > 1 ? i / (rest - 1) : 0, P.burstEase));
     seq = { t: -P.peel, times, next: 0 };
@@ -503,6 +508,21 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
   }
 
   // Covers after the first leave straight from the pile without peeling, softer the later they go.
+  // The next older cover appears under the pile, at once (no fall), turning softly into its resting angle.
+  function addFromReserve() {
+    if (!reserve.length) return;
+    const c = buildCard(reserve.pop());
+    world.insertBefore(c.el, world.firstChild);
+    cards.unshift(c);
+    const depth = cards.length - 1;
+    c.restRz = c.rz; c.landRz = c.rz + rand(0.6, 1) * P.dropTurn * (Math.random() < 0.5 ? -1 : 1); c.rz = c.landRz;
+    c.dropFrom = 0; c.dropDrift = [0, 0]; c.dropPhase = 0;
+    c.landed = true; c.impact = 1;     // skips the fall and the landing squash
+    c.pop = P.dropFall;                // straight into the settle turn
+    c.x = 0; c.sy = c.y = stackY(depth); c.sz = c.z = stackZ(depth); c.s = 1;
+    c.R = eulerMatrix(0, 0, c.rz);
+  }
+
   function releaseNext(progress) {
     const c = cards.pop();
     if (!c) return;
@@ -518,6 +538,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     c.sv += P.squash;
     flying.push(c);
     pileShift += topGap();
+    addFromReserve();
     markTop();
     const top = cards[cards.length - 1];
     if (top) { top.sv -= P.squash * 0.4; top.svz -= 60; }
@@ -545,6 +566,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     });
     holdBody(c);
     flying.push(c);
+    addFromReserve();
     markTop();
     const top = cards[cards.length - 1];  // the newly exposed cover wobbles like jelly
     if (top) { top.sv -= P.squash * (cards.length === 1 ? 0.9 : 0.6); top.svz += cards.length === 1 ? 220 : 120; }

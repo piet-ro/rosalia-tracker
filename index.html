@@ -394,7 +394,7 @@
     const TEST_MODE = new URLSearchParams(location.search).has('test');
     let peelStack = null, peelStackLoading = false;
     // bump with every change to peel-stack.js, so browsers fetch the new file instead of a cached one
-    const PEEL_STACK_VERSION = '19';
+    const PEEL_STACK_VERSION = '20';
     let peelStackModule = null;
     const loadPeelStack = () => peelStackModule || (peelStackModule = import(`./peel-stack.js?v=${PEEL_STACK_VERSION}`));
 
@@ -476,8 +476,7 @@
 
     // Swap the cover for a tappable stack of every cover played during the active streak
     async function maybeInitPeelStack() {
-      // the 20 most recent plays at most: more covers in the air makes the burst stutter on phones
-      const tracks = (coreData.streak_tracks || []).filter(t => t.album_art).slice(-20);
+      const tracks = (coreData.streak_tracks || []).filter(t => t.album_art);
       const img = document.getElementById('cover-art');
       if (peelStack || peelStackLoading) return;
       if (!(coreData.current_streak > 0) || tracks.length < 2) return;
