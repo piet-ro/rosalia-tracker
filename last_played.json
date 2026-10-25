@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-25T20:29:29.941Z",
-    "track_name": "Mundo Nuevo",
+    "timestamp": "2026-10-25T20:34:13.676Z",
+    "track_name": "Berghain",
     "album_name": "LUX",
     "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
-    "spotify_url": "https://open.spotify.com/track/1LFM6gtGwcTe8CXX6y1IK2",
+    "spotify_url": "https://open.spotify.com/track/2T8yuUKl1nhmtaIocqWo4i",
     "album_url": "https://open.spotify.com/album/3SUEJULSGgBDG1j4GQhfYY"
   },
   "streak_tracks": [
@@ -280,10 +280,26 @@
       "album_name": "LUX",
       "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
       "spotify_url": "https://open.spotify.com/track/1LFM6gtGwcTe8CXX6y1IK2"
+    },
+    {
+      "played_at": "2026-10-25T20:31:14.293Z",
+      "track_name": "De Madrugá",
+      "album_name": "LUX",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+      "spotify_url": "https://open.spotify.com/track/3h64Lbm3TXMBSByfnRQyZE"
+    },
+    {
+      "played_at": "2026-10-25T20:34:13.676Z",
+      "track_name": "Berghain",
+      "album_name": "LUX",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+      "spotify_url": "https://open.spotify.com/track/2T8yuUKl1nhmtaIocqWo4i"
     }
   ],
   "last_successful_run": "2026-10-24T22:00:49.126Z",
   "tracked_timestamps": [
+    "2026-10-25T20:34:13.676Z",
+    "2026-10-25T20:31:14.293Z",
     "2026-10-25T20:29:29.941Z",
     "2026-10-25T20:27:09.570Z",
     "2026-10-25T20:23:53.496Z",
