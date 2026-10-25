@@ -1,8 +1,8 @@
 {
-  "current_streak": 1,
+  "current_streak": 2,
   "active_streak": {
     "start_date": "2026-10-24",
-    "end_date": "2026-10-24"
+    "end_date": "2026-10-25"
   },
   "longest_streak": {
     "count": 4,
@@ -14,12 +14,12 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-24T21:43:29.397Z",
-    "track_name": "G3 N15",
-    "album_name": "MOTOMAMI +",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
-    "spotify_url": "https://open.spotify.com/track/7EJcb4e5T2vDsaPWR7yEb4",
-    "album_url": "https://open.spotify.com/album/3zbiiu3JTibw0esC7eoMXr"
+    "timestamp": "2026-10-25T11:28:05.384Z",
+    "track_name": "Focu 'Ranni",
+    "album_name": "LUX (Complete Works)",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+    "spotify_url": "https://open.spotify.com/track/3aIGNjFJPjrGpe24OFMSUH",
+    "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
     {
@@ -238,10 +238,18 @@
       "album_name": "MOTOMAMI +",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734494c44870e1de47d6461532",
       "spotify_url": "https://open.spotify.com/track/7EJcb4e5T2vDsaPWR7yEb4"
+    },
+    {
+      "played_at": "2026-10-25T11:28:05.384Z",
+      "track_name": "Focu 'Ranni",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/3aIGNjFJPjrGpe24OFMSUH"
     }
   ],
   "last_successful_run": "2026-10-24T22:00:49.126Z",
   "tracked_timestamps": [
+    "2026-10-25T11:28:05.384Z",
     "2026-10-24T21:43:29.397Z",
     "2026-10-24T21:39:40.150Z",
     "2026-10-24T21:36:57.275Z",
