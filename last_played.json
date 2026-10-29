@@ -1,6 +1,9 @@
 {
-  "current_streak": 0,
-  "active_streak": null,
+  "current_streak": 1,
+  "active_streak": {
+    "start_date": "2026-10-29",
+    "end_date": "2026-10-29"
+  },
   "longest_streak": {
     "count": 4,
     "start_date": "2026-10-04",
@@ -11,16 +14,49 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-25T20:34:13.676Z",
-    "track_name": "Berghain",
-    "album_name": "LUX",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
-    "spotify_url": "https://open.spotify.com/track/2T8yuUKl1nhmtaIocqWo4i",
-    "album_url": "https://open.spotify.com/album/3SUEJULSGgBDG1j4GQhfYY"
+    "timestamp": "2026-10-29T07:29:48.033Z",
+    "track_name": "Jeanne",
+    "album_name": "LUX (Complete Works)",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+    "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd",
+    "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
-  "streak_tracks": [],
+  "streak_tracks": [
+    {
+      "played_at": "2026-10-29T07:23:03.392Z",
+      "track_name": "Mio Cristo Piange Diamanti",
+      "album_name": "LUX",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+      "spotify_url": "https://open.spotify.com/track/0hVZnH3f3xmudcfCFLdw1V"
+    },
+    {
+      "played_at": "2026-10-29T07:23:16.950Z",
+      "track_name": "Sauvignon Blanc",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6"
+    },
+    {
+      "played_at": "2026-10-29T07:25:56.041Z",
+      "track_name": "Sauvignon Blanc",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6"
+    },
+    {
+      "played_at": "2026-10-29T07:29:48.033Z",
+      "track_name": "Jeanne",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd"
+    }
+  ],
   "last_successful_run": "2026-10-28T23:00:50.349Z",
   "tracked_timestamps": [
+    "2026-10-29T07:29:48.033Z",
+    "2026-10-29T07:25:56.041Z",
+    "2026-10-29T07:23:16.950Z",
+    "2026-10-29T07:23:03.392Z",
     "2026-10-25T20:34:13.676Z",
     "2026-10-25T20:31:14.293Z",
     "2026-10-25T20:29:29.941Z",
