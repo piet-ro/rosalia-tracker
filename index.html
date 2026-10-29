@@ -390,11 +390,11 @@
     let coreData = {};
     let currentMode = 'binary';
 
-    // /test (or ?test) fakes an active streak whose last 14 plays all used the latest cover
+    // /test (or ?test) fakes an active streak whose last 14 plays all used the latest cover; ?test=4 picks the count
     const TEST_MODE = new URLSearchParams(location.search).has('test');
     let peelStack = null, peelStackLoading = false;
     // bump with every change to peel-stack.js, so browsers fetch the new file instead of a cached one
-    const PEEL_STACK_VERSION = '20';
+    const PEEL_STACK_VERSION = '21';
     let peelStackModule = null;
     const loadPeelStack = () => peelStackModule || (peelStackModule = import(`./peel-stack.js?v=${PEEL_STACK_VERSION}`));
 
@@ -469,7 +469,8 @@
       coreData.active_streak = { start_date: days[days.length - 1], end_date: days[0] };
       coreData.last_successful_run = new Date().toISOString();
       if (coreData.latest_track) {
-        coreData.streak_tracks = Array.from({ length: 14 }, () => ({ ...coreData.latest_track }));
+        const count = parseInt(new URLSearchParams(location.search).get('test'), 10) || 14;
+        coreData.streak_tracks = Array.from({ length: Math.max(2, count) }, () => ({ ...coreData.latest_track }));
       }
       document.getElementById('test-badge').hidden = false;
     }
