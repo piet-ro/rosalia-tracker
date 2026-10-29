@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-29T07:44:14.716Z",
-    "track_name": "Magnolias",
+    "timestamp": "2026-10-29T07:53:14.712Z",
+    "track_name": "Sexo, Violencia y Llantas",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/4cSEOMb21q2S2ypucBvQT0",
+    "spotify_url": "https://open.spotify.com/track/3tkwOzZXgstU1DdH4gpaw1",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -77,10 +77,18 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
       "spotify_url": "https://open.spotify.com/track/4cSEOMb21q2S2ypucBvQT0"
+    },
+    {
+      "played_at": "2026-10-29T07:53:14.712Z",
+      "track_name": "Sexo, Violencia y Llantas",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/3tkwOzZXgstU1DdH4gpaw1"
     }
   ],
   "last_successful_run": "2026-10-28T23:00:50.349Z",
   "tracked_timestamps": [
+    "2026-10-29T07:53:14.712Z",
     "2026-10-29T07:44:14.716Z",
     "2026-10-29T07:40:59.143Z",
     "2026-10-29T07:37:13.383Z",
