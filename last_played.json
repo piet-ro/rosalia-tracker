@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-10-31T16:44:56.408Z",
-    "track_name": "De Madrugá",
+    "timestamp": "2026-10-31T16:57:45.155Z",
+    "track_name": "Sauvignon Blanc",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-    "spotify_url": "https://open.spotify.com/track/6F52Ls9K7a6vNNi0lip9Gm",
+    "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -84,10 +84,42 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
       "spotify_url": "https://open.spotify.com/track/6F52Ls9K7a6vNNi0lip9Gm"
+    },
+    {
+      "played_at": "2026-10-31T16:47:53.506Z",
+      "track_name": "Dios Es Un Stalker (versión Francotiradora)",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO"
+    },
+    {
+      "played_at": "2026-10-31T16:52:12.068Z",
+      "track_name": "La Yugular",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/08g7n12xuTaZwcwr7dgWLR"
+    },
+    {
+      "played_at": "2026-10-31T16:55:02.602Z",
+      "track_name": "Focu 'Ranni",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/3aIGNjFJPjrGpe24OFMSUH"
+    },
+    {
+      "played_at": "2026-10-31T16:57:45.155Z",
+      "track_name": "Sauvignon Blanc",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
+      "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6"
     }
   ],
   "last_successful_run": "2026-10-30T23:00:47.959Z",
   "tracked_timestamps": [
+    "2026-10-31T16:57:45.155Z",
+    "2026-10-31T16:55:02.602Z",
+    "2026-10-31T16:52:12.068Z",
+    "2026-10-31T16:47:53.506Z",
     "2026-10-31T16:44:56.408Z",
     "2026-10-31T16:43:12.005Z",
     "2026-10-31T16:40:51.606Z",
