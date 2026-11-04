@@ -1,9 +1,6 @@
 {
-  "current_streak": 1,
-  "active_streak": {
-    "start_date": "2026-11-03",
-    "end_date": "2026-11-03"
-  },
+  "current_streak": 0,
+  "active_streak": null,
   "longest_streak": {
     "count": 4,
     "start_date": "2026-10-04",
@@ -21,16 +18,8 @@
     "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
-  "streak_tracks": [
-    {
-      "played_at": "2026-11-03T17:40:07.164Z",
-      "track_name": "Jeanne",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2732b497f6bf340faa8812b940c",
-      "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd"
-    }
-  ],
-  "last_successful_run": "2026-11-03T23:00:49.391Z",
+  "streak_tracks": [],
+  "last_successful_run": "2026-11-04T23:00:47.151Z",
   "tracked_timestamps": [
     "2026-11-03T17:40:07.164Z",
     "2026-10-31T16:57:45.155Z",
