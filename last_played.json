@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-05T18:27:34.381Z",
-    "track_name": "Reliquia",
+    "timestamp": "2026-11-05T18:35:45.728Z",
+    "track_name": "Porcelana",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/7s2fbTm6mudP1SZDZR8vci",
+    "spotify_url": "https://open.spotify.com/track/0LdgA1zbSnRgM29DxxYcu8",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -42,10 +42,26 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
       "spotify_url": "https://open.spotify.com/track/7s2fbTm6mudP1SZDZR8vci"
+    },
+    {
+      "played_at": "2026-11-05T18:31:37.631Z",
+      "track_name": "Divinize",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/5Doua6JQZzfRgxMW5RWJUB"
+    },
+    {
+      "played_at": "2026-11-05T18:35:45.728Z",
+      "track_name": "Porcelana",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/0LdgA1zbSnRgM29DxxYcu8"
     }
   ],
   "last_successful_run": "2026-11-04T23:00:47.151Z",
   "tracked_timestamps": [
+    "2026-11-05T18:35:45.728Z",
+    "2026-11-05T18:31:37.631Z",
     "2026-11-05T18:27:34.381Z",
     "2026-11-05T18:23:44.136Z",
     "2026-11-05T18:20:20.404Z",
