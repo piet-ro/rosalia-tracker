@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-09T19:44:10.330Z",
-    "track_name": "Sexo, Violencia y Llantas",
+    "timestamp": "2026-11-09T19:54:00.757Z",
+    "track_name": "Divinize",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/3tkwOzZXgstU1DdH4gpaw1",
+    "spotify_url": "https://open.spotify.com/track/5Doua6JQZzfRgxMW5RWJUB",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -28,10 +28,26 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
       "spotify_url": "https://open.spotify.com/track/3tkwOzZXgstU1DdH4gpaw1"
+    },
+    {
+      "played_at": "2026-11-09T19:49:57.461Z",
+      "track_name": "Reliquia",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/7s2fbTm6mudP1SZDZR8vci"
+    },
+    {
+      "played_at": "2026-11-09T19:54:00.757Z",
+      "track_name": "Divinize",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/5Doua6JQZzfRgxMW5RWJUB"
     }
   ],
   "last_successful_run": "2026-11-08T23:00:48.103Z",
   "tracked_timestamps": [
+    "2026-11-09T19:54:00.757Z",
+    "2026-11-09T19:49:57.461Z",
     "2026-11-09T19:44:10.330Z",
     "2026-11-05T21:32:28.950Z",
     "2026-11-05T21:29:30.086Z",
