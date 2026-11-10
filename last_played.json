@@ -1,8 +1,8 @@
 {
-  "current_streak": 1,
+  "current_streak": 2,
   "active_streak": {
     "start_date": "2026-11-09",
-    "end_date": "2026-11-09"
+    "end_date": "2026-11-10"
   },
   "longest_streak": {
     "count": 4,
@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-09T22:18:48.804Z",
-    "track_name": "Berghain",
+    "timestamp": "2026-11-10T16:59:21.397Z",
+    "track_name": "La Perla",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/6ZBJc582Szb5UGV3VDgrkh",
+    "spotify_url": "https://open.spotify.com/track/3Vgk7dv0fpyHlyeTZatE31",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -63,10 +63,26 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
       "spotify_url": "https://open.spotify.com/track/6ZBJc582Szb5UGV3VDgrkh"
+    },
+    {
+      "played_at": "2026-11-10T16:59:03.683Z",
+      "track_name": "La Perla",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/3Vgk7dv0fpyHlyeTZatE31"
+    },
+    {
+      "played_at": "2026-11-10T16:59:21.397Z",
+      "track_name": "La Perla",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/3Vgk7dv0fpyHlyeTZatE31"
     }
   ],
   "last_successful_run": "2026-11-09T23:00:51.885Z",
   "tracked_timestamps": [
+    "2026-11-10T16:59:21.397Z",
+    "2026-11-10T16:59:03.683Z",
     "2026-11-09T22:18:48.804Z",
     "2026-11-09T22:11:53.512Z",
     "2026-11-09T22:04:34.504Z",
