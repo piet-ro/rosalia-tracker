@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-10T17:06:51.316Z",
-    "track_name": "Dios Es Un Stalker (versión Francotiradora)",
+    "timestamp": "2026-11-10T18:53:57.341Z",
+    "track_name": "La Yugular",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO",
+    "spotify_url": "https://open.spotify.com/track/08g7n12xuTaZwcwr7dgWLR",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -98,10 +98,18 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
       "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO"
+    },
+    {
+      "played_at": "2026-11-10T18:53:57.341Z",
+      "track_name": "La Yugular",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/08g7n12xuTaZwcwr7dgWLR"
     }
   ],
   "last_successful_run": "2026-11-09T23:00:51.885Z",
   "tracked_timestamps": [
+    "2026-11-10T18:53:57.341Z",
     "2026-11-10T17:06:51.316Z",
     "2026-11-10T17:03:54.286Z",
     "2026-11-10T17:02:09.892Z",
