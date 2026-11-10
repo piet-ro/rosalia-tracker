@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-10T16:59:21.397Z",
-    "track_name": "La Perla",
+    "timestamp": "2026-11-10T17:06:51.316Z",
+    "track_name": "Dios Es Un Stalker (versión Francotiradora)",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/3Vgk7dv0fpyHlyeTZatE31",
+    "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -77,10 +77,34 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
       "spotify_url": "https://open.spotify.com/track/3Vgk7dv0fpyHlyeTZatE31"
+    },
+    {
+      "played_at": "2026-11-10T17:02:09.892Z",
+      "track_name": "Mundo Nuevo",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/1uRF6PMGde0D7uB73bni1d"
+    },
+    {
+      "played_at": "2026-11-10T17:03:54.286Z",
+      "track_name": "De Madrugá",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/6F52Ls9K7a6vNNi0lip9Gm"
+    },
+    {
+      "played_at": "2026-11-10T17:06:51.316Z",
+      "track_name": "Dios Es Un Stalker (versión Francotiradora)",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO"
     }
   ],
   "last_successful_run": "2026-11-09T23:00:51.885Z",
   "tracked_timestamps": [
+    "2026-11-10T17:06:51.316Z",
+    "2026-11-10T17:03:54.286Z",
+    "2026-11-10T17:02:09.892Z",
     "2026-11-10T16:59:21.397Z",
     "2026-11-10T16:59:03.683Z",
     "2026-11-09T22:18:48.804Z",
