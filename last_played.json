@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-11T08:14:29.571Z",
-    "track_name": "Focu 'Ranni",
+    "timestamp": "2026-11-11T08:21:03.374Z",
+    "track_name": "Jeanne",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/3aIGNjFJPjrGpe24OFMSUH",
+    "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -140,10 +140,26 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
       "spotify_url": "https://open.spotify.com/track/3aIGNjFJPjrGpe24OFMSUH"
+    },
+    {
+      "played_at": "2026-11-11T08:17:12.071Z",
+      "track_name": "Sauvignon Blanc",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6"
+    },
+    {
+      "played_at": "2026-11-11T08:21:03.374Z",
+      "track_name": "Jeanne",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd"
     }
   ],
   "last_successful_run": "2026-11-10T23:00:50.795Z",
   "tracked_timestamps": [
+    "2026-11-11T08:21:03.374Z",
+    "2026-11-11T08:17:12.071Z",
     "2026-11-11T08:14:29.571Z",
     "2026-11-11T08:11:39.037Z",
     "2026-11-11T08:07:20.380Z",
