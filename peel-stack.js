@@ -20,7 +20,7 @@ export const DEFAULTS = {
   gravity: 650, drag: 0.006, flutter: 320, flutterHz: 1.2, sway: 38,
   spin: 500, spinDrag: 1.8, settleSpin: 90,
   bounce: 0.3, friction: 0.3,
-  burstLength: 2.6, burstEase: 1.5, endPower: 0.4,
+  burstLength: 2.6, burstEase: 1.5, endPower: 0.4, burstFull: 20,
   startPause: 0.7, refillPause: 2,
   dropHeight: 200, dropFall: 0.45, dropGap: 0, dropMax: 2, dropTurn: 10, dropSettle: 0.7,
   dropShadow: 0.8, dropBlur: 0.5, dropTilt: 0, dropDrift: 15, dropImpact: 2.05,
@@ -491,10 +491,13 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     if (onePerTap) { if (launchClear()) launchTop(); return; }
     // the top cover peels as the wind-up, then the rest follow in one run that starts as a bang and slows to a trickle.
     // Every cover leaves, so nothing older sits under the newest cover when the pile builds back up.
+    // A small pile packs its covers into a shorter, harder burst: the run lasts burstLength and fades to
+    // endPower only once the pile holds burstFull covers, so 3 or 4 covers still go off like a bang.
     const rest = cards.length + reserve.length - 1;
+    const fill = Math.min(1, (rest + 1) / P.burstFull);
     launchTop();
-    const times = Array.from({ length: rest }, (_, i) => P.burstLength * Math.pow(rest > 1 ? i / (rest - 1) : 0, P.burstEase));
-    seq = { t: -P.peel, times, next: 0 };
+    const times = Array.from({ length: rest }, (_, i) => fill * P.burstLength * Math.pow(rest > 1 ? i / (rest - 1) : 0, P.burstEase));
+    seq = { t: -P.peel, times, next: 0, fill };
     charging = rest > 0;
     if (autoRestack) restackIn = P.refillPause;  // counts down once the last cover has left the pile
   }
@@ -503,7 +506,7 @@ export function createPeelStack({ stage, anchor, covers = [], params = {}, back 
     if (!seq) return;
     seq.t += dt;
     const last = Math.max(1, seq.times.length - 1);
-    while (seq.next < seq.times.length && seq.t >= seq.times[seq.next]) { releaseNext(seq.next / last); seq.next++; }
+    while (seq.next < seq.times.length && seq.t >= seq.times[seq.next]) { releaseNext(seq.fill * seq.next / last); seq.next++; }
     if (seq.next >= seq.times.length) { seq = null; charging = false; }
   }
 
