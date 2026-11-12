@@ -1,9 +1,6 @@
 {
-  "current_streak": 3,
-  "active_streak": {
-    "start_date": "2026-11-09",
-    "end_date": "2026-11-11"
-  },
+  "current_streak": 0,
+  "active_streak": null,
   "longest_streak": {
     "count": 4,
     "start_date": "2026-10-04",
@@ -21,142 +18,8 @@
     "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
-  "streak_tracks": [
-    {
-      "played_at": "2026-11-09T19:44:10.330Z",
-      "track_name": "Sexo, Violencia y Llantas",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/3tkwOzZXgstU1DdH4gpaw1"
-    },
-    {
-      "played_at": "2026-11-09T19:49:57.461Z",
-      "track_name": "Reliquia",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/7s2fbTm6mudP1SZDZR8vci"
-    },
-    {
-      "played_at": "2026-11-09T19:54:00.757Z",
-      "track_name": "Divinize",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/5Doua6JQZzfRgxMW5RWJUB"
-    },
-    {
-      "played_at": "2026-11-09T22:04:34.504Z",
-      "track_name": "Porcelana",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/0LdgA1zbSnRgM29DxxYcu8"
-    },
-    {
-      "played_at": "2026-11-09T22:11:53.512Z",
-      "track_name": "Mio Cristo Piange Diamanti",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/0zJxp7ndkNCwE2zjfmnnBZ"
-    },
-    {
-      "played_at": "2026-11-09T22:18:48.804Z",
-      "track_name": "Berghain",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/6ZBJc582Szb5UGV3VDgrkh"
-    },
-    {
-      "played_at": "2026-11-10T16:59:03.683Z",
-      "track_name": "La Perla",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/3Vgk7dv0fpyHlyeTZatE31"
-    },
-    {
-      "played_at": "2026-11-10T16:59:21.397Z",
-      "track_name": "La Perla",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/3Vgk7dv0fpyHlyeTZatE31"
-    },
-    {
-      "played_at": "2026-11-10T17:02:09.892Z",
-      "track_name": "Mundo Nuevo",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/1uRF6PMGde0D7uB73bni1d"
-    },
-    {
-      "played_at": "2026-11-10T17:03:54.286Z",
-      "track_name": "De Madrugá",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/6F52Ls9K7a6vNNi0lip9Gm"
-    },
-    {
-      "played_at": "2026-11-10T17:06:51.316Z",
-      "track_name": "Dios Es Un Stalker (versión Francotiradora)",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO"
-    },
-    {
-      "played_at": "2026-11-10T18:53:57.341Z",
-      "track_name": "La Yugular",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/08g7n12xuTaZwcwr7dgWLR"
-    },
-    {
-      "played_at": "2026-11-11T08:02:38.979Z",
-      "track_name": "Mundo Nuevo",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/1uRF6PMGde0D7uB73bni1d"
-    },
-    {
-      "played_at": "2026-11-11T08:04:23.312Z",
-      "track_name": "De Madrugá",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/6F52Ls9K7a6vNNi0lip9Gm"
-    },
-    {
-      "played_at": "2026-11-11T08:07:20.380Z",
-      "track_name": "Dios Es Un Stalker (versión Francotiradora)",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO"
-    },
-    {
-      "played_at": "2026-11-11T08:11:39.037Z",
-      "track_name": "La Yugular",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/08g7n12xuTaZwcwr7dgWLR"
-    },
-    {
-      "played_at": "2026-11-11T08:14:29.571Z",
-      "track_name": "Focu 'Ranni",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/3aIGNjFJPjrGpe24OFMSUH"
-    },
-    {
-      "played_at": "2026-11-11T08:17:12.071Z",
-      "track_name": "Sauvignon Blanc",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6"
-    },
-    {
-      "played_at": "2026-11-11T08:21:03.374Z",
-      "track_name": "Jeanne",
-      "album_name": "LUX (Complete Works)",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-      "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd"
-    }
-  ],
-  "last_successful_run": "2026-11-11T23:00:52.322Z",
+  "streak_tracks": [],
+  "last_successful_run": "2026-11-12T23:00:50.589Z",
   "tracked_timestamps": [
     "2026-11-11T08:21:03.374Z",
     "2026-11-11T08:17:12.071Z",
