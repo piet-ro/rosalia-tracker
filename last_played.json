@@ -14,7 +14,7 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-13T19:30:12.752Z",
+    "timestamp": "2026-11-13T20:31:59.190Z",
     "track_name": "Novia Robot",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
@@ -28,10 +28,18 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
       "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu"
+    },
+    {
+      "played_at": "2026-11-13T20:31:59.190Z",
+      "track_name": "Novia Robot",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu"
     }
   ],
   "last_successful_run": "2026-11-12T23:00:50.589Z",
   "tracked_timestamps": [
+    "2026-11-13T20:31:59.190Z",
     "2026-11-13T19:30:12.752Z",
     "2026-11-11T08:21:03.374Z",
     "2026-11-11T08:17:12.071Z",
