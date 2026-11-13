@@ -1,6 +1,9 @@
 {
-  "current_streak": 0,
-  "active_streak": null,
+  "current_streak": 1,
+  "active_streak": {
+    "start_date": "2026-11-13",
+    "end_date": "2026-11-13"
+  },
   "longest_streak": {
     "count": 4,
     "start_date": "2026-10-04",
@@ -11,16 +14,25 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-11T08:21:03.374Z",
-    "track_name": "Jeanne",
+    "timestamp": "2026-11-13T19:30:12.752Z",
+    "track_name": "Novia Robot",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd",
+    "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
-  "streak_tracks": [],
+  "streak_tracks": [
+    {
+      "played_at": "2026-11-13T19:30:12.752Z",
+      "track_name": "Novia Robot",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu"
+    }
+  ],
   "last_successful_run": "2026-11-12T23:00:50.589Z",
   "tracked_timestamps": [
+    "2026-11-13T19:30:12.752Z",
     "2026-11-11T08:21:03.374Z",
     "2026-11-11T08:17:12.071Z",
     "2026-11-11T08:14:29.571Z",
