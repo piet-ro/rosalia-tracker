@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-14T09:12:50.848Z",
-    "track_name": "Porcelana",
+    "timestamp": "2026-11-14T10:07:08.468Z",
+    "track_name": "Mio Cristo Piange Diamanti",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/0LdgA1zbSnRgM29DxxYcu8",
+    "spotify_url": "https://open.spotify.com/track/0zJxp7ndkNCwE2zjfmnnBZ",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -63,10 +63,26 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
       "spotify_url": "https://open.spotify.com/track/0LdgA1zbSnRgM29DxxYcu8"
+    },
+    {
+      "played_at": "2026-11-14T10:07:02.337Z",
+      "track_name": "Mio Cristo Piange Diamanti",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/0zJxp7ndkNCwE2zjfmnnBZ"
+    },
+    {
+      "played_at": "2026-11-14T10:07:08.468Z",
+      "track_name": "Mio Cristo Piange Diamanti",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/0zJxp7ndkNCwE2zjfmnnBZ"
     }
   ],
   "last_successful_run": "2026-11-13T23:00:47.322Z",
   "tracked_timestamps": [
+    "2026-11-14T10:07:08.468Z",
+    "2026-11-14T10:07:02.337Z",
     "2026-11-14T09:12:50.848Z",
     "2026-11-14T09:07:37.974Z",
     "2026-11-14T09:03:34.679Z",
