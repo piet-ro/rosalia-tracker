@@ -1,8 +1,8 @@
 {
-  "current_streak": 1,
+  "current_streak": 2,
   "active_streak": {
     "start_date": "2026-11-13",
-    "end_date": "2026-11-13"
+    "end_date": "2026-11-14"
   },
   "longest_streak": {
     "count": 4,
@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-13T20:31:59.190Z",
-    "track_name": "Novia Robot",
+    "timestamp": "2026-11-14T08:59:44.477Z",
+    "track_name": "Sexo, Violencia y Llantas",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu",
+    "spotify_url": "https://open.spotify.com/track/3tkwOzZXgstU1DdH4gpaw1",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -35,10 +35,18 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
       "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu"
+    },
+    {
+      "played_at": "2026-11-14T08:59:44.477Z",
+      "track_name": "Sexo, Violencia y Llantas",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/3tkwOzZXgstU1DdH4gpaw1"
     }
   ],
   "last_successful_run": "2026-11-13T23:00:47.322Z",
   "tracked_timestamps": [
+    "2026-11-14T08:59:44.477Z",
     "2026-11-13T20:31:59.190Z",
     "2026-11-13T19:30:12.752Z",
     "2026-11-11T08:21:03.374Z",
