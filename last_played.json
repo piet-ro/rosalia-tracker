@@ -1,8 +1,8 @@
 {
-  "current_streak": 2,
+  "current_streak": 3,
   "active_streak": {
     "start_date": "2026-11-13",
-    "end_date": "2026-11-14"
+    "end_date": "2026-11-15"
   },
   "longest_streak": {
     "count": 4,
@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-14T10:07:08.468Z",
-    "track_name": "Mio Cristo Piange Diamanti",
+    "timestamp": "2026-11-15T14:51:41.152Z",
+    "track_name": "Berghain",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/0zJxp7ndkNCwE2zjfmnnBZ",
+    "spotify_url": "https://open.spotify.com/track/6ZBJc582Szb5UGV3VDgrkh",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -77,10 +77,18 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
       "spotify_url": "https://open.spotify.com/track/0zJxp7ndkNCwE2zjfmnnBZ"
+    },
+    {
+      "played_at": "2026-11-15T14:51:41.152Z",
+      "track_name": "Berghain",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/6ZBJc582Szb5UGV3VDgrkh"
     }
   ],
   "last_successful_run": "2026-11-14T23:00:49.063Z",
   "tracked_timestamps": [
+    "2026-11-15T14:51:41.152Z",
     "2026-11-14T10:07:08.468Z",
     "2026-11-14T10:07:02.337Z",
     "2026-11-14T09:12:50.848Z",
