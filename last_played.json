@@ -14,11 +14,11 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-16T10:57:41.746Z",
-    "track_name": "Dios Es Un Stalker (versión Francotiradora)",
+    "timestamp": "2026-11-16T11:14:37.546Z",
+    "track_name": "Novia Robot",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO",
+    "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -119,10 +119,50 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
       "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO"
+    },
+    {
+      "played_at": "2026-11-16T11:02:00.436Z",
+      "track_name": "La Yugular",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/08g7n12xuTaZwcwr7dgWLR"
+    },
+    {
+      "played_at": "2026-11-16T11:04:50.891Z",
+      "track_name": "Focu 'Ranni",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/3aIGNjFJPjrGpe24OFMSUH"
+    },
+    {
+      "played_at": "2026-11-16T11:07:33.871Z",
+      "track_name": "Sauvignon Blanc",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/76HbQAib8rYB6fPaz57Xh6"
+    },
+    {
+      "played_at": "2026-11-16T11:11:25.138Z",
+      "track_name": "Jeanne",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd"
+    },
+    {
+      "played_at": "2026-11-16T11:14:37.546Z",
+      "track_name": "Novia Robot",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/501aZny32oS5iewdx3e4Eu"
     }
   ],
   "last_successful_run": "2026-11-15T23:00:47.418Z",
   "tracked_timestamps": [
+    "2026-11-16T11:14:37.546Z",
+    "2026-11-16T11:11:25.138Z",
+    "2026-11-16T11:07:33.871Z",
+    "2026-11-16T11:04:50.891Z",
+    "2026-11-16T11:02:00.436Z",
     "2026-11-16T10:57:41.746Z",
     "2026-11-16T10:54:44.662Z",
     "2026-11-16T10:53:00.236Z",
