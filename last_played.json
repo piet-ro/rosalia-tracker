@@ -1,24 +1,24 @@
 {
-  "current_streak": 3,
+  "current_streak": 4,
   "active_streak": {
     "start_date": "2026-11-13",
-    "end_date": "2026-11-15"
+    "end_date": "2026-11-16"
   },
   "longest_streak": {
     "count": 4,
-    "start_date": "2026-10-04",
-    "end_date": "2026-10-07"
+    "start_date": "2026-11-13",
+    "end_date": "2026-11-16"
   },
   "peak_volume": {
     "count": 46,
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-15T14:51:41.152Z",
-    "track_name": "Berghain",
+    "timestamp": "2026-11-16T10:57:41.746Z",
+    "track_name": "Dios Es Un Stalker (versión Francotiradora)",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/6ZBJc582Szb5UGV3VDgrkh",
+    "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
   "streak_tracks": [
@@ -84,10 +84,50 @@
       "album_name": "LUX (Complete Works)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
       "spotify_url": "https://open.spotify.com/track/6ZBJc582Szb5UGV3VDgrkh"
+    },
+    {
+      "played_at": "2026-11-16T10:47:24.280Z",
+      "track_name": "Berghain",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/6ZBJc582Szb5UGV3VDgrkh"
+    },
+    {
+      "played_at": "2026-11-16T10:50:39.866Z",
+      "track_name": "La Perla",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/3Vgk7dv0fpyHlyeTZatE31"
+    },
+    {
+      "played_at": "2026-11-16T10:53:00.236Z",
+      "track_name": "Mundo Nuevo",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/1uRF6PMGde0D7uB73bni1d"
+    },
+    {
+      "played_at": "2026-11-16T10:54:44.662Z",
+      "track_name": "De Madrugá",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/6F52Ls9K7a6vNNi0lip9Gm"
+    },
+    {
+      "played_at": "2026-11-16T10:57:41.746Z",
+      "track_name": "Dios Es Un Stalker (versión Francotiradora)",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/55VfayiDkGUTyFE5M3mUFO"
     }
   ],
   "last_successful_run": "2026-11-15T23:00:47.418Z",
   "tracked_timestamps": [
+    "2026-11-16T10:57:41.746Z",
+    "2026-11-16T10:54:44.662Z",
+    "2026-11-16T10:53:00.236Z",
+    "2026-11-16T10:50:39.866Z",
+    "2026-11-16T10:47:24.280Z",
     "2026-11-15T14:51:41.152Z",
     "2026-11-14T10:07:08.468Z",
     "2026-11-14T10:07:02.337Z",
