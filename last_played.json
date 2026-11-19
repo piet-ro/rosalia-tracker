@@ -1,9 +1,6 @@
 {
-  "current_streak": 1,
-  "active_streak": {
-    "start_date": "2026-11-18",
-    "end_date": "2026-11-18"
-  },
+  "current_streak": 0,
+  "active_streak": null,
   "longest_streak": {
     "count": 4,
     "start_date": "2026-11-13",
@@ -21,58 +18,8 @@
     "spotify_url": "https://open.spotify.com/track/1B0BQaSRHxhI0AUlItY3LK",
     "album_url": "https://open.spotify.com/album/355bjCHzRJztCzaG5Za4gq"
   },
-  "streak_tracks": [
-    {
-      "played_at": "2026-11-18T21:13:03.858Z",
-      "track_name": "Con Altura",
-      "album_name": "Con Altura",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b27365b0e3e1bd8b5fe2f602c1ea",
-      "spotify_url": "https://open.spotify.com/track/2qG5sZ7Si6sdK74qLxedYM"
-    },
-    {
-      "played_at": "2026-11-18T21:16:53.516Z",
-      "track_name": "Besos Moja2",
-      "album_name": "La Última Misión",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b2738fe9cdddf62d0331e37f9597",
-      "spotify_url": "https://open.spotify.com/track/6OzUIp8KjuwxJnCWkXp1uL"
-    },
-    {
-      "played_at": "2026-11-18T21:19:33.623Z",
-      "track_name": "Brillo",
-      "album_name": "Vibras",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b273dda2b86297d3bfb519f8b785",
-      "spotify_url": "https://open.spotify.com/track/3vgiIJW3iSQRRvgYiW86i9"
-    },
-    {
-      "played_at": "2026-11-18T21:22:47.904Z",
-      "track_name": "PIENSO EN TU MIRÁ - Cap.3: Celos",
-      "album_name": "El Mal Querer",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b273b115d8632e69edce1a1da7d8",
-      "spotify_url": "https://open.spotify.com/track/5r8mGKhCDIVWb3AG4hm0l0"
-    },
-    {
-      "played_at": "2026-11-18T22:09:42.094Z",
-      "track_name": "Dolerme",
-      "album_name": "Dolerme",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b27342194a51e1a7b00ebc910557",
-      "spotify_url": "https://open.spotify.com/track/2reL9PAUza4PUtbjqW1fRf"
-    },
-    {
-      "played_at": "2026-11-18T22:12:00.221Z",
-      "track_name": "SAOKO",
-      "album_name": "MOTOMAMI",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b273ac8367a27c0eb7195dc3a58d",
-      "spotify_url": "https://open.spotify.com/track/2FYGZDfsAnNsrm1gVbyKnG"
-    },
-    {
-      "played_at": "2026-11-18T22:14:30.726Z",
-      "track_name": "MALAMENTE - Cap.1: Augurio",
-      "album_name": "El Mal Querer",
-      "album_art": "https://i.scdn.co/image/ab67616d0000b273b115d8632e69edce1a1da7d8",
-      "spotify_url": "https://open.spotify.com/track/1B0BQaSRHxhI0AUlItY3LK"
-    }
-  ],
-  "last_successful_run": "2026-11-18T23:00:56.262Z",
+  "streak_tracks": [],
+  "last_successful_run": "2026-11-19T23:00:54.687Z",
   "tracked_timestamps": [
     "2026-11-18T22:14:30.726Z",
     "2026-11-18T22:12:00.221Z",
