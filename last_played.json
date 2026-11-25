@@ -14,12 +14,12 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-25T21:30:20.764Z",
-    "track_name": "New Woman (feat. ROSALÍA)",
-    "album_name": "Alter Ego",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b27395ce3d848f4e452489d4a12c",
-    "spotify_url": "https://open.spotify.com/track/5UmfBGfRJgjZ8CdhgffabQ",
-    "album_url": "https://open.spotify.com/album/5eoWRkeplmcCL97afSMJVm"
+    "timestamp": "2026-11-25T21:44:19.102Z",
+    "track_name": "PIENSO EN TU MIRÁ - Cap.3: Celos",
+    "album_name": "El Mal Querer",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b273b115d8632e69edce1a1da7d8",
+    "spotify_url": "https://open.spotify.com/track/5r8mGKhCDIVWb3AG4hm0l0",
+    "album_url": "https://open.spotify.com/album/355bjCHzRJztCzaG5Za4gq"
   },
   "streak_tracks": [
     {
@@ -98,10 +98,50 @@
       "album_name": "Alter Ego",
       "album_art": "https://i.scdn.co/image/ab67616d0000b27395ce3d848f4e452489d4a12c",
       "spotify_url": "https://open.spotify.com/track/5UmfBGfRJgjZ8CdhgffabQ"
+    },
+    {
+      "played_at": "2026-11-25T21:32:54.658Z",
+      "track_name": "Aute Cuture",
+      "album_name": "Aute Cuture",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2733fb1795e55605ce553f0f898",
+      "spotify_url": "https://open.spotify.com/track/7dQFpbs34ufIEU745DVclf"
+    },
+    {
+      "played_at": "2026-11-25T21:35:49.254Z",
+      "track_name": "LLYLM",
+      "album_name": "LLYLM",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273b6d4e11d7348adfe385afae4",
+      "spotify_url": "https://open.spotify.com/track/2SiAcexM2p1yX6joESbehd"
+    },
+    {
+      "played_at": "2026-11-25T21:38:13.760Z",
+      "track_name": "Dolerme",
+      "album_name": "Dolerme",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27342194a51e1a7b00ebc910557",
+      "spotify_url": "https://open.spotify.com/track/2reL9PAUza4PUtbjqW1fRf"
+    },
+    {
+      "played_at": "2026-11-25T21:41:04.800Z",
+      "track_name": "Focu 'Ranni",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/3aIGNjFJPjrGpe24OFMSUH"
+    },
+    {
+      "played_at": "2026-11-25T21:44:19.102Z",
+      "track_name": "PIENSO EN TU MIRÁ - Cap.3: Celos",
+      "album_name": "El Mal Querer",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273b115d8632e69edce1a1da7d8",
+      "spotify_url": "https://open.spotify.com/track/5r8mGKhCDIVWb3AG4hm0l0"
     }
   ],
   "last_successful_run": "2026-11-24T23:00:55.216Z",
   "tracked_timestamps": [
+    "2026-11-25T21:44:19.102Z",
+    "2026-11-25T21:41:04.800Z",
+    "2026-11-25T21:38:13.760Z",
+    "2026-11-25T21:35:49.254Z",
+    "2026-11-25T21:32:54.658Z",
     "2026-11-25T21:30:20.764Z",
     "2026-11-25T19:22:12.459Z",
     "2026-11-25T19:18:48.459Z",
@@ -396,11 +436,6 @@
     "2026-09-28T21:00:47.395Z",
     "2026-09-28T20:58:10.990Z",
     "2026-09-28T20:53:42.461Z",
-    "2026-09-28T20:51:05.087Z",
-    "2026-09-28T18:52:02.493Z",
-    "2026-09-28T18:49:03.162Z",
-    "2026-09-28T18:48:01.241Z",
-    "2026-09-28T18:44:58.100Z",
-    "2026-09-28T18:41:49.493Z"
+    "2026-09-28T20:51:05.087Z"
   ]
 }
