@@ -14,12 +14,12 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-25T21:44:19.102Z",
-    "track_name": "PIENSO EN TU MIRÁ - Cap.3: Celos",
-    "album_name": "El Mal Querer",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b273b115d8632e69edce1a1da7d8",
-    "spotify_url": "https://open.spotify.com/track/5r8mGKhCDIVWb3AG4hm0l0",
-    "album_url": "https://open.spotify.com/album/355bjCHzRJztCzaG5Za4gq"
+    "timestamp": "2026-11-25T21:59:50.709Z",
+    "track_name": "VAMPIROS",
+    "album_name": "RR",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b2734d6cf0d0d5e32ca4fa3a59e1",
+    "spotify_url": "https://open.spotify.com/track/3Eax1yebRxj6LSYpxE9Yd3",
+    "album_url": "https://open.spotify.com/album/50uChhk7AKkzDKytDixjYW"
   },
   "streak_tracks": [
     {
@@ -133,10 +133,50 @@
       "album_name": "El Mal Querer",
       "album_art": "https://i.scdn.co/image/ab67616d0000b273b115d8632e69edce1a1da7d8",
       "spotify_url": "https://open.spotify.com/track/5r8mGKhCDIVWb3AG4hm0l0"
+    },
+    {
+      "played_at": "2026-11-25T21:46:49.603Z",
+      "track_name": "MALAMENTE - Cap.1: Augurio",
+      "album_name": "El Mal Querer",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273b115d8632e69edce1a1da7d8",
+      "spotify_url": "https://open.spotify.com/track/1B0BQaSRHxhI0AUlItY3LK"
+    },
+    {
+      "played_at": "2026-11-25T21:51:12.205Z",
+      "track_name": "COMO UN G",
+      "album_name": "MOTOMAMI",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273ac8367a27c0eb7195dc3a58d",
+      "spotify_url": "https://open.spotify.com/track/7MDfNYdpdohHjmFsYK44KU"
+    },
+    {
+      "played_at": "2026-11-25T21:53:36.699Z",
+      "track_name": "Linda",
+      "album_name": "Linda",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273c25804a0031a10086daba15f",
+      "spotify_url": "https://open.spotify.com/track/1ahCrpeTt94LL7y1aXw0Y8"
+    },
+    {
+      "played_at": "2026-11-25T21:56:52.763Z",
+      "track_name": "La Perla",
+      "album_name": "LUX",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+      "spotify_url": "https://open.spotify.com/track/4oVO4fGNRRvEn0CRuFO4qv"
+    },
+    {
+      "played_at": "2026-11-25T21:59:50.709Z",
+      "track_name": "VAMPIROS",
+      "album_name": "RR",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734d6cf0d0d5e32ca4fa3a59e1",
+      "spotify_url": "https://open.spotify.com/track/3Eax1yebRxj6LSYpxE9Yd3"
     }
   ],
   "last_successful_run": "2026-11-24T23:00:55.216Z",
   "tracked_timestamps": [
+    "2026-11-25T21:59:50.709Z",
+    "2026-11-25T21:56:52.763Z",
+    "2026-11-25T21:53:36.699Z",
+    "2026-11-25T21:51:12.205Z",
+    "2026-11-25T21:46:49.603Z",
     "2026-11-25T21:44:19.102Z",
     "2026-11-25T21:41:04.800Z",
     "2026-11-25T21:38:13.760Z",
@@ -431,11 +471,6 @@
     "2026-09-28T21:17:03.198Z",
     "2026-09-28T21:13:49.215Z",
     "2026-09-28T21:12:14.095Z",
-    "2026-09-28T21:09:36.593Z",
-    "2026-09-28T21:05:06.529Z",
-    "2026-09-28T21:00:47.395Z",
-    "2026-09-28T20:58:10.990Z",
-    "2026-09-28T20:53:42.461Z",
-    "2026-09-28T20:51:05.087Z"
+    "2026-09-28T21:09:36.593Z"
   ]
 }
