@@ -14,12 +14,12 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-25T18:58:22.092Z",
-    "track_name": "Berghain",
-    "album_name": "Berghain (Remix)",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b273fb535a56e6bacfb6bee0c1b4",
-    "spotify_url": "https://open.spotify.com/track/7dVTSIA4J4u0mhYYTCiYt1",
-    "album_url": "https://open.spotify.com/album/5tY5Hafl8siFkPnxyllYVR"
+    "timestamp": "2026-11-25T19:12:53.661Z",
+    "track_name": "Brillo",
+    "album_name": "Vibras",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b273dda2b86297d3bfb519f8b785",
+    "spotify_url": "https://open.spotify.com/track/3vgiIJW3iSQRRvgYiW86i9",
+    "album_url": "https://open.spotify.com/album/5kprdYds6oZb4iSldfflOT"
   },
   "streak_tracks": [
     {
@@ -35,10 +35,50 @@
       "album_name": "Berghain (Remix)",
       "album_art": "https://i.scdn.co/image/ab67616d0000b273fb535a56e6bacfb6bee0c1b4",
       "spotify_url": "https://open.spotify.com/track/7dVTSIA4J4u0mhYYTCiYt1"
+    },
+    {
+      "played_at": "2026-11-25T19:01:02.066Z",
+      "track_name": "Sexo, Violencia y Llantas",
+      "album_name": "LUX",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+      "spotify_url": "https://open.spotify.com/track/1dp0MRcrgCxEESP1LrF2yA"
+    },
+    {
+      "played_at": "2026-11-25T19:04:53.964Z",
+      "track_name": "Jeanne",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/7CTwREqLgmaxQngztZrJNd"
+    },
+    {
+      "played_at": "2026-11-25T19:08:02.563Z",
+      "track_name": "LA FAMA",
+      "album_name": "MOTOMAMI",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273ac8367a27c0eb7195dc3a58d",
+      "spotify_url": "https://open.spotify.com/track/6Y46tOTRhkBamosyuWa6YX"
+    },
+    {
+      "played_at": "2026-11-25T19:10:13.564Z",
+      "track_name": "Dios Es Un Stalker",
+      "album_name": "LUX",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27393ee2e2f2dfb7de9befcc164",
+      "spotify_url": "https://open.spotify.com/track/6FdOGTRYvLCJ79d55YtGgZ"
+    },
+    {
+      "played_at": "2026-11-25T19:12:53.661Z",
+      "track_name": "Brillo",
+      "album_name": "Vibras",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273dda2b86297d3bfb519f8b785",
+      "spotify_url": "https://open.spotify.com/track/3vgiIJW3iSQRRvgYiW86i9"
     }
   ],
   "last_successful_run": "2026-11-24T23:00:55.216Z",
   "tracked_timestamps": [
+    "2026-11-25T19:12:53.661Z",
+    "2026-11-25T19:10:13.564Z",
+    "2026-11-25T19:08:02.563Z",
+    "2026-11-25T19:04:53.964Z",
+    "2026-11-25T19:01:02.066Z",
     "2026-11-25T18:58:22.092Z",
     "2026-11-25T18:55:23.262Z",
     "2026-11-18T23:03:26.610Z",
@@ -333,11 +373,6 @@
     "2026-09-28T18:38:03.600Z",
     "2026-09-28T18:34:56.789Z",
     "2026-09-27T11:50:10.902Z",
-    "2026-09-27T11:41:08.486Z",
-    "2026-09-27T11:38:31.347Z",
-    "2026-09-27T11:34:18.738Z",
-    "2026-09-27T11:31:19.461Z",
-    "2026-09-27T11:30:17.600Z",
-    "2026-09-27T11:27:14.680Z"
+    "2026-09-27T11:41:08.486Z"
   ]
 }
