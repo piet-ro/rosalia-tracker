@@ -1,6 +1,9 @@
 {
-  "current_streak": 0,
-  "active_streak": null,
+  "current_streak": 1,
+  "active_streak": {
+    "start_date": "2026-11-25",
+    "end_date": "2026-11-25"
+  },
   "longest_streak": {
     "count": 4,
     "start_date": "2026-11-13",
@@ -11,16 +14,34 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-18T22:14:30.726Z",
-    "track_name": "MALAMENTE - Cap.1: Augurio",
-    "album_name": "El Mal Querer",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b273b115d8632e69edce1a1da7d8",
-    "spotify_url": "https://open.spotify.com/track/1B0BQaSRHxhI0AUlItY3LK",
-    "album_url": "https://open.spotify.com/album/355bjCHzRJztCzaG5Za4gq"
+    "timestamp": "2026-11-25T18:58:22.092Z",
+    "track_name": "Berghain",
+    "album_name": "Berghain (Remix)",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b273fb535a56e6bacfb6bee0c1b4",
+    "spotify_url": "https://open.spotify.com/track/7dVTSIA4J4u0mhYYTCiYt1",
+    "album_url": "https://open.spotify.com/album/5tY5Hafl8siFkPnxyllYVR"
   },
-  "streak_tracks": [],
+  "streak_tracks": [
+    {
+      "played_at": "2026-11-25T18:55:23.262Z",
+      "track_name": "Berghain - Remix",
+      "album_name": "Berghain (Remix)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273fb535a56e6bacfb6bee0c1b4",
+      "spotify_url": "https://open.spotify.com/track/7CI5IAi2z70tyJIVXxsHfw"
+    },
+    {
+      "played_at": "2026-11-25T18:58:22.092Z",
+      "track_name": "Berghain",
+      "album_name": "Berghain (Remix)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273fb535a56e6bacfb6bee0c1b4",
+      "spotify_url": "https://open.spotify.com/track/7dVTSIA4J4u0mhYYTCiYt1"
+    }
+  ],
   "last_successful_run": "2026-11-24T23:00:55.216Z",
   "tracked_timestamps": [
+    "2026-11-25T18:58:22.092Z",
+    "2026-11-25T18:55:23.262Z",
+    "2026-11-18T23:03:26.610Z",
     "2026-11-18T22:14:30.726Z",
     "2026-11-18T22:12:00.221Z",
     "2026-11-18T22:09:42.094Z",
@@ -317,9 +338,6 @@
     "2026-09-27T11:34:18.738Z",
     "2026-09-27T11:31:19.461Z",
     "2026-09-27T11:30:17.600Z",
-    "2026-09-27T11:27:14.680Z",
-    "2026-09-27T11:24:05.979Z",
-    "2026-09-27T11:20:20.108Z",
-    "2026-09-27T11:17:01.979Z"
+    "2026-09-27T11:27:14.680Z"
   ]
 }
