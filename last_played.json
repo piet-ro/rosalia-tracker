@@ -14,12 +14,12 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-25T19:12:53.661Z",
-    "track_name": "Brillo",
-    "album_name": "Vibras",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b273dda2b86297d3bfb519f8b785",
-    "spotify_url": "https://open.spotify.com/track/3vgiIJW3iSQRRvgYiW86i9",
-    "album_url": "https://open.spotify.com/album/5kprdYds6oZb4iSldfflOT"
+    "timestamp": "2026-11-25T19:22:12.459Z",
+    "track_name": "Lo Vas A Olvidar (with ROSALÍA)",
+    "album_name": "Lo Vas A Olvidar (with ROSALÍA)",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b273c64ed7bab63186d7fca3012f",
+    "spotify_url": "https://open.spotify.com/track/0psS4i5YooJrXfDnGvWRLi",
+    "album_url": "https://open.spotify.com/album/4E8puNI8tw7cXz6YJkwMew"
   },
   "streak_tracks": [
     {
@@ -70,10 +70,34 @@
       "album_name": "Vibras",
       "album_art": "https://i.scdn.co/image/ab67616d0000b273dda2b86297d3bfb519f8b785",
       "spotify_url": "https://open.spotify.com/track/3vgiIJW3iSQRRvgYiW86i9"
+    },
+    {
+      "played_at": "2026-11-25T19:16:07.659Z",
+      "track_name": "CANDY",
+      "album_name": "MOTOMAMI",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273ac8367a27c0eb7195dc3a58d",
+      "spotify_url": "https://open.spotify.com/track/70AYiGbc4mWZGEqiipBBDb"
+    },
+    {
+      "played_at": "2026-11-25T19:18:48.459Z",
+      "track_name": "LA COMBI VERSACE",
+      "album_name": "MOTOMAMI",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273ac8367a27c0eb7195dc3a58d",
+      "spotify_url": "https://open.spotify.com/track/5gCNf9wMVrYuM2fvfgLTlF"
+    },
+    {
+      "played_at": "2026-11-25T19:22:12.459Z",
+      "track_name": "Lo Vas A Olvidar (with ROSALÍA)",
+      "album_name": "Lo Vas A Olvidar (with ROSALÍA)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273c64ed7bab63186d7fca3012f",
+      "spotify_url": "https://open.spotify.com/track/0psS4i5YooJrXfDnGvWRLi"
     }
   ],
   "last_successful_run": "2026-11-24T23:00:55.216Z",
   "tracked_timestamps": [
+    "2026-11-25T19:22:12.459Z",
+    "2026-11-25T19:18:48.459Z",
+    "2026-11-25T19:16:07.659Z",
     "2026-11-25T19:12:53.661Z",
     "2026-11-25T19:10:13.564Z",
     "2026-11-25T19:08:02.563Z",
@@ -370,9 +394,6 @@
     "2026-09-28T18:48:01.241Z",
     "2026-09-28T18:44:58.100Z",
     "2026-09-28T18:41:49.493Z",
-    "2026-09-28T18:38:03.600Z",
-    "2026-09-28T18:34:56.789Z",
-    "2026-09-27T11:50:10.902Z",
-    "2026-09-27T11:41:08.486Z"
+    "2026-09-28T18:38:03.600Z"
   ]
 }
