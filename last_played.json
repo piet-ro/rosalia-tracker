@@ -14,12 +14,12 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-25T21:59:50.709Z",
-    "track_name": "VAMPIROS",
-    "album_name": "RR",
-    "album_art": "https://i.scdn.co/image/ab67616d0000b2734d6cf0d0d5e32ca4fa3a59e1",
-    "spotify_url": "https://open.spotify.com/track/3Eax1yebRxj6LSYpxE9Yd3",
-    "album_url": "https://open.spotify.com/album/50uChhk7AKkzDKytDixjYW"
+    "timestamp": "2026-11-25T22:06:31.111Z",
+    "track_name": "El Pañuelo",
+    "album_name": "Fórmula, Vol. 3",
+    "album_art": "https://i.scdn.co/image/ab67616d0000b273485849255c69a3c2c3cfc6a5",
+    "spotify_url": "https://open.spotify.com/track/7jfmlr5W2AQWUGLVhT8ofl",
+    "album_url": "https://open.spotify.com/album/3kGn13mW34Ookfj6yiY8BF"
   },
   "streak_tracks": [
     {
@@ -168,10 +168,26 @@
       "album_name": "RR",
       "album_art": "https://i.scdn.co/image/ab67616d0000b2734d6cf0d0d5e32ca4fa3a59e1",
       "spotify_url": "https://open.spotify.com/track/3Eax1yebRxj6LSYpxE9Yd3"
+    },
+    {
+      "played_at": "2026-11-25T22:02:35.813Z",
+      "track_name": "Con Altura",
+      "album_name": "Con Altura",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b27365b0e3e1bd8b5fe2f602c1ea",
+      "spotify_url": "https://open.spotify.com/track/2qG5sZ7Si6sdK74qLxedYM"
+    },
+    {
+      "played_at": "2026-11-25T22:06:31.111Z",
+      "track_name": "El Pañuelo",
+      "album_name": "Fórmula, Vol. 3",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b273485849255c69a3c2c3cfc6a5",
+      "spotify_url": "https://open.spotify.com/track/7jfmlr5W2AQWUGLVhT8ofl"
     }
   ],
   "last_successful_run": "2026-11-24T23:00:55.216Z",
   "tracked_timestamps": [
+    "2026-11-25T22:06:31.111Z",
+    "2026-11-25T22:02:35.813Z",
     "2026-11-25T21:59:50.709Z",
     "2026-11-25T21:56:52.763Z",
     "2026-11-25T21:53:36.699Z",
@@ -469,8 +485,6 @@
     "2026-09-30T17:41:42.952Z",
     "2026-09-30T17:39:46.335Z",
     "2026-09-28T21:17:03.198Z",
-    "2026-09-28T21:13:49.215Z",
-    "2026-09-28T21:12:14.095Z",
-    "2026-09-28T21:09:36.593Z"
+    "2026-09-28T21:13:49.215Z"
   ]
 }
