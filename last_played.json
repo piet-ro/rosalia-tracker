@@ -1,6 +1,9 @@
 {
-  "current_streak": 0,
-  "active_streak": null,
+  "current_streak": 1,
+  "active_streak": {
+    "start_date": "2026-11-28",
+    "end_date": "2026-11-28"
+  },
   "longest_streak": {
     "count": 4,
     "start_date": "2026-11-13",
@@ -11,16 +14,25 @@
     "date": "2026-10-12"
   },
   "latest_track": {
-    "timestamp": "2026-11-26T08:31:39.840Z",
-    "track_name": "La Perla",
+    "timestamp": "2026-11-28T16:05:14.586Z",
+    "track_name": "Mundo Nuevo",
     "album_name": "LUX (Complete Works)",
     "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
-    "spotify_url": "https://open.spotify.com/track/3Vgk7dv0fpyHlyeTZatE31",
+    "spotify_url": "https://open.spotify.com/track/1uRF6PMGde0D7uB73bni1d",
     "album_url": "https://open.spotify.com/album/3goLwu2fkSSmghikOcVufU"
   },
-  "streak_tracks": [],
+  "streak_tracks": [
+    {
+      "played_at": "2026-11-28T16:05:14.586Z",
+      "track_name": "Mundo Nuevo",
+      "album_name": "LUX (Complete Works)",
+      "album_art": "https://i.scdn.co/image/ab67616d0000b2734ccc50918aa0cb5072773045",
+      "spotify_url": "https://open.spotify.com/track/1uRF6PMGde0D7uB73bni1d"
+    }
+  ],
   "last_successful_run": "2026-11-27T23:00:55.309Z",
   "tracked_timestamps": [
+    "2026-11-28T16:05:14.586Z",
     "2026-11-26T08:31:39.840Z",
     "2026-11-26T08:28:24.323Z",
     "2026-11-26T08:25:25.471Z",
@@ -319,7 +331,6 @@
     "2026-09-30T18:04:54.823Z",
     "2026-09-30T18:02:33.560Z",
     "2026-09-30T17:59:20.711Z",
-    "2026-09-30T17:57:31.087Z",
-    "2026-09-30T17:55:46.192Z"
+    "2026-09-30T17:57:31.087Z"
   ]
 }
